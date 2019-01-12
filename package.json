@@ -2,13 +2,16 @@
   "name": "guisynthesis",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./dist/main.js"
   },
   "author": "priyan",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^10.12.18",
     "electron": "^4.0.1",
     "electron-rebuild": "^1.8.2",
     "webpack-node-externals": "^1.7.2"
@@ -19,7 +22,8 @@
     "js-yaml": "^3.12.1",
     "monaco-editor": "^0.15.6",
     "node-pty": "^0.8.0",
-    "w2ui": "^1.4.3",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.2",
     "xterm": "^3.10.0"
   }
 }
