@@ -23,5 +23,3 @@ command:
       type: string
       default: "output.mp4"
       required: true
-
-

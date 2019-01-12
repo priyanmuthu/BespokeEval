@@ -16,6 +16,7 @@
   "dependencies": {
     "bootstrap": "^3.4.0",
     "jquery": "^3.3.1",
+    "js-yaml": "^3.12.1",
     "monaco-editor": "^0.15.6",
     "node-pty": "^0.8.0",
     "w2ui": "^1.4.3",
