@@ -1,7 +1,8 @@
 const fs = require('fs')
 const path = require('path');
 const yaml = require('js-yaml')
-const YAMLPATH = path.join(__dirname, 'example.yaml');
+// const YAMLPATH = path.join(__dirname, 'example.yaml');
+const utils = require('./utils.js')
 var formDiv;
 $(document).ready(() => {
     // Do everything here
@@ -9,25 +10,26 @@ $(document).ready(() => {
     renderUI();
 })
 
-function getYAMLText(){
-    var yamlText = null;
-    try{
-        yamlText = fs.readFileSync(YAMLPATH).toString();
-    }
-    catch(err){
-        console.log(err);
-    }
+// function getYAMLText(){
+//     var yamlText = null;
+//     try{
+//         yamlText = fs.readFileSync(YAMLPATH).toString();
+//     }
+//     catch(err){
+//         console.log(err);
+//     }
 
-    return yamlText;
-}
+//     return yamlText;
+// }
 
-function getYAMLObject(){
-    return yaml.load(getYAMLText());
-}
+// function getYAMLObject(){
+//     return yaml.load(getYAMLText());
+// }
 
 function renderUI(){
     formDiv.innerHTML = "";
-    formDiv.appendChild(createUI(getYAMLObject()));
+    var editorText = window.editor.getValue();
+    formDiv.appendChild(createUI(utils.getYAMLObject(editorText)));
 }
 
 function createUI(yamlObj){
