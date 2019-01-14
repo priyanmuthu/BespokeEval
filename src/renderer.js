@@ -1,8 +1,12 @@
 //Place all the constants here
 let stringCount = 0;
 let timeCount = 0;
+let booleanCount = 0;
+let markdownCount = 0;
 
 const utils = require('./utils.js')
+const showdown = require('showdown');
+let mdConverter = new showdown.Converter();
 
 function renderUI(){
     var editorText = window.editor.getValue();
@@ -26,16 +30,24 @@ function renderUI(){
 function createUI(yamlObj){
     var mainDiv = document.createElement("div");
     mainDiv.id = 'mainDiv'
+
     //Do this for the command
-    var command = yamlObj['command'];
-    
+    var commandCount = yamlObj.length;
+    for(var i = 0; i < commandCount; i++){
+        command = yamlObj[i];
+        var commandDiv = renderCommandUI(command, i);
+        mainDiv.appendChild(commandDiv);
+    }
+    return mainDiv;
+}
+
+function renderCommandUI(command, div_ID){
     //Create a text for command
     var commandDiv = document.createElement("div");
-    commandDiv.id = 'commandDiv';
-    mainDiv.appendChild(commandDiv);
+    commandDiv.id = 'commandDiv_'+div_ID;
 
-    commandHeading = document.createElement('h3');
-    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b   s> ffmpeg";
+    commandHeading = document.createElement('h1');
+    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command['command'];
     commandDiv.appendChild(commandHeading);
 
     var mainParamDiv = document.createElement('div');
@@ -44,29 +56,13 @@ function createUI(yamlObj){
 
     renderParamUI(mainParamDiv, command['params']);
     commandDiv.appendChild(mainParamDiv);
-
-    return mainDiv;
+    return commandDiv;
 }
 
 function renderParamUI(mainParamDiv, params){
     var paramCount = params.length;
     for(var i = 0; i < paramCount; i++){
         param = params[i];
-        // //Render the param UI
-        // var pDiv = document.createElement('div')
-        // pDiv.id = 'param_div_' + i;
-        
-        // var paramName = document.createElement('label');
-        // paramName.innerHTML = param['parameter']
-        // pDiv.appendChild(paramName);
-
-        // var paramEdit = document.createElement('input');
-        // paramEdit.classList.add('form-control');
-        // paramEdit.type = 'text';
-        // paramEdit.id = 'input_param_1';
-        // param.innerHTML = param['default'];
-
-        // pDiv.appendChild(paramEdit);
 
         var pDiv;
 
@@ -76,6 +72,9 @@ function renderParamUI(mainParamDiv, params){
                 break;
             case 'boolean':
                 pDiv = renderBooleanParam(param);
+                break;
+            case 'markdown':
+                pDiv = renderMarkdownParam(param);
                 break;
             default:
                 pDiv = renderStringParam(param);
@@ -89,7 +88,7 @@ function renderParamUI(mainParamDiv, params){
 function renderStringParam(param){
     //Render the param UI
     var pDiv = document.createElement('div')
-    pDiv.id = 'param_div_' + stringCount;
+    pDiv.id = 'param_string_' + stringCount;
     stringCount = stringCount + 1;
     pDiv.classList.add('form-group');
     
@@ -118,10 +117,21 @@ function renderStringParam(param){
     return pDiv;
 }
 
+function renderMarkdownParam(param){
+    var pDiv = document.createElement('div')
+    pDiv.id = 'param_md_' + markdownCount;
+    markdownCount = markdownCount + 1;
+
+    // pDiv.insertAdjacentHTML('beforeend', '<br />');
+    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(param['md']));
+
+    return pDiv;
+}
+
 function renderTimeParam(param){
     //Render the param UI
     var pDiv = document.createElement('div')
-    pDiv.id = 'param_div_' + timeCount;
+    pDiv.id = 'param_time_' + timeCount;
     timeCount = timeCount + 1;
     pDiv.classList.add('form-group');
     
@@ -150,8 +160,8 @@ function renderTimeParam(param){
 function renderBooleanParam(param){
     //Render the param UI
     var pDiv = document.createElement('div')
-    pDiv.id = 'param_div_' + stringCount;
-    stringCount = stringCount + 1;
+    pDiv.id = 'param_bool_' + booleanCount;
+    booleanCount = booleanCount + 1;
     pDiv.classList.add('form-group');
     pDiv.insertAdjacentHTML( 'beforeend', '<br/>' );
     

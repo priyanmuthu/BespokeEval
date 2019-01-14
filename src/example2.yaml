@@ -10,7 +10,8 @@
     - parameter: ""
       type: markdown
       md: |
-        This is a sample markdown. You can have explanations here.
+        This is a sample markdown.
+        # Introduction
     - parameter: "-c"
       type: string
       default: "copy"
