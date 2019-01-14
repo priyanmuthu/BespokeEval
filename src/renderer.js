@@ -21,14 +21,15 @@ function renderStringParam(param){
     paramEdit.classList.add('form-control');
     paramEdit.type = 'text';
     paramEdit.id = 'input_param_' + stringCount;
-    paramEdit.value = param['default'];
+    if('default' in param){
+        paramEdit.value = param['default'];
+    }
     paramEdit.placeholder = param['parameter'];
     pDiv.appendChild(paramEdit);
 
-    // param['eval'] = function(){
-    //     console.log("eval");
-    //     return paramEdit.value;
-    // }
+    param['eval'] = function(){
+        return paramEdit.value;
+    }
 
     return pDiv;
 }
@@ -49,8 +50,15 @@ function renderTimeParam(param){
     pDiv.appendChild(paramName);
     pDiv.insertAdjacentHTML( 'beforeend', '<br/>' );
     
-    var paramEdit = createTimerInput('timer_input_'+ stringCount);
+    var defaultVal = null;
+    if('default' in param){
+        defaultVal = param['default'];
+    }
+    var result = createTimerInput('timer_input_'+ stringCount, defaultVal);
+    var paramEdit = result['div'];
     pDiv.appendChild(paramEdit);
+
+    param['eval'] = result['eval'];
 
     return pDiv;
 }
@@ -67,6 +75,9 @@ function renderBooleanParam(param){
     paramEdit.classList.add('form-check-input');
     paramEdit.type = 'checkbox';
     paramEdit.id = 'input_param_' + stringCount;
+    if('default' in param){
+        paramEdit.checked = param['default'];
+    }
     pDiv.appendChild(paramEdit);
 
     var paramName = document.createElement('label');
@@ -79,6 +90,10 @@ function renderBooleanParam(param){
     }
     pDiv.appendChild(paramName);
 
+    param['eval'] = function(){
+        return paramEdit.checked + '';
+    }
+    
     return pDiv;
 }
 
@@ -92,7 +107,7 @@ function createInfo(infoText){
     return infoIcon;
 }
 
-function createTimerInput(timer_id){
+function createTimerInput(timer_id, defaultVal){
     var timerDiv = document.createElement('div');
     timerDiv.classList.add('timer-div');
     timerDiv.style.verticalAlign = "middle";
@@ -112,7 +127,26 @@ function createTimerInput(timer_id){
     var secInput = createTimeInput("secs", 59);
     timerDiv.appendChild(secInput);
 
-    return timerDiv;
+    //default value
+    if(defaultVal != null){
+        try{
+            var strArr = defaultVal.split(':');
+            var hour = strArr[0];
+            var min = strArr[1];
+            var sec = strArr[2];
+            hourInput.value = hour;
+            minInput.value = min;
+            secInput.value = sec;
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    var res = {'div': timerDiv, 'eval': function(){
+        return hourInput.value + ":" + minInput.value + ":" + secInput.value;
+    }};
+    return res;
 }
 
 function createTimeInput(timerType, maxVal){
@@ -143,7 +177,6 @@ function inputSlice(e){
 }
 
 function pad(num, maxVal) {
-    console.log(num);
     size=2;
     var s = num+"";
     if(s.length>=size){

@@ -18,20 +18,15 @@ function renderUI(){
         formDiv.innerHTML = "";
         formDiv.appendChild(newUI);
         $('[data-toggle="tooltip"]').tooltip();
+
+        // var command = yamlObj['command'];
+        // var params = command['params'];
+        // var val = params[2]['eval']();
+        // console.log('val: '+val);
     }
     catch(e){
         //Show an error UI
     }
-    var yamlObj = utils.getYAMLObject(editorText);
-    var newUI = createUI(yamlObj);
-    formDiv.innerHTML = "";
-    formDiv.appendChild(newUI);
-    $('[data-toggle="tooltip"]').tooltip();
-
-    // var command = yamlObj['command'];
-    // var params = command['params'];
-    // var val = params[0]['eval']();
-    // console.log('val: '+val);
 }
 
 function createUI(yamlObj){
@@ -47,7 +42,6 @@ function createUI(yamlObj){
 
     commandHeading = document.createElement('h3');
     commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b   s> ffmpeg";
-    console.log('<bold>Command:<bold> '.concat( command['name']));
     commandDiv.appendChild(commandHeading);
 
     var mainParamDiv = document.createElement('div');
@@ -56,7 +50,6 @@ function createUI(yamlObj){
 
     renderParamUI(mainParamDiv, command['params']);
     commandDiv.appendChild(mainParamDiv);
-    console.log(command['params']);
 
     return mainDiv;
 }

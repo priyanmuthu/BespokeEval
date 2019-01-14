@@ -26,3 +26,4 @@ command:
       required: true
     - parameter: "flag"
       type: boolean
+      default: true
