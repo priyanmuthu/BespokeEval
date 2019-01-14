@@ -1,35 +1,37 @@
-const fs = require('fs')
+const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml')
+const yaml = require('js-yaml');
+const renderer = require('./renderer.js');
 // const YAMLPATH = path.join(__dirname, 'example.yaml');
 const utils = require('./utils.js')
 var formDiv;
 $(document).ready(() => {
     // Do everything here
     formDiv = document.getElementById('formDiv');
-    renderUI();
+    // renderUI();
 })
 
-// function getYAMLText(){
-//     var yamlText = null;
-//     try{
-//         yamlText = fs.readFileSync(YAMLPATH).toString();
-//     }
-//     catch(err){
-//         console.log(err);
-//     }
-
-//     return yamlText;
-// }
-
-// function getYAMLObject(){
-//     return yaml.load(getYAMLText());
-// }
-
 function renderUI(){
-    formDiv.innerHTML = "";
     var editorText = window.editor.getValue();
-    formDiv.appendChild(createUI(utils.getYAMLObject(editorText)));
+    try{
+        var newUI = createUI(utils.getYAMLObject(editorText));
+        formDiv.innerHTML = "";
+        formDiv.appendChild(newUI);
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    catch(e){
+        //Show an error UI
+    }
+    var yamlObj = utils.getYAMLObject(editorText);
+    var newUI = createUI(yamlObj);
+    formDiv.innerHTML = "";
+    formDiv.appendChild(newUI);
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // var command = yamlObj['command'];
+    // var params = command['params'];
+    // var val = params[0]['eval']();
+    // console.log('val: '+val);
 }
 
 function createUI(yamlObj){
@@ -50,6 +52,7 @@ function createUI(yamlObj){
 
     var mainParamDiv = document.createElement('div');
     mainParamDiv.id = 'mainParamDiv';
+    mainParamDiv.classList.add('grid-form')
 
     renderParamUI(mainParamDiv, command['params']);
     commandDiv.appendChild(mainParamDiv);
@@ -62,20 +65,35 @@ function renderParamUI(mainParamDiv, params){
     var paramCount = params.length;
     for(var i = 0; i < paramCount; i++){
         param = params[i];
-        //Render the param UI
-        var pDiv = document.createElement('div')
-        pDiv.id = 'param_div_' + i;
+        // //Render the param UI
+        // var pDiv = document.createElement('div')
+        // pDiv.id = 'param_div_' + i;
         
-        var paramName = document.createElement('p');
-        paramName.innerHTML = param['parameter']
-        pDiv.appendChild(paramName);
+        // var paramName = document.createElement('label');
+        // paramName.innerHTML = param['parameter']
+        // pDiv.appendChild(paramName);
 
-        var paramEdit = document.createElement('input');
-        paramEdit.type = 'text';
-        paramEdit.id = 'input_param_1';
-        param.innerHTML = param['default'];
+        // var paramEdit = document.createElement('input');
+        // paramEdit.classList.add('form-control');
+        // paramEdit.type = 'text';
+        // paramEdit.id = 'input_param_1';
+        // param.innerHTML = param['default'];
 
-        pDiv.appendChild(paramEdit);
+        // pDiv.appendChild(paramEdit);
+
+        var pDiv;
+
+        switch(param['type']){
+            case 'time':
+                pDiv = renderer.renderTimeParam(param);
+                break;
+            case 'boolean':
+                pDiv = renderer.renderBooleanParam(param);
+                break;
+            default:
+                pDiv = renderer.renderStringParam(param);
+                break;
+        }
 
         mainParamDiv.appendChild(pDiv);
     }

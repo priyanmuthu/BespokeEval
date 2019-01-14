@@ -39,11 +39,33 @@
             renderUI();
         }
 
-        //Content Change event
-        editor.onDidChangeModelContent(function (e) {
-            console.log('content changed');
+        /**
+         * Addds content changed listener to `editor` and invokes `callback` 100ms after the last content changed event.
+         */
+        function onDidChangeModelContentDebounced(editor, callback) {
+            var timer = -1;
+            var runner = function() {
+            timer = -1;
+            callback();
+            }
+            return editor.onDidChangeModelContent(function(e) {
+            if (timer !== -1) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(runner, 1000);
+            });
+        }
+
+        onDidChangeModelContentDebounced(editor, () => {
+            console.log('changed content');
             renderUI();
         });
+
+        //Content Change event
+        // editor.onDidChangeModelContent(function (e) {
+        //     console.log('content changed');
+        //     renderUI();
+        // });
     });
 })();
 

@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path');
 function readFileText(path){
-    console.log('from utils');
     var yamlText = null;
     try{
         yamlText = fs.readFileSync(path).toString();

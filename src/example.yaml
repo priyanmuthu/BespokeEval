@@ -7,6 +7,7 @@ command:
       type: string
       default: "input.mp4"
       required: true
+      info: input video
     - parameter: "-c"
       type: string
       default: "copy"
@@ -23,3 +24,5 @@ command:
       type: string
       default: "output.mp4"
       required: true
+    - parameter: "flag"
+      type: boolean
