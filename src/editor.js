@@ -6,6 +6,7 @@
     const amdDefine = amdLoader.require.define;
     const fs = require('fs');
     const utils = require('./utils.js')
+    var renderer = require('./renderer.js');
     const YAMLPATH = path.join(__dirname, 'example.yaml');
     // var editor;
     function uriFromPath(_path) {
@@ -36,7 +37,7 @@
         var yaml_text = utils.readFileText(YAMLPATH);
         if(null != yaml_text){
             window.editor.setModel(monaco.editor.createModel(yaml_text, 'yaml'));
-            renderUI();
+            renderer.renderUI();
         }
 
         /**
@@ -58,13 +59,13 @@
 
         onDidChangeModelContentDebounced(editor, () => {
             console.log('changed content');
-            renderUI();
+            renderer.renderUI();
         });
 
         //Content Change event
         // editor.onDidChangeModelContent(function (e) {
         //     console.log('content changed');
-        //     renderUI();
+        //     renderer.renderUI();
         // });
     });
 })();
