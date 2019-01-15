@@ -24,7 +24,7 @@
     self.module = undefined;
     amdRequire(['vs/editor/editor.main'], function() {
         window.editor = monaco.editor.create(document.getElementById('editordiv'), {
-            value: "{\n\t\"Hello\":\"world\"\n}",
+            value: "",
             language: "yaml",
 
             lineNumbers: "on",

@@ -8,9 +8,10 @@ $(document).ready(() => {
     // Do everything here
     
     //Creating Editor
-    require('./editor.js');
+    var editor = require('./editor.js');
 
     // Creating the terminal
-    require('./terminal.js');
+    var terminal = require('./terminal.js');
+    terminal.initializeTerminal();
 })
 

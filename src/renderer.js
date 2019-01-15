@@ -4,7 +4,9 @@ let timeCount = 0;
 let booleanCount = 0;
 let markdownCount = 0;
 
-const utils = require('./utils.js')
+const utils = require('./utils.js');
+const constants = require('./constants.js');
+// Using Showdown.js to parse markdown to HTML: https://github.com/showdownjs/showdown
 const showdown = require('showdown');
 let mdConverter = new showdown.Converter();
 
@@ -12,10 +14,12 @@ function renderUI(){
     var editorText = window.editor.getValue();
     try{
         var formDiv = document.getElementById('formDiv');
-        var newUI = createUI(utils.getYAMLObject(editorText));
+        var yamlObj = utils.getYAMLObject(editorText);
+        var newUI = createUI(yamlObj);
         formDiv.innerHTML = "";
         formDiv.appendChild(newUI);
         $('[data-toggle="tooltip"]').tooltip();
+        module.exports.yamlObj = yamlObj;
 
         // var command = yamlObj['command'];
         // var params = command['params'];
@@ -24,6 +28,7 @@ function renderUI(){
     }
     catch(e){
         //Show an error UI
+        console.log(e);
     }
 }
 
@@ -47,14 +52,25 @@ function renderCommandUI(command, div_ID){
     commandDiv.id = 'commandDiv_'+div_ID;
 
     commandHeading = document.createElement('h1');
-    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command['command'];
+    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
+    var runButton = document.createElement('button');
+    runButton.classList.add('btn');
+    runButton.classList.add('btn-primary');
+    runButton.classList.add('pull-right');
+    runButton.innerText = "Run";
+    runButton.style.minWidth = "40px";
+    runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" style="margin-left:5px;" />');
+    runButton.addEventListener("click",() => {
+        runCommand(command);
+    });
+    commandHeading.appendChild(runButton);
     commandDiv.appendChild(commandHeading);
 
     var mainParamDiv = document.createElement('div');
     mainParamDiv.id = 'mainParamDiv';
     mainParamDiv.classList.add('grid-form')
 
-    renderParamUI(mainParamDiv, command['params']);
+    renderParamUI(mainParamDiv, command[constants.yamlStrings.parameterArray]);
     commandDiv.appendChild(mainParamDiv);
     return commandDiv;
 }
@@ -66,14 +82,14 @@ function renderParamUI(mainParamDiv, params){
 
         var pDiv;
 
-        switch(param['type']){
-            case 'time':
+        switch(param[constants.yamlStrings.parameterType]){
+            case constants.yamlTypes.time:
                 pDiv = renderTimeParam(param);
                 break;
-            case 'boolean':
+            case constants.yamlTypes.boolean:
                 pDiv = renderBooleanParam(param);
                 break;
-            case 'markdown':
+            case constants.yamlTypes.markdown:
                 pDiv = renderMarkdownParam(param);
                 break;
             default:
@@ -124,7 +140,7 @@ function renderMarkdownParam(param){
     markdownCount = markdownCount + 1;
 
     // pDiv.insertAdjacentHTML('beforeend', '<br />');
-    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(param['md']));
+    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(param[constants.yamlStrings.markdownValue]));
 
     return pDiv;
 }
@@ -186,7 +202,7 @@ function renderBooleanParam(param){
     pDiv.appendChild(paramName);
 
     param['eval'] = function(){
-        return paramEdit.checked + '';
+        return paramEdit.checked;
     }
     
     return pDiv;
@@ -275,15 +291,50 @@ function pad(num, maxVal) {
     size=2;
     var s = num+"";
     if(s.length>=size){
-        console.log('big size');
         s = s.slice(-2);
         if(parseInt(s)>maxVal){
             return maxVal+"";
-        }
+        }   
         return s;
     }
     while (s.length < size) s = "0" + s;
     return s;
+}
+
+function runCommand(command){
+    //parse the parameters and run the command
+    var commandString = "";
+
+    //command name:
+    commandString += command[constants.yamlStrings.commandName];
+    commandString += " ";
+
+    //add params
+    var params = command[constants.yamlStrings.parameterArray];
+    var paramCount = params.length;
+    var paramList = [];
+    for(var i = 0; i<paramCount; i++){
+        var param = params[i];
+        if(param[constants.yamlStrings.parameterType] == constants.yamlTypes.markdown){
+            continue;
+        }
+        switch(param[constants.yamlStrings.parameterType]){
+            case constants.yamlTypes.boolean:
+                if(param[constants.yamlStrings.evaluate]()){
+                    paramList.push(param[constants.yamlStrings.parameterName]);
+                }
+                break;
+            default:
+                var paramElements = [param[constants.yamlStrings.parameterName], param[constants.yamlStrings.evaluate]()];
+                paramList.push(paramElements.join(' '));
+                break;
+        }pad
+    }
+    commandString += paramList.join(' ');
+    console.log(commandString);
+
+    // var terminal = require('./terminal.js');
+    // terminal.runCommand(commandString);
 }
 
 module.exports.renderStringParam = renderStringParam;

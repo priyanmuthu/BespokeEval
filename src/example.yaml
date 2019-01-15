@@ -27,6 +27,6 @@
       type: string
       default: "output.mp4"
       required: true
-    - parameter: "flag"
+    - parameter: "-flag"
       type: boolean
       default: true
