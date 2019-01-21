@@ -4,15 +4,22 @@ const yamlStrings = {
     'parameterType': 'type',
     'markdownValue': 'md',
     'parameterName': 'parameter',
-    'evaluate': 'eval'
-}
+    'evaluate': 'eval',
+    'defaultValue':'default',
+    'info': 'info',
+    'value': 'value'
+};
 
 const yamlTypes = {
     'string': 'string',
-    'markdown': 'markdown',
+    'markdown': 'md',
     'boolean': 'boolean',
-    'time': 'time'
-}
+    'time': 'time',
+    'dropdown': 'dropdown',
+    'file': 'file'
+};
 
-module.exports.yamlStrings = yamlStrings;
-module.exports.yamlTypes = yamlTypes;
+module.exports = {
+    yamlStrings: yamlStrings,
+    yamlTypes: yamlTypes
+};

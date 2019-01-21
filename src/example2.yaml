@@ -3,15 +3,20 @@
 - command: ffmpeg
   params: 
     - parameter: "-i"
-      type: string
+      type: file
       default: "input.mp4"
       required: true
       info: input video
-    - parameter: ""
-      type: markdown
-      md: |
-        This is a sample markdown.
-        # Introduction
+    # - parameter: ""
+    #   type: markdown
+    #   md: |
+    #     This is a sample markdown. You can have explanations here.
+    - parameter: '-test'
+      type: dropdown
+      value:
+        - val1
+        - val2
+        - val3
     - parameter: "-c"
       type: string
       default: "copy"
@@ -24,10 +29,11 @@
       type: time
       default: 00:06:00
       required: true
+    # - parameter: ""
+    #   type: markdown
+    #   md: |
+    #     Value with no flag corresponds to output file name.
     - parameter: ""
       type: string
       default: "output.mp4"
       required: true
-    - parameter: "flag"
-      type: boolean
-      default: true

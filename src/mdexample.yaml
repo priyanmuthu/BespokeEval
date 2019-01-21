@@ -2,6 +2,12 @@
 # Command: ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4
 - command: ffmpeg
   params: 
+    - type: md
+      md: |
+        ### Explanation
+        This runs the *ffmpeg* command. The below given flags are required to crop the video.  
+        - -i: input file path
+        - -c: codec to use
     - parameter: "-i"
       type: string
       default: "input.mp4"
@@ -10,6 +16,10 @@
       type: string
       default: "copy"
       required: true
+    - type: md
+      md: |
+        - -ss: crop start time
+        - -t: length of the crop
     - parameter: "-ss"
       type: time
       default: 00:02:20

@@ -3,16 +3,21 @@ let stringCount = 0;
 let timeCount = 0;
 let booleanCount = 0;
 let markdownCount = 0;
+let dropdownCount = 0;
+let fileDialogCount = 0;
 
 const utils = require('./utils.js');
 const constants = require('./constants.js');
 // Using Showdown.js to parse markdown to HTML: https://github.com/showdownjs/showdown
 const showdown = require('showdown');
 let mdConverter = new showdown.Converter();
+const Awesomplete = require('awesomplete');
+const {dialog} = require('electron').remote;
+const path = require('path');
 
-function renderUI(){
+function renderUI() {
     var editorText = window.editor.getValue();
-    try{
+    try {
         var formDiv = document.getElementById('formDiv');
         var yamlObj = utils.getYAMLObject(editorText);
         var newUI = createUI(yamlObj);
@@ -26,19 +31,21 @@ function renderUI(){
         // var val = params[2]['eval']();
         // console.log('val: '+val);
     }
-    catch(e){
+    catch (e) {
         //Show an error UI
         console.log(e);
     }
 }
 
-function createUI(yamlObj){
+function createUI(yamlObj) {
     var mainDiv = document.createElement("div");
     mainDiv.id = 'mainDiv'
+    mainDiv.classList.add("pre-scrollable");
+    mainDiv.style.minHeight = "100%";
 
     //Do this for the command
     var commandCount = yamlObj.length;
-    for(var i = 0; i < commandCount; i++){
+    for (var i = 0; i < commandCount; i++) {
         command = yamlObj[i];
         var commandDiv = renderCommandUI(command, i);
         mainDiv.appendChild(commandDiv);
@@ -46,10 +53,12 @@ function createUI(yamlObj){
     return mainDiv;
 }
 
-function renderCommandUI(command, div_ID){
+function renderCommandUI(command, div_ID) {
     //Create a text for command
     var commandDiv = document.createElement("div");
-    commandDiv.id = 'commandDiv_'+div_ID;
+    commandDiv.id = 'commandDiv_' + div_ID;
+    commandDiv.classList.add("pre-scrollable");
+    commandDiv.style.minHeight = "100%";
 
     commandHeading = document.createElement('h1');
     commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
@@ -60,7 +69,7 @@ function renderCommandUI(command, div_ID){
     runButton.innerText = "Run";
     runButton.style.minWidth = "40px";
     runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" style="margin-left:5px;" />');
-    runButton.addEventListener("click",() => {
+    runButton.addEventListener("click", () => {
         runCommand(command);
     });
     commandHeading.appendChild(runButton);
@@ -75,14 +84,14 @@ function renderCommandUI(command, div_ID){
     return commandDiv;
 }
 
-function renderParamUI(mainParamDiv, params){
+function renderParamUI(mainParamDiv, params) {
     var paramCount = params.length;
-    for(var i = 0; i < paramCount; i++){
+    for (var i = 0; i < paramCount; i++) {
         param = params[i];
 
         var pDiv;
 
-        switch(param[constants.yamlStrings.parameterType]){
+        switch (param[constants.yamlStrings.parameterType]) {
             case constants.yamlTypes.time:
                 pDiv = renderTimeParam(param);
                 break;
@@ -91,6 +100,12 @@ function renderParamUI(mainParamDiv, params){
                 break;
             case constants.yamlTypes.markdown:
                 pDiv = renderMarkdownParam(param);
+                break;
+            case constants.yamlTypes.dropdown:
+                pDiv = renderDropdownParam(param);
+                break;
+            case constants.yamlTypes.file:
+                pDiv = renderFileDialog(param);
                 break;
             default:
                 pDiv = renderStringParam(param);
@@ -101,17 +116,17 @@ function renderParamUI(mainParamDiv, params){
     }
 }
 
-function renderStringParam(param){
+function renderStringParam(param) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_string_' + stringCount;
     stringCount = stringCount + 1;
     pDiv.classList.add('form-group');
-    
+
     var paramName = document.createElement('label');
-    paramName.innerHTML = param['parameter']
-    if("info" in param){
-        var infoIcon = createInfo(param['info']);
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
     pDiv.appendChild(paramName);
@@ -120,20 +135,20 @@ function renderStringParam(param){
     paramEdit.classList.add('form-control');
     paramEdit.type = 'text';
     paramEdit.id = 'input_param_' + stringCount;
-    if('default' in param){
-        paramEdit.value = param['default'];
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
     }
-    paramEdit.placeholder = param['parameter'];
+    paramEdit.placeholder = param[constants.yamlStrings.parameterName];
     pDiv.appendChild(paramEdit);
 
-    param['eval'] = function(){
+    param[constants.yamlStrings.evaluate] = function () {
         return paramEdit.value;
     }
 
     return pDiv;
 }
 
-function renderMarkdownParam(param){
+function renderMarkdownParam(param) {
     var pDiv = document.createElement('div')
     pDiv.id = 'param_md_' + markdownCount;
     pDiv.style['grid-column'] = "1/-1";
@@ -145,70 +160,183 @@ function renderMarkdownParam(param){
     return pDiv;
 }
 
-function renderTimeParam(param){
+function renderTimeParam(param) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_time_' + timeCount;
     timeCount = timeCount + 1;
     pDiv.classList.add('form-group');
-    
+
     var paramName = document.createElement('label');
-    paramName.innerHTML = param['parameter']
-    if("info" in param){
-        var infoIcon = createInfo(param['info']);
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
     pDiv.appendChild(paramName);
-    pDiv.insertAdjacentHTML( 'beforeend', '<br/>' );
-    
+    pDiv.insertAdjacentHTML('beforeend', '<br/>');
+
     var defaultVal = null;
-    if('default' in param){
-        defaultVal = param['default'];
+    if (constants.yamlStrings.defaultValue in param) {
+        defaultVal = param[constants.yamlStrings.defaultValue];
     }
-    var result = createTimerInput('timer_input_'+ stringCount, defaultVal);
+    var result = createTimerInput('timer_input_' + stringCount, defaultVal);
     var paramEdit = result['div'];
     pDiv.appendChild(paramEdit);
 
-    param['eval'] = result['eval'];
+    param[constants.yamlStrings.evaluate] = result[constants.yamlStrings.evaluate];
 
     return pDiv;
 }
 
-function renderBooleanParam(param){
+function renderBooleanParam(param) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_bool_' + booleanCount;
     booleanCount = booleanCount + 1;
     pDiv.classList.add('form-group');
-    pDiv.insertAdjacentHTML( 'beforeend', '<br/>' );
-    
+    pDiv.insertAdjacentHTML('beforeend', '<br/>');
+
     var paramEdit = document.createElement('input');
     paramEdit.classList.add('form-check-input');
     paramEdit.type = 'checkbox';
     paramEdit.id = 'input_param_' + stringCount;
-    if('default' in param){
-        paramEdit.checked = param['default'];
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.checked = param[constants.yamlStrings.defaultValue];
     }
     pDiv.appendChild(paramEdit);
 
     var paramName = document.createElement('label');
-    paramName.innerHTML = param['parameter']
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
     paramName.style.marginLeft = "10px";
     paramName.style.fontSize = "16px";
-    if("info" in param){
-        var infoIcon = createInfo(param['info']);
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
     pDiv.appendChild(paramName);
 
-    param['eval'] = function(){
+    param[constants.yamlStrings.evaluate] = function () {
         return paramEdit.checked;
     }
-    
+
     return pDiv;
 }
 
-function createInfo(infoText){
+function renderDropdownParam(param) {
+    //Render the param UI
+
+    var pDiv = document.createElement('div');
+    pDiv.classList.add('form-group');
+    pDiv.classList.add('has-feedback');
+    pDiv.style.color = "#000000";
+
+    // label
+    var paramName = document.createElement('label');
+    paramName.style.color = "#ffffff";
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    if(constants.yamlStrings.info in param){
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+    pDiv.appendChild(paramName);
+
+    //input
+    var dInput = document.createElement('input');
+    dInput.id = "dropdown_" + dropdownCount;
+    dropdownCount += 1;
+    dInput.type = "text";
+    dInput.classList.add('form-control');
+    pDiv.appendChild(dInput);
+
+    var icon = document.createElement('span');
+    icon.classList.add('glyphicon');
+    icon.classList.add('glyphicon-chevron-down');
+    icon.classList.add('form-control-feedback');
+    pDiv.appendChild(icon);
+
+    var valArray = param[constants.yamlStrings.value];
+    var dropdownAP = new Awesomplete(dInput, {list: valArray, minChars:0});
+    dropdownAP.evaluate();
+    dropdownAP.close();
+    dInput.addEventListener('click', () => {
+        dropdownAP.open();
+    });
+
+    param[constants.yamlStrings.evaluate] = function(){
+        return dInput.value;
+    }
+
+    return pDiv;
+}
+
+function renderFileDialog(param){
+    var pDiv = document.createElement('div');
+    pDiv.id = "file_div_" + fileDialogCount;
+    fileDialogCount += 1;
+    // pDiv.classList.add('input-group');
+    pDiv.classList.add('form-group');
+
+    // label
+    var paramName = document.createElement('label');
+    paramName.style.color = "#ffffff";
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    if(constants.yamlStrings.info in param){
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+    pDiv.appendChild(paramName);
+
+    //input div
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('input-group');
+    pDiv.appendChild(inputDiv);
+    //input
+    var paramEdit = document.createElement('input');
+    paramEdit.classList.add('form-control');
+    paramEdit.type = 'text';
+    paramEdit.id = 'file_input_' + fileDialogCount;
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    inputDiv.appendChild(paramEdit);
+
+    // File dialog
+    var fSpan = document.createElement('span');
+    fSpan.classList.add('input-group-btn');
+    inputDiv.appendChild(fSpan);
+    var fButton = document.createElement('button');
+    fButton.id = "File_Button_" + fileDialogCount;
+    fButton.classList.add('btn');
+    fButton.classList.add('btn-default');
+    fButton.type = "submit";
+    fSpan.appendChild(fButton);
+
+    var icon = document.createElement('i');
+    icon.classList.add('glyphicon');
+    icon.classList.add('glyphicon-folder-open');
+    fButton.appendChild(icon);
+
+    let options = {
+        defaultPath: __dirname
+    }
+
+    fButton.addEventListener('click', () => {
+        dialog.showOpenDialog(options, (files) => {
+            if(files != undefined){
+                paramEdit.value = files[0];
+            }
+        });
+    })
+
+    param['eval'] = function(){
+        return "\"" + paramEdit.value + "\"";
+    }
+
+    return pDiv;
+}
+
+function createInfo(infoText) {
     var infoIcon = document.createElement('span');
     infoIcon.classList.add('glyphicon');
     infoIcon.classList.add('glyphicon-info-sign');
@@ -218,7 +346,7 @@ function createInfo(infoText){
     return infoIcon;
 }
 
-function createTimerInput(timer_id, defaultVal){
+function createTimerInput(timer_id, defaultVal) {
     var timerDiv = document.createElement('div');
     timerDiv.classList.add('timer-div');
     timerDiv.style.verticalAlign = "middle";
@@ -239,8 +367,8 @@ function createTimerInput(timer_id, defaultVal){
     timerDiv.appendChild(secInput);
 
     //default value
-    if(defaultVal != null){
-        try{
+    if (defaultVal != null) {
+        try {
             var strArr = defaultVal.split(':');
             var hour = strArr[0];
             var min = strArr[1];
@@ -249,18 +377,20 @@ function createTimerInput(timer_id, defaultVal){
             minInput.value = min;
             secInput.value = sec;
         }
-        catch(e){
+        catch (e) {
             console.log(e);
         }
     }
 
-    var res = {'div': timerDiv, 'eval': function(){
-        return hourInput.value + ":" + minInput.value + ":" + secInput.value;
-    }};
+    var res = {
+        'div': timerDiv, 'eval': function () {
+            return hourInput.value + ":" + minInput.value + ":" + secInput.value;
+        }
+    };
     return res;
 }
 
-function createTimeInput(timerType, maxVal){
+function createTimeInput(timerType, maxVal) {
     var timerInput = document.createElement('input');
     timerInput.classList.add('form-control');
     timerInput.classList.add('timer-input');
@@ -269,11 +399,11 @@ function createTimeInput(timerType, maxVal){
     timerInput.max = maxVal;
     timerInput.addEventListener('input', inputSlice);
     timerInput['data-type'] = timerType;
-    
+
     return timerInput;
 }
 
-function createTimerSep(){
+function createTimerSep() {
     var sep = document.createElement('span');
     sep.style.display = "-webkit-box";
     sep.style["-webkit-box-pack"] = "center";
@@ -282,26 +412,26 @@ function createTimerSep(){
     return sep;
 }
 
-function inputSlice(e){
+function inputSlice(e) {
     // console.log(e);
     e.target.value = pad(e.target.value, e.target.max);
 }
 
 function pad(num, maxVal) {
-    size=2;
-    var s = num+"";
-    if(s.length>=size){
+    size = 2;
+    var s = num + "";
+    if (s.length >= size) {
         s = s.slice(-2);
-        if(parseInt(s)>maxVal){
-            return maxVal+"";
-        }   
+        if (parseInt(s) > maxVal) {
+            return maxVal + "";
+        }
         return s;
     }
     while (s.length < size) s = "0" + s;
     return s;
 }
 
-function runCommand(command){
+function runCommand(command) {
     //parse the parameters and run the command
     var commandString = "";
 
@@ -313,14 +443,14 @@ function runCommand(command){
     var params = command[constants.yamlStrings.parameterArray];
     var paramCount = params.length;
     var paramList = [];
-    for(var i = 0; i<paramCount; i++){
+    for (var i = 0; i < paramCount; i++) {
         var param = params[i];
-        if(param[constants.yamlStrings.parameterType] == constants.yamlTypes.markdown){
+        if (param[constants.yamlStrings.parameterType] == constants.yamlTypes.markdown) {
             continue;
         }
-        switch(param[constants.yamlStrings.parameterType]){
+        switch (param[constants.yamlStrings.parameterType]) {
             case constants.yamlTypes.boolean:
-                if(param[constants.yamlStrings.evaluate]()){
+                if (param[constants.yamlStrings.evaluate]()) {
                     paramList.push(param[constants.yamlStrings.parameterName]);
                 }
                 break;
@@ -328,17 +458,15 @@ function runCommand(command){
                 var paramElements = [param[constants.yamlStrings.parameterName], param[constants.yamlStrings.evaluate]()];
                 paramList.push(paramElements.join(' '));
                 break;
-        }pad
+        }
     }
     commandString += paramList.join(' ');
     console.log(commandString);
 
-    // var terminal = require('./terminal.js');
-    // terminal.runCommand(commandString);
+    var terminal = require('./terminal.js');
+    terminal.runCommand(commandString);
 }
 
-module.exports.renderStringParam = renderStringParam;
-module.exports.renderTimeParam = renderTimeParam;
-module.exports.renderBooleanParam = renderBooleanParam;
-module.exports.inputSlice = inputSlice;
-module.exports.renderUI = renderUI;
+module.exports = {
+    renderUI: renderUI
+};
