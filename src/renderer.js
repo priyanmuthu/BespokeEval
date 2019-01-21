@@ -39,9 +39,7 @@ function renderUI() {
 
 function createUI(yamlObj) {
     var mainDiv = document.createElement("div");
-    mainDiv.id = 'mainDiv'
-    mainDiv.classList.add("pre-scrollable");
-    mainDiv.style.minHeight = "100%";
+    mainDiv.id = 'mainDiv';
 
     //Do this for the command
     var commandCount = yamlObj.length;
@@ -57,8 +55,6 @@ function renderCommandUI(command, div_ID) {
     //Create a text for command
     var commandDiv = document.createElement("div");
     commandDiv.id = 'commandDiv_' + div_ID;
-    commandDiv.classList.add("pre-scrollable");
-    commandDiv.style.minHeight = "100%";
 
     commandHeading = document.createElement('h1');
     commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
