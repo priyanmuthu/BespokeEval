@@ -23,11 +23,13 @@ $(document).ready(() => {
     var window = require('electron').remote.getCurrentWindow();
     window.on('resize', () => {
         console.log('resize');
-        editor.editorObj.layout();
-        terminal.xterm.fit();
-        // console.log(editor.editorObj);
+        resizeUI();
     });
     
+    function resizeUI(){
+        editor.editorObj.layout();
+        terminal.xterm.fit();
+    }
 
     $('#panelButton').click(() => {
         console.log('button click');
