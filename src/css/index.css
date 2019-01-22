@@ -20,6 +20,14 @@ body{
     overflow-y: hidden; /* don't show content that exceeds my height */
 }
 
+.half {
+    max-height: 50% !important;
+}
+
+.full {
+    max-height: 100% !important;
+}
+
 #formdiv {
     overflow: scroll;
 }
@@ -27,3 +35,26 @@ body{
 div.awesomplete {
     display: block;
 }
+
+.accordion {
+    background-color: #454545;
+    color: #fff;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    height: 100%;
+    vertical-align: middle;
+    padding: 10px;
+  }
+
+  .active, .accordion:hover {
+    background-color: #515151;
+  }
+
+  .accordion-panel {
+    background-color: #282828;
+    display: block;
+  }

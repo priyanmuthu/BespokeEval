@@ -7,8 +7,8 @@
     const fs = require('fs');
     const utils = require('./utils.js')
     var renderer = require('./renderer.js');
-    const YAMLPATH = path.join(__dirname, 'example.yaml');
-    // const YAMLPATH = path.join(__dirname, 'mdexample.yaml');
+    // const YAMLPATH = path.join(__dirname, 'example.yaml');
+    const YAMLPATH = path.join(__dirname, 'mdexample.yaml');
     // var editor;
     function uriFromPath(_path) {
         var pathName = path.resolve(_path).replace(/\\/g, '/');
