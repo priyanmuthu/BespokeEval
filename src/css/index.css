@@ -40,7 +40,7 @@ div.awesomplete {
     background-color: #454545;
     color: #fff;
     cursor: pointer;
-    width: 100%;
+    /* width: 100%; */
     text-align: left;
     border: none;
     outline: none;

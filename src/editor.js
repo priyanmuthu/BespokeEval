@@ -59,15 +59,18 @@
         }
 
         onDidChangeModelContentDebounced(editor, () => {
-            console.log('changed content');
             renderer.renderUI();
         });
+
+        console.log(window.editor);
+        module.exports.editorObj = window.editor;
 
         //Content Change event
         // editor.onDidChangeModelContent(function (e) {
         //     console.log('content changed');
         //     renderer.renderUI();
         // });
+        
     });
 })();
 

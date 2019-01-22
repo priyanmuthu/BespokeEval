@@ -16,6 +16,13 @@ $(document).ready(() => {
     //Creating Editor
     var editor = require('./editor.js');
 
+    var window = require('electron').remote.getCurrentWindow();
+    window.on('resize', () => {
+        console.log('resize');
+        editor.editorObj.layout();
+        // console.log(editor.editorObj);
+    });
+
     // Creating the terminal
     var terminal = require('./terminal.js');
     terminal.initializeTerminal();
