@@ -16,16 +16,17 @@ $(document).ready(() => {
     //Creating Editor
     var editor = require('./editor.js');
 
+    // Creating the terminal
+    var terminal = require('./terminal.js');
+    terminal.initializeTerminal();
+
     var window = require('electron').remote.getCurrentWindow();
     window.on('resize', () => {
         console.log('resize');
         editor.editorObj.layout();
+        terminal.xterm.fit();
         // console.log(editor.editorObj);
     });
-
-    // Creating the terminal
-    var terminal = require('./terminal.js');
-    terminal.initializeTerminal();
     
 
     $('#panelButton').click(() => {

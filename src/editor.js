@@ -62,7 +62,6 @@
             renderer.renderUI();
         });
 
-        console.log(window.editor);
         module.exports.editorObj = window.editor;
 
         //Content Change event
