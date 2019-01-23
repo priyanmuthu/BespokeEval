@@ -19,10 +19,12 @@
     "jquery": "^3.3.1",
     "jquery-editable-select": "^2.2.5",
     "js-yaml": "^3.12.1",
+    "minimist": "^1.2.0",
     "monaco-editor": "^0.15.6",
     "node-pty": "^0.8.0",
     "showdown": "^1.9.0",
     "w2ui": "^1.4.3",
-    "xterm": "^3.10.1"
+    "xterm": "^3.10.1",
+    "yargs-parser": "^11.1.1"
   }
 }

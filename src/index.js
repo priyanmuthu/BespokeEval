@@ -4,6 +4,8 @@ const yaml = require('js-yaml');
 const { dialog } = require('electron').remote;
 // const YAMLPATH = path.join(__dirname, 'example.yaml');
 const Awesomplete = require('awesomplete');
+const yargsParser = require('yargs-parser');
+const parserConfig = {'configuration': {'short-option-groups': false}};
 
 
 $(document).ready(() => {
@@ -19,35 +21,37 @@ $(document).ready(() => {
     var terminal = require('./terminal.js');
     terminal.initializeTerminal();
 
-    
+
     initDynamicResize(editor, terminal);
     initCollapseUI();
+    
+    console.log(parseArgs('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
 });
 
-function initDynamicResize(editor, terminal){
+function parseArgs(commandStr) {
+    return yargsParser(commandStr, parserConfig);
+}
+
+function initDynamicResize(editor, terminal) {
     var window = require('electron').remote.getCurrentWindow();
     window.on('resize', () => {
-        console.log('resize');
         resizeUI();
     });
 
     function resizeUI() {
         editor.editorObj.layout();
         terminal.xterm.fit();
+        terminal.xterm.fit();
     }
 }
 
 function initCollapseUI() {
     $('#panelButton').click(() => {
-        console.log('button click');
         var bottomPanel = '#bottomPanel';
         var topPanel = '#topPanel';
         var panelButtonIcon = '#panelButtonIcon';
         var disp = $('#bottomPanel').css('display');
-        console.log($(bottomPanel).height() / $(bottomPanel).parent().height());
-        console.log(disp);
         if (disp == 'block') {
-            console.log('block -> hidden');
             $(bottomPanel).hide();
             $(bottomPanel).height('0%');
             $(topPanel).height('95%');
@@ -55,7 +59,6 @@ function initCollapseUI() {
             $(panelButtonIcon).addClass('glyphicon-menu-up');
         }
         else if (disp == 'none') {
-            console.log('hidden -> block');
             //Show the panel
             $(topPanel).height('50%');
             $(bottomPanel).height('45%');

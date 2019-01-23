@@ -45,7 +45,6 @@ div.awesomplete {
     border: none;
     outline: none;
     transition: 0.4s;
-    height: 100%;
     vertical-align: middle;
     padding: 10px;
   }

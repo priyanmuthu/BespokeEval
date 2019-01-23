@@ -9,7 +9,7 @@ function initializeTerminal() {
   const ptyProcess = pty.spawn(shell, [], {
     name: 'xterm-color',
     cols: 80,
-    rows: 30,
+    rows: 10,
     cwd: process.cwd(),
     env: process.env
   });
@@ -19,7 +19,7 @@ function initializeTerminal() {
   const xterm = new Terminal.Terminal();
   xterm.open(document.getElementById('xterm'));
   xterm.setOption('theme', { background: '#282828' });
-  
+  xterm.fit();
   module.exports.xterm = xterm;
 
   // Setup communication between xterm.js and node-pty
