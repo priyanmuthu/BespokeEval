@@ -7,6 +7,21 @@ html, body {
 }
 body{
     color: #ffffff;
+    -ms-overflow-style: scrollbar;
+    -webkit-app-region:drag;
+}
+
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="text"],
+button,
+textarea {
+	-webkit-app-region: no-drag;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    -webkit-user-select: none;
 }
 
 .panel-body{
@@ -18,6 +33,14 @@ body{
     height: 80%;
     padding: 20px;
     overflow-y: hidden; /* don't show content that exceeds my height */
+}
+
+.monaco-editor {
+    -webkit-app-region: no-drag;
+}
+
+.terminal {
+    -webkit-app-region: no-drag;
 }
 
 .half {
@@ -40,13 +63,11 @@ div.awesomplete {
     background-color: #454545;
     color: #fff;
     cursor: pointer;
-    /* width: 100%; */
     text-align: left;
     border: none;
     outline: none;
     transition: 0.4s;
     vertical-align: middle;
-    padding: 10px;
   }
 
   .active, .accordion:hover {

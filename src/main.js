@@ -8,7 +8,7 @@ let win;
 function createWindow () {
   // Create the browser window.
   let {swidth, sheight} = require('electron').screen.getPrimaryDisplay().size
-  win = new BrowserWindow({ width: 1000, height: 600, show: false, webPreferences: {experimentalFeatures: true}, minWidth: 1000 })
+  win = new BrowserWindow({ width: 1000, height: 700, show: false, webPreferences: {experimentalFeatures: true}, minWidth: 1000, minHeight:700, titleBarStyle: "hidden" })
   // win.maximize();
   win.show();
   // and load the index.html of the app.
