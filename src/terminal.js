@@ -1,8 +1,10 @@
 function initializeTerminal() {
-  var os = require('os');
-  var pty = require('node-pty');
-  var Terminal = require('xterm');
-  var fit = require("../node_modules/xterm/lib/addons/fit/fit");
+  const os = require('os');
+  const pty = require('node-pty');
+  const Terminal = require('xterm');
+  const fit = require("../node_modules/xterm/lib/addons/fit/fit");
+  const synthesis = require('./synthesis.js');
+  const editor = require('./editor.js');
   // import * as fit from 'xterm/lib/addons/fit/fit';
   // Initialize node-pty with an appropriate shell
   const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
@@ -14,13 +16,15 @@ function initializeTerminal() {
     env: process.env
   });
   // Initialize xterm.js and attach it to the DOM
-  // Terminal.loadAddon('fit');
   Terminal.Terminal.applyAddon(fit);
   const xterm = new Terminal.Terminal();
   xterm.open(document.getElementById('xterm'));
   xterm.setOption('theme', { background: '#282828' });
   xterm.fit();
+  ptyProcess.resize(xterm.cols, xterm.rows);
+  console.log('xterm size:', xterm.rows, xterm.cols);
   module.exports.xterm = xterm;
+  module.exports.ptyProcess = ptyProcess;
 
   // Setup communication between xterm.js and node-pty
   xterm.on('data', (data) => {
@@ -30,18 +34,29 @@ function initializeTerminal() {
   // For monitoring commands
   xterm.on('keydown', (ev) => {
     // console.log(ev['key']);
-    if(ev['key']=='Enter'){
+    if (ev['key'] == 'Enter') {
       xterm.selectAll();
       var alllines = xterm.getSelection();
       xterm.clearSelection();
-      var command = alllines.trim().split('\n').slice(-1)[0].split("bash-3.2$").slice(-1)[0].trim();
-      console.log(alllines);
-      console.log(command);
+      var lastLine = alllines.trim().split('\n').slice(-1)[0]
+      if (lastLine.startsWith("bash-3.2$")) {
+        var command = lastLine.split("bash-3.2$").slice(-1)[0].trim();
+        // console.log(alllines);
+        console.log(command);
+        synthesis.addCommandEntry(command);
+        editor.setEditorText(synthesis.getSynthesis());
+      }
     }
   });
 
   ptyProcess.on('data', function (data) {
     xterm.write(data);
+  });
+
+  ptyProcess.on('exit', (code) => {
+    // should log 123
+    console.log('exit');
+    console.log(code);
   });
 
   module.exports.xterm = xterm;

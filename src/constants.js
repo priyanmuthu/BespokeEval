@@ -7,7 +7,8 @@ const yamlStrings = {
     'evaluate': 'eval',
     'defaultValue':'default',
     'info': 'info',
-    'value': 'value'
+    'value': 'value',
+    'required': 'required'
 };
 
 const yamlTypes = {

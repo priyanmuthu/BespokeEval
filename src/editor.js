@@ -1,5 +1,5 @@
 // let editor;
-(function() {
+function InitializeEditor() {
     const path = require('path');
     const amdLoader = require('../node_modules/monaco-editor/min/vs/loader.js');
     const amdRequire = amdLoader.require;
@@ -27,7 +27,6 @@
         window.editor = monaco.editor.create(document.getElementById('editordiv'), {
             value: "",
             language: "yaml",
-
             lineNumbers: "on",
             roundedSelection: false,
             scrollBeyondLastLine: false,
@@ -35,11 +34,18 @@
             theme: "vs-dark"
         });
 
-        var yaml_text = utils.readFileText(YAMLPATH);
-        if(null != yaml_text){
-            window.editor.setModel(monaco.editor.createModel(yaml_text, 'yaml'));
+        // var yaml_text = utils.readFileText(YAMLPATH);
+        // if(null != yaml_text){
+        //     window.editor.setModel(monaco.editor.createModel(yaml_text, 'yaml'));
+        //     renderer.renderUI();
+        // }
+
+        function setEditorText(yamltext){
+            window.editor.setModel(monaco.editor.createModel(yamltext, 'yaml'));
             renderer.renderUI();
         }
+
+        module.exports.setEditorText = setEditorText;
 
         /**
          * Addds content changed listener to `editor` and invokes `callback` 100ms after the last content changed event.
@@ -71,5 +77,6 @@
         // });
         
     });
-})();
+}
 
+module.exports.InitializeEditor = InitializeEditor;

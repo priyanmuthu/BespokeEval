@@ -259,6 +259,10 @@ function renderDropdownParam(param) {
         dropdownAP.open();
     });
 
+    if (constants.yamlStrings.defaultValue in param) {
+        dInput.value = param[constants.yamlStrings.defaultValue];
+    }
+
     param[constants.yamlStrings.evaluate] = function(){
         return dInput.value;
     }

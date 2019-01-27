@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
 const { dialog } = require('electron').remote;
 // const YAMLPATH = path.join(__dirname, 'example.yaml');
 const Awesomplete = require('awesomplete');
-const yargsParser = require('yargs-parser');
-const parserConfig = {'configuration': {'short-option-groups': false}};
-
+// const synthesis = require('./synthesis.js');
+const utils = require('./utils.js');
 
 $(document).ready(() => {
     // Do everything here
@@ -17,6 +15,7 @@ $(document).ready(() => {
 
     //Creating Editor
     var editor = require('./editor.js');
+    editor.InitializeEditor();
     // Creating the terminal
     var terminal = require('./terminal.js');
     terminal.initializeTerminal();
@@ -25,12 +24,15 @@ $(document).ready(() => {
     initDynamicResize(editor, terminal);
     initCollapseUI();
     
-    console.log(parseArgs('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
+    // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
+    // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
+    // synthesis.parseArgs('git commit -a -m "this is a commit message"');
+
+
+
 });
 
-function parseArgs(commandStr) {
-    return yargsParser(commandStr, parserConfig);
-}
+
 
 function initDynamicResize(editor, terminal) {
     var window = require('electron').remote.getCurrentWindow();
@@ -41,7 +43,7 @@ function initDynamicResize(editor, terminal) {
     function resizeUI() {
         editor.editorObj.layout();
         terminal.xterm.fit();
-        terminal.xterm.fit();
+        terminal.ptyProcess.resize(terminal.xterm.rows, terminal.xterm.cols)
     }
 }
 
