@@ -5,6 +5,7 @@ const yamlStrings = {
     'markdownValue': 'md',
     'parameterName': 'parameter',
     'evaluate': 'eval',
+    'isinclude': 'isinclude',
     'defaultValue':'default',
     'info': 'info',
     'value': 'value',
