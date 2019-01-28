@@ -136,16 +136,16 @@ function renderStringParam(param) {
 
     var paramName = document.createElement('label');
     paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
     var paramcheck = document.createElement('input');
     paramcheck.type = 'checkbox'
     paramcheck.checked = true;
     paramcheck.classList.add('pull-right');
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(paramcheck);
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
     pDiv.appendChild(paramName);
 
     var paramEdit = document.createElement('input');
@@ -190,16 +190,16 @@ function renderTimeParam(param) {
 
     var paramName = document.createElement('label');
     paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
     var paramcheck = document.createElement('input');
     paramcheck.type = 'checkbox'
     paramcheck.checked = true;
     paramcheck.classList.add('pull-right');
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(paramcheck);
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
     pDiv.appendChild(paramName);
     pDiv.insertAdjacentHTML('beforeend', '<br/>');
 
@@ -238,13 +238,13 @@ function renderBooleanParam(param) {
     pDiv.appendChild(paramEdit);
 
     var paramName = document.createElement('label');
-    paramName.innerHTML = param[constants.yamlStrings.parameterName]
-    paramName.style.marginLeft = "10px";
-    paramName.style.fontSize = "16px";
     if (constants.yamlStrings.info in param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
+    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    paramName.style.marginLeft = "10px";
+    paramName.style.fontSize = "16px";
     pDiv.appendChild(paramName);
 
     param[constants.yamlStrings.evaluate] = function () {
@@ -270,16 +270,16 @@ function renderDropdownParam(param) {
     var paramName = document.createElement('label');
     paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
     var paramcheck = document.createElement('input');
     paramcheck.type = 'checkbox'
     paramcheck.checked = true;
     paramcheck.classList.add('pull-right');
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(paramcheck);
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
     pDiv.appendChild(paramName);
 
     //input
@@ -328,18 +328,17 @@ function renderFileDialog(param) {
 
     // label
     var paramName = document.createElement('label');
-    // paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
     var paramcheck = document.createElement('input');
     paramcheck.type = 'checkbox'
     paramcheck.checked = true;
     paramcheck.classList.add('pull-right');
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(paramcheck);
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
     pDiv.appendChild(paramName);
 
     //input div
@@ -401,7 +400,7 @@ function createInfo(infoText) {
     infoIcon.classList.add('glyphicon-info-sign');
     infoIcon.setAttribute('data-toggle', 'tooltip');
     infoIcon.setAttribute('title', infoText);
-    infoIcon.style.marginLeft = "10px";
+    infoIcon.style.marginRight = "10px";
     return infoIcon;
 }
 

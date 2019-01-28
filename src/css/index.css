@@ -11,6 +11,10 @@ body{
     -webkit-app-region:drag;
 }
 
+label{
+    font-size: 16px;
+}
+
 input[type="submit"],
 input[type="reset"],
 input[type="button"],
