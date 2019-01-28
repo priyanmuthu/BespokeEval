@@ -53,8 +53,39 @@ function parseArgs(commandStr) {
 }
 
 function getSynthesis() {
+    // get all object keys
+    // var fCommand = getFrequentCommand();
+    // var filteredObjs = commandObjs.filter(obj => {
+    //     obj[constants.yamlStrings.commandName] == command
+    // });
+
+    // var allKeys = []];
+    // for (var i = 0; i < filteredObjs.length; i++) {
+    //     allKeys = [...new Set([...allKeys, ...Object.keys(filteredObjs[i])])];
+    // }
+    // console.log(allKeys);
     var cObj = commandObjs[commandObjs.length - 1];
     return utils.getYAMLText(cObj);
+}
+
+function getFrequentCommand() {
+    let commands = commandObjs.map(c => c[constants.yamlStrings.commandName]);
+    counts = {};
+    for (var i = 0; i < commands.length; i++) {
+        var k = commands[i];
+        counts[k] = counts[k] ? counts[k] + 1 : 1;
+    }
+
+    var maxCount = -1;
+    var maxCommand = null;
+    for (const key of Object.keys(counts)) {
+        if (maxCount < counts[key]) {
+            maxCommand = key;
+            maxCount = counts[key];
+        }
+    }
+
+    return maxCommand;
 }
 
 function getParamObject(key, val) {
@@ -79,10 +110,10 @@ function getType(value) {
 
     const filePattern = /^(\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{3,})$/;
     const timerPattern = /^([0-9]{2}:){2}([0-9]{2})$/;
-    if(filePattern.test(value)){
+    if (filePattern.test(value)) {
         return 'file';
     }
-    if(timerPattern.test(value)){
+    if (timerPattern.test(value)) {
         return 'time';
     }
     return 'string';
