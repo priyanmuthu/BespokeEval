@@ -262,8 +262,6 @@ function renderDropdownParam(param) {
     //Render the param UI
 
     var pDiv = document.createElement('div');
-    pDiv.classList.add('form-group');
-    pDiv.classList.add('has-feedback');
     pDiv.style.color = "#000000";
 
     // label
@@ -282,19 +280,24 @@ function renderDropdownParam(param) {
     paramName.appendChild(paramcheck);
     pDiv.appendChild(paramName);
 
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('form-group');
+    inputDiv.classList.add('has-feedback');
+    pDiv.appendChild(inputDiv);
+
     //input
     var dInput = document.createElement('input');
     dInput.id = "dropdown_" + dropdownCount;
     dropdownCount += 1;
     dInput.type = "text";
     dInput.classList.add('form-control');
-    pDiv.appendChild(dInput);
+    inputDiv.appendChild(dInput);
 
     var icon = document.createElement('span');
     icon.classList.add('glyphicon');
     icon.classList.add('glyphicon-chevron-down');
     icon.classList.add('form-control-feedback');
-    pDiv.appendChild(icon);
+    inputDiv.appendChild(icon);
 
     var valArray = param[constants.yamlStrings.value];
     var dropdownAP = new Awesomplete(dInput, { list: valArray, minChars: 0 });
