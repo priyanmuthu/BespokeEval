@@ -27,9 +27,6 @@ $(document).ready(() => {
     // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
     // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
     // synthesis.parseArgs('git commit -a -m "this is a commit message"');
-
-
-
 });
 
 
@@ -42,8 +39,7 @@ function initDynamicResize(editor, terminal) {
 
     function resizeUI() {
         editor.editorObj.layout();
-        terminal.xterm.fit();
-        terminal.ptyProcess.resize(terminal.xterm.rows, terminal.xterm.cols)
+        terminal.fitTerminal();
     }
 }
 
@@ -70,4 +66,3 @@ function initCollapseUI() {
         }
     });
 }
-

@@ -43,6 +43,7 @@ function InitializeEditor() {
         function setEditorText(yamltext){
             window.editor.setModel(monaco.editor.createModel(yamltext, 'yaml'));
             renderer.renderUI();
+            console.log('editor text set');
         }
 
         module.exports.setEditorText = setEditorText;
@@ -65,6 +66,7 @@ function InitializeEditor() {
         }
 
         onDidChangeModelContentDebounced(editor, () => {
+            console.log('call back');
             renderer.renderUI();
         });
 

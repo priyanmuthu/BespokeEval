@@ -21,6 +21,11 @@ const yamlTypes = {
     'file': 'file'
 };
 
+const commandblacklist = [
+    'ls',
+    'clear'
+]
+
 module.exports = {
     yamlStrings: yamlStrings,
     yamlTypes: yamlTypes

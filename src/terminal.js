@@ -20,16 +20,21 @@ function initializeTerminal() {
   const xterm = new Terminal.Terminal();
   xterm.open(document.getElementById('xterm'));
   xterm.setOption('theme', { background: '#282828' });
-  xterm.fit();
-  ptyProcess.resize(xterm.cols, xterm.rows);
-  console.log('xterm size:', xterm.rows, xterm.cols);
-  module.exports.xterm = xterm;
-  module.exports.ptyProcess = ptyProcess;
+  fitTerminal();
 
   // Setup communication between xterm.js and node-pty
   xterm.on('data', (data) => {
     ptyProcess.write(data);
   });
+
+  function fitTerminal() {
+    xterm.fit();
+    ptyProcess.resize(xterm.cols, xterm.rows);
+  }
+
+  module.exports.xterm = xterm;
+  module.exports.ptyProcess = ptyProcess;
+  module.exports.fitTerminal = fitTerminal;
 
   // For monitoring commands
   xterm.on('keydown', (ev) => {
@@ -43,11 +48,15 @@ function initializeTerminal() {
         var command = lastLine.split("bash-3.2$").slice(-1)[0].trim();
         // console.log(alllines);
         console.log(command);
-        synthesis.addCommandEntry(command);
-        editor.setEditorText(synthesis.getSynthesis());
+        onCommandEnter(command);
       }
     }
   });
+
+  function onCommandEnter(command) {
+    synthesis.addCommandEntry(command);
+    editor.setEditorText(synthesis.getSynthesis());
+  }
 
   ptyProcess.on('data', function (data) {
     xterm.write(data);

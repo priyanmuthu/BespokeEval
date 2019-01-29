@@ -43,8 +43,7 @@ function parseArgs(commandStr) {
             pObj[constants.yamlStrings.required] = true;
             cYAMLObj[constants.yamlStrings.parameterArray].push(pObj);
         }
-        console.log(cYAMLObj);
-        return [cYAMLObj];
+        return cYAMLObj;
     }
     catch (e) {
         console.error(e);
@@ -54,18 +53,26 @@ function parseArgs(commandStr) {
 
 function getSynthesis() {
     // get all object keys
-    // var fCommand = getFrequentCommand();
-    // var filteredObjs = commandObjs.filter(obj => {
-    //     obj[constants.yamlStrings.commandName] == command
-    // });
+    var fCommand = getFrequentCommand();
+    var filteredObjs = commandObjs.filter(obj => {
+        return obj[constants.yamlStrings.commandName] === fCommand
+    });
+    console.log(filteredObjs);
+    var allKeys = [];
+    for (var i = 0; i < filteredObjs.length; i++) {
+        var curKeys = filteredObjs[i][constants.yamlStrings.parameterArray].map(p => p[constants.yamlStrings.parameterName]);
+        allKeys = [...new Set([...allKeys, ...curKeys])];
+    }
+    console.log(allKeys);
 
-    // var allKeys = []];
-    // for (var i = 0; i < filteredObjs.length; i++) {
-    //     allKeys = [...new Set([...allKeys, ...Object.keys(filteredObjs[i])])];
-    // }
-    // console.log(allKeys);
+    // for each key synthesize
+
     var cObj = commandObjs[commandObjs.length - 1];
     return utils.getYAMLText(cObj);
+}
+
+function paramSynthesis(paramKey){
+
 }
 
 function getFrequentCommand() {
