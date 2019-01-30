@@ -21,12 +21,11 @@ const yamlTypes = {
     'file': 'file'
 };
 
-const commandblacklist = [
-    'ls',
-    'clear'
-]
+
+const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 module.exports = {
     yamlStrings: yamlStrings,
-    yamlTypes: yamlTypes
+    yamlTypes: yamlTypes,
+    trackingPort: trackingPort
 };

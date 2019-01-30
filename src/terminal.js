@@ -5,7 +5,25 @@ function initializeTerminal() {
   const fit = require("../node_modules/xterm/lib/addons/fit/fit");
   const synthesis = require('./synthesis.js');
   const editor = require('./editor.js');
-  // import * as fit from 'xterm/lib/addons/fit/fit';
+  const express = require('express');
+  const bodyParser = require('body-parser');
+  const constants = require('./constants.js');
+
+  // Initialize command listener before initializing the terminal
+  const app = express();
+  // app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+  app.post('/', (req, res) => {
+    const postBody = req.body;
+    console.log(postBody);
+    var command = postBody.command;
+    onCommandEnter(command);
+    res.send('\n');
+  });
+  app.listen(constants.trackingPort, () => {
+    //do something here
+  });
+
   // Initialize node-pty with an appropriate shell
   const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
   const ptyProcess = pty.spawn(shell, [], {
@@ -15,6 +33,8 @@ function initializeTerminal() {
     cwd: process.cwd(),
     env: process.env
   });
+  ptyProcess.write("export PATH=$PATH:$(pwd)/src\r");
+  ptyProcess.write("clear\r");
   // Initialize xterm.js and attach it to the DOM
   Terminal.Terminal.applyAddon(fit);
   const xterm = new Terminal.Terminal();
@@ -36,22 +56,22 @@ function initializeTerminal() {
   module.exports.ptyProcess = ptyProcess;
   module.exports.fitTerminal = fitTerminal;
 
-  // For monitoring commands
-  xterm.on('keydown', (ev) => {
-    // console.log(ev['key']);
-    if (ev['key'] == 'Enter') {
-      xterm.selectAll();
-      var alllines = xterm.getSelection();
-      xterm.clearSelection();
-      var lastLine = alllines.trim().split('\n').slice(-1)[0]
-      if (lastLine.startsWith("bash-3.2$")) {
-        var command = lastLine.split("bash-3.2$").slice(-1)[0].trim();
-        // console.log(alllines);
-        console.log(command);
-        onCommandEnter(command);
-      }
-    }
-  });
+  // // For monitoring commands
+  // xterm.on('keydown', (ev) => {
+  //   // console.log(ev['key']);
+  //   if (ev['key'] == 'Enter') {
+  //     xterm.selectAll();
+  //     var alllines = xterm.getSelection();
+  //     xterm.clearSelection();
+  //     var lastLine = alllines.trim().split('\n').slice(-1)[0]
+  //     if (lastLine.startsWith("bash-3.2$")) {
+  //       var command = lastLine.split("bash-3.2$").slice(-1)[0].trim();
+  //       // console.log(alllines);
+  //       console.log(command);
+  //       onCommandEnter(command);
+  //     }
+  //   }
+  // });
 
   function onCommandEnter(command) {
     synthesis.addCommandEntry(command);
@@ -75,7 +95,6 @@ function initializeTerminal() {
 function runCommand(commandText) {
   commandText = commandText.trim();
   commandText = commandText + "\n";
-  // xterm.write(commandText);
   module.exports.ptyProcess.write(commandText);
 }
 
