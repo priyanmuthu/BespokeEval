@@ -2,6 +2,7 @@ const yargsParser = require('yargs-parser');
 const parserConfig = { 'configuration': { 'short-option-groups': false, 'camel-case-expansion': false } };
 const constants = require('./constants.js');
 const utils = require('./utils.js');
+var stringArgv = require("string-argv");
 
 var commandObjs = [];
 
@@ -23,7 +24,64 @@ function parseArgs(commandStr) {
 
         //Create YAML supported object
         var cYAMLObj = {};
+
         cYAMLObj[constants.yamlStrings.commandName] = command;
+        cYAMLObj[constants.yamlStrings.rawCommand] = commandStr;
+
+        //Going in the positional order
+        cYAMLObj[constants.yamlStrings.parameterArray] = [];
+
+        //Get the argv representation and skip the first one
+        var argvArr = stringArgv(commandStr);
+
+        for (var i = 1; i < argvArr.length; i++) {
+            var arg = argvArr[i];
+            // if the arg is present in positional array, add it to params
+            if (cObj['_'].indexOf(arg) > -1) {
+                // Positional Argument: add it to the param array
+                var pObj = {};
+                pObj[constants.yamlStrings.parameterName] = "";
+                pObj[constants.yamlStrings.parameterType] = getType(arg);
+                pObj[constants.yamlStrings.defaultValue] = arg;
+                pObj[constants.yamlStrings.required] = true;
+                cYAMLObj[constants.yamlStrings.parameterArray].push(pObj);
+            }
+            else if (cleanArg(arg) in cObj) {
+                // flag in object
+                cYAMLObj[constants.yamlStrings.parameterArray].push(getParamObject(arg, cObj[cleanArg(arg)]));
+            }
+        }
+        return cYAMLObj;
+    }
+    catch (e) {
+        console.error(e);
+    }
+    return null;
+}
+
+function cleanArg(arg) {
+    if (arg.startsWith('--')) {
+        return arg.replace('--', '');
+    }
+    else if (arg.startsWith('-')) {
+        return arg.replace('-', '');
+    }
+    return arg;
+}
+
+function parseArgsNonPositional(commandStr) {
+    try {
+        var cObj = yargsParser(commandStr, parserConfig);
+
+        var command = commandStr.split(' ')[0];
+
+        var idx = cObj['_'].indexOf(command);
+        if (idx !== -1) cObj['_'].splice(idx, 1);
+
+        //Create YAML supported object
+        var cYAMLObj = {};
+        cYAMLObj[constants.yamlStrings.commandName] = command;
+        cYAMLObj[constants.yamlStrings.rawCommand] = commandStr;
         cYAMLObj[constants.yamlStrings.parameterArray] = [];
         for (const key of Object.keys(cObj)) {
             // Create param obj
@@ -67,10 +125,6 @@ function getSynthesis() {
     return utils.getYAMLText([cObj]); //Always pass command object as array
 }
 
-function paramSynthesis(paramKey){
-
-}
-
 function getFrequentCommand() {
     let commands = commandObjs.map(c => c[constants.yamlStrings.commandName]);
     counts = {};
@@ -102,7 +156,7 @@ function getParamObject(key, val) {
 
 function getStringParamObject(key, val) {
     var pObj = {};
-    pObj[constants.yamlStrings.parameterName] = '-' + key;
+    pObj[constants.yamlStrings.parameterName] = key;
     pObj[constants.yamlStrings.parameterType] = getType(val);
     pObj[constants.yamlStrings.defaultValue] = val;
     pObj[constants.yamlStrings.required] = true;

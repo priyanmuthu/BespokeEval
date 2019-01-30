@@ -9,7 +9,8 @@ const yamlStrings = {
     'defaultValue':'default',
     'info': 'info',
     'value': 'value',
-    'required': 'required'
+    'required': 'required',
+    'rawCommand': 'raw'
 };
 
 const yamlTypes = {

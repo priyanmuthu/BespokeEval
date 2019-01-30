@@ -3,7 +3,7 @@
 # $@ : gives the whole argument string
 # @- : take input from STDIN - essentially from the pipe output
 
-echo '{"command": "'$@'"}' | curl -d @- http://localhost:3000/ -H "Content-Type: application/json" > /dev/null
-eval $@
+echo '{"command": "'$@'"}' | curl -d @- http://localhost:3000/ -H "Content-Type: application/json" > /dev/null 2>&1
+# eval $@
 
 # node ./src/client.js $@
