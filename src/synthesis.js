@@ -17,7 +17,6 @@ function parseArgs(commandStr) {
         var cObj = yargsParser(commandStr, parserConfig);
 
         var command = commandStr.split(' ')[0];
-        console.log(command);
 
         var idx = cObj['_'].indexOf(command);
         if (idx !== -1) cObj['_'].splice(idx, 1);
@@ -27,14 +26,12 @@ function parseArgs(commandStr) {
         cYAMLObj[constants.yamlStrings.commandName] = command;
         cYAMLObj[constants.yamlStrings.parameterArray] = [];
         for (const key of Object.keys(cObj)) {
-            // console.log(key, cObj[key]);
             // Create param obj
             if (key == '_') {
                 continue;
             }
             cYAMLObj[constants.yamlStrings.parameterArray].push(getParamObject(key, cObj[key]));
         }
-        console.log('_ num values: ' + cObj['_'].length);
         for (var i = 0; i < cObj['_'].length; i++) {
             var pObj = {};
             pObj[constants.yamlStrings.parameterName] = "";
@@ -66,9 +63,8 @@ function getSynthesis() {
     console.log(allKeys);
 
     // for each key synthesize
-
     var cObj = commandObjs[commandObjs.length - 1];
-    return utils.getYAMLText(cObj);
+    return utils.getYAMLText([cObj]); //Always pass command object as array
 }
 
 function paramSynthesis(paramKey){
