@@ -170,7 +170,9 @@ function getStringParamObject(key, val) {
 
 function getType(value) {
 
-    const filePattern = /^(\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{3,})$/;
+    // const filePattern = /^(\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{2,})$/;
+    const filePattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{2,})$/;
+    const folderPattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)+([A-z0-9-_]+)*$/;
     const timerPattern = /^([0-9]{2}:){2}([0-9]{2})$/;
     if (filePattern.test(value)) {
         return 'file';
