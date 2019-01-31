@@ -159,7 +159,9 @@ function renderStringParam(param) {
     pDiv.appendChild(paramEdit);
 
     param[constants.yamlStrings.evaluate] = function () {
-        return paramEdit.value;
+        var valStr = paramEdit.value;
+
+        return (valStr.includes(' '))? '"' + valStr + '"' : valStr;
     }
     
     param[constants.yamlStrings.isinclude] = function () {
@@ -387,7 +389,8 @@ function renderFileDialog(param) {
     })
 
     param['eval'] = function () {
-        return "\"" + paramEdit.value + "\"";
+        var valStr = paramEdit.value;
+        return (valStr.includes(' '))? '"' + valStr + '"' : valStr;
     }
 
     param[constants.yamlStrings.isinclude] = function () {

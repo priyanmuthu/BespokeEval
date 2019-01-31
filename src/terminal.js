@@ -12,12 +12,12 @@ function initializeTerminal() {
   // Initialize command listener before initializing the terminal
   const app = express();
   // app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.text());
   app.post('/', (req, res) => {
     const postBody = req.body;
     console.log(postBody);
-    var command = postBody.command;
-    onCommandEnter(command);
+    // var command = postBody.command;
+    onCommandEnter(postBody);
     res.send('\n');
   });
   app.listen(constants.trackingPort, () => {

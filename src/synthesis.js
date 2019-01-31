@@ -34,6 +34,10 @@ function parseArgs(commandStr) {
         //Get the argv representation and skip the first one
         var argvArr = stringArgv(commandStr);
 
+        console.log(argvArr);
+        console.log(cObj);
+        console.log(cObj['_'].indexOf('commit'));
+
         for (var i = 1; i < argvArr.length; i++) {
             var arg = argvArr[i];
             // if the arg is present in positional array, add it to params
@@ -45,6 +49,7 @@ function parseArgs(commandStr) {
                 pObj[constants.yamlStrings.defaultValue] = arg;
                 pObj[constants.yamlStrings.required] = true;
                 cYAMLObj[constants.yamlStrings.parameterArray].push(pObj);
+                cObj['_'].splice(cObj['_'].indexOf(arg), 1);
             }
             else if (cleanArg(arg) in cObj) {
                 // flag in object
@@ -108,17 +113,17 @@ function parseArgsNonPositional(commandStr) {
 
 function getSynthesis() {
     // get all object keys
-    var fCommand = getFrequentCommand();
-    var filteredObjs = commandObjs.filter(obj => {
-        return obj[constants.yamlStrings.commandName] === fCommand
-    });
-    console.log(filteredObjs);
-    var allKeys = [];
-    for (var i = 0; i < filteredObjs.length; i++) {
-        var curKeys = filteredObjs[i][constants.yamlStrings.parameterArray].map(p => p[constants.yamlStrings.parameterName]);
-        allKeys = [...new Set([...allKeys, ...curKeys])];
-    }
-    console.log(allKeys);
+    // var fCommand = getFrequentCommand();
+    // var filteredObjs = commandObjs.filter(obj => {
+    //     return obj[constants.yamlStrings.commandName] === fCommand
+    // });
+    // console.log(filteredObjs);
+    // var allKeys = [];
+    // for (var i = 0; i < filteredObjs.length; i++) {
+    //     var curKeys = filteredObjs[i][constants.yamlStrings.parameterArray].map(p => p[constants.yamlStrings.parameterName]);
+    //     allKeys = [...new Set([...allKeys, ...curKeys])];
+    // }
+    // console.log(allKeys);
 
     // for each key synthesize
     var cObj = commandObjs[commandObjs.length - 1];
