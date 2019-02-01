@@ -2,7 +2,7 @@ const yamlStrings = {
     'commandName': 'command',
     'parameterArray': 'params',
     'parameterType': 'type',
-    'markdownValue': 'md',
+    'markdown': 'md',
     'parameterName': 'parameter',
     'evaluate': 'eval',
     'isinclude': 'isinclude',

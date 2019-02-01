@@ -46,9 +46,15 @@ function createUI(yamlObj) {
     //Do this for the command
     var commandCount = yamlObj.length;
     for (var i = 0; i < commandCount; i++) {
-        command = yamlObj[i];
-        var commandDiv = renderCommandUI(command, i);
-        mainDiv.appendChild(commandDiv);
+        var obj = yamlObj[i];
+        if (constants.yamlStrings.commandName in obj) {
+            var commandDiv = renderCommandUI(obj, i);
+            mainDiv.appendChild(commandDiv);
+        }
+        else if (constants.yamlStrings.markdown in obj) {
+            var mdDiv = renderMarkdown(obj);
+            mainDiv.appendChild(mdDiv);
+        }
     }
     return mainDiv;
 }
@@ -86,8 +92,13 @@ function renderParamUI(mainParamDiv, params) {
     var paramCount = params.length;
     for (var i = 0; i < paramCount; i++) {
         param = params[i];
-
         var pDiv;
+
+        if (constants.yamlStrings.markdown in param) {
+            pDiv = renderMarkdown(param);
+            mainParamDiv.appendChild(pDiv);
+            continue;
+        }
 
         switch (param[constants.yamlStrings.parameterType]) {
             case constants.yamlTypes.number:
@@ -98,9 +109,6 @@ function renderParamUI(mainParamDiv, params) {
                 break;
             case constants.yamlTypes.boolean:
                 pDiv = renderBooleanParam(param);
-                break;
-            case constants.yamlTypes.markdown:
-                pDiv = renderMarkdownParam(param);
                 break;
             case constants.yamlTypes.dropdown:
                 pDiv = renderDropdownParam(param);
@@ -230,14 +238,14 @@ function renderNumberParam(param) {
     return pDiv;
 }
 
-function renderMarkdownParam(param) {
+function renderMarkdown(param) {
     var pDiv = document.createElement('div')
     pDiv.id = 'param_md_' + markdownCount;
     pDiv.style['grid-column'] = "1/-1";
     markdownCount = markdownCount + 1;
 
     // pDiv.insertAdjacentHTML('beforeend', '<br />');
-    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(param[constants.yamlStrings.markdownValue]));
+    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(param[constants.yamlStrings.markdown]));
 
     return pDiv;
 }
@@ -645,7 +653,7 @@ function runCommand(command) {
     var paramList = [];
     for (var i = 0; i < paramCount; i++) {
         var param = params[i];
-        if (param[constants.yamlStrings.parameterType] == constants.yamlTypes.markdown) {
+        if (constants.yamlStrings.markdown in param) {
             continue;
         }
         if (!param[constants.yamlStrings.isinclude]()) {
@@ -658,8 +666,11 @@ function runCommand(command) {
                 }
                 break;
             default:
-                var paramElements = [param[constants.yamlStrings.parameterName], param[constants.yamlStrings.evaluate]()];
-                paramList.push(paramElements.join(' '));
+                var paramElements = [];
+                if (param[constants.yamlStrings.parameterName] !== "") {
+                    paramList.push(param[constants.yamlStrings.parameterName]);
+                }
+                paramList.push(param[constants.yamlStrings.evaluate]());
                 break;
         }
     }
