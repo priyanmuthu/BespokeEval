@@ -5,6 +5,8 @@ let booleanCount = 0;
 let markdownCount = 0;
 let dropdownCount = 0;
 let fileDialogCount = 0;
+let folderDialogCount = 0;
+let numberCount = 0;
 
 const utils = require('./utils.js');
 const constants = require('./constants.js');
@@ -88,6 +90,9 @@ function renderParamUI(mainParamDiv, params) {
         var pDiv;
 
         switch (param[constants.yamlStrings.parameterType]) {
+            case constants.yamlTypes.number:
+                pDiv = renderNumberParam(param);
+                break;
             case constants.yamlTypes.time:
                 pDiv = renderTimeParam(param);
                 break;
@@ -102,6 +107,9 @@ function renderParamUI(mainParamDiv, params) {
                 break;
             case constants.yamlTypes.file:
                 pDiv = renderFileDialog(param);
+                break;
+            case constants.yamlTypes.folder:
+                pDiv = renderFolderDialog(param);
                 break;
             default:
                 pDiv = renderStringParam(param);
@@ -131,7 +139,7 @@ function renderStringParam(param) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_string_' + stringCount;
-    stringCount = stringCount + 1;
+    stringCount += 1;
     pDiv.classList.add('form-group');
 
     var paramName = document.createElement('label');
@@ -161,9 +169,60 @@ function renderStringParam(param) {
     param[constants.yamlStrings.evaluate] = function () {
         var valStr = paramEdit.value;
 
-        return (valStr.includes(' '))? '"' + valStr + '"' : valStr;
+        return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
-    
+
+    param[constants.yamlStrings.isinclude] = function () {
+        return paramcheck.checked;
+    }
+
+    return pDiv;
+}
+
+function renderNumberParam(param) {
+    //Render the param UI
+    var pDiv = document.createElement('div')
+    pDiv.id = 'param_string_' + numberCount;
+    numberCount += 1;
+    pDiv.classList.add('form-group');
+
+    var paramName = document.createElement('label');
+    paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+    var paramcheck = document.createElement('input');
+    paramcheck.type = 'checkbox'
+    paramcheck.checked = true;
+    paramcheck.classList.add('pull-right');
+    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    paramName.appendChild(paramcheck);
+    pDiv.appendChild(paramName);
+
+    var paramEdit = document.createElement('input');
+    paramEdit.classList.add('form-control');
+    paramEdit.type = 'number';
+    paramEdit.id = 'input_param_' + numberCount;
+
+    if (constants.yamlStrings.minValue in param) {
+        paramEdit.min = "" + param[constants.yamlStrings.minValue];
+    }
+    if (constants.yamlStrings.maxValue in param) {
+        paramEdit.max = "" + param[constants.yamlStrings.maxValue];
+    }
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    paramEdit.placeholder = param[constants.yamlStrings.parameterName];
+    pDiv.appendChild(paramEdit);
+
+    param[constants.yamlStrings.evaluate] = function () {
+        var valStr = paramEdit.value;
+
+        return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
+    }
+
     param[constants.yamlStrings.isinclude] = function () {
         return paramcheck.checked;
     }
@@ -390,7 +449,84 @@ function renderFileDialog(param) {
 
     param['eval'] = function () {
         var valStr = paramEdit.value;
-        return (valStr.includes(' '))? '"' + valStr + '"' : valStr;
+        return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
+    }
+
+    param[constants.yamlStrings.isinclude] = function () {
+        return paramcheck.checked;
+    }
+
+    return pDiv;
+}
+
+function renderFolderDialog(param) {
+    var pDiv = document.createElement('div');
+    pDiv.id = "file_div_" + folderDialogCount;
+    folderDialogCount += 1;
+    // pDiv.classList.add('input-group');
+    pDiv.classList.add('form-group');
+
+    // label
+    var paramName = document.createElement('label');
+    paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+    var paramcheck = document.createElement('input');
+    paramcheck.type = 'checkbox'
+    paramcheck.checked = true;
+    paramcheck.classList.add('pull-right');
+    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    paramName.appendChild(paramcheck);
+    pDiv.appendChild(paramName);
+
+    //input div
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('input-group');
+    pDiv.appendChild(inputDiv);
+    //input
+    var paramEdit = document.createElement('input');
+    paramEdit.classList.add('form-control');
+    paramEdit.type = 'text';
+    paramEdit.id = 'file_input_' + folderDialogCount;
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    inputDiv.appendChild(paramEdit);
+
+    // File dialog
+    var fSpan = document.createElement('span');
+    fSpan.classList.add('input-group-btn');
+    inputDiv.appendChild(fSpan);
+    var fButton = document.createElement('button');
+    fButton.id = "File_Button_" + fileDialogCount;
+    fButton.classList.add('btn');
+    fButton.classList.add('btn-default');
+    fButton.type = "submit";
+    fSpan.appendChild(fButton);
+
+    var icon = document.createElement('i');
+    icon.classList.add('glyphicon');
+    icon.classList.add('glyphicon-folder-open');
+    fButton.appendChild(icon);
+
+    let options = {
+        defaultPath: __dirname,
+        properties: ['openDirectory']
+    }
+
+    fButton.addEventListener('click', () => {
+        dialog.showOpenDialog(options, (files) => {
+            if (files != undefined) {
+                paramEdit.value = files[0];
+            }
+        });
+    })
+
+    param['eval'] = function () {
+        var valStr = paramEdit.value;
+        return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
     param[constants.yamlStrings.isinclude] = function () {
@@ -512,7 +648,7 @@ function runCommand(command) {
         if (param[constants.yamlStrings.parameterType] == constants.yamlTypes.markdown) {
             continue;
         }
-        if(!param[constants.yamlStrings.isinclude]()){
+        if (!param[constants.yamlStrings.isinclude]()) {
             continue;
         }
         switch (param[constants.yamlStrings.parameterType]) {

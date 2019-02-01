@@ -10,7 +10,9 @@ const yamlStrings = {
     'info': 'info',
     'value': 'value',
     'required': 'required',
-    'rawCommand': 'raw'
+    'rawCommand': 'raw',
+    'minValue': 'min',
+    'maxValue': 'max'
 };
 
 const yamlTypes = {
@@ -19,7 +21,9 @@ const yamlTypes = {
     'boolean': 'boolean',
     'time': 'time',
     'dropdown': 'dropdown',
-    'file': 'file'
+    'file': 'file',
+    'folder': 'folder',
+    'number': 'number'
 };
 
 

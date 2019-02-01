@@ -174,13 +174,23 @@ function getType(value) {
     const filePattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{2,})$/;
     const folderPattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)+([A-z0-9-_]+)*$/;
     const timerPattern = /^([0-9]{2}:){2}([0-9]{2})$/;
+    const numberPattern = /^([0-9]*).?([0-9]+)$/;
     if (filePattern.test(value)) {
-        return 'file';
+        return constants.yamlTypes.file;
+    }
+    if (folderPattern.test(value)) {
+        return constants.yamlTypes.folder;
     }
     if (timerPattern.test(value)) {
-        return 'time';
+        return constants.yamlTypes.time;
     }
-    return 'string';
+    if (numberPattern.test(value)) {
+        return constants.yamlTypes.number;
+    }
+    if (typeof value == typeof true) {
+        return constants.yamlTypes.boolean;
+    }
+    return constants.yamlTypes.string;
 }
 
 module.exports.addCommandEntry = addCommandEntry;
