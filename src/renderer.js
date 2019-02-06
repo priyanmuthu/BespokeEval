@@ -17,6 +17,7 @@ const Awesomplete = require('awesomplete');
 const { dialog } = require('electron').remote;
 const path = require('path');
 
+
 function renderUI() {
     var editorText = window.editor.getValue();
     try {
@@ -61,11 +62,24 @@ function createUI(yamlObj) {
 
 function renderCommandUI(command, div_ID) {
     //Create a text for command
-    var commandDiv = document.createElement("div");
-    commandDiv.id = 'commandDiv_' + div_ID;
+    var commandUIDiv = document.createElement("div");
+    commandUIDiv.id = 'commandDiv_' + div_ID;
 
     commandHeading = document.createElement('h1');
     commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
+
+    var editButton = document.createElement('button');
+    editButton.classList.add('btn');
+    editButton.classList.add('btn-default');
+    editButton.classList.add('pull-right');
+    editButton.innerText = "Edit";
+    editButton.style.minWidth = "40px";
+    editButton.style.marginRight = "10px";
+    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" style="margin-left:5px;" />');
+    editButton.addEventListener("click", () => {
+        console.log('edit button');
+    });
+
     var runButton = document.createElement('button');
     runButton.classList.add('btn');
     runButton.classList.add('btn-primary');
@@ -77,15 +91,16 @@ function renderCommandUI(command, div_ID) {
         runCommand(command);
     });
     commandHeading.appendChild(runButton);
-    commandDiv.appendChild(commandHeading);
+    commandHeading.appendChild(editButton);
+    commandUIDiv.appendChild(commandHeading);
 
     var mainParamDiv = document.createElement('div');
     mainParamDiv.id = 'mainParamDiv';
     mainParamDiv.classList.add('grid-form')
 
     renderParamUI(mainParamDiv, command[constants.yamlStrings.parameterArray]);
-    commandDiv.appendChild(mainParamDiv);
-    return commandDiv;
+    commandUIDiv.appendChild(mainParamDiv);
+    return commandUIDiv;
 }
 
 function renderParamUI(mainParamDiv, params) {

@@ -26,11 +26,22 @@ const yamlTypes = {
     'number': 'number'
 };
 
+const cellType = {
+    command: 1,
+    markdown: 2
+}
+
+const cellTypeIcon = {
+    command: 'glyphicon-console',
+    markdown: 'glyphicon-font'
+}
 
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 module.exports = {
     yamlStrings: yamlStrings,
     yamlTypes: yamlTypes,
-    trackingPort: trackingPort
+    trackingPort: trackingPort,
+    cellType: cellType,
+    cellTypeIcon: cellTypeIcon
 };
