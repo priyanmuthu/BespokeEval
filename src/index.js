@@ -12,7 +12,7 @@ $(document).ready(() => {
     //House keeping
     $('#topPanel').height('50%');
     $('#bottomPanel').height('45%');
-    $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
+    // $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
 
     //Creating Editor
     var editor = require('./editor.js');
@@ -27,7 +27,14 @@ $(document).ready(() => {
     const celljs = require('./cell.js');
     var formDiv = document.getElementById('formDiv');
     var newCell = new celljs.cell();
-    formDiv.appendChild(newCell.getInputUI());
+    formDiv.appendChild(newCell.getUI());
+    $('.selectpicker').selectpicker();
+
+    var testDiv = document.getElementById('testdiv');
+    testDiv.style.display = 'none';
+    // testDiv.offsetHeight;
+    testDiv.style.display = 'block';
+
 
     // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
     // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');

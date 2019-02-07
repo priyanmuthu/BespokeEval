@@ -49,7 +49,7 @@ function createUI(yamlObj) {
     for (var i = 0; i < commandCount; i++) {
         var obj = yamlObj[i];
         if (constants.yamlStrings.commandName in obj) {
-            var commandDiv = renderCommandUI(obj, i);
+            var commandDiv = renderCommandUI(obj);
             mainDiv.appendChild(commandDiv);
         }
         else if (constants.yamlStrings.markdown in obj) {
@@ -60,10 +60,9 @@ function createUI(yamlObj) {
     return mainDiv;
 }
 
-function renderCommandUI(command, div_ID) {
+function renderCommandUI(command, commandUI = null) {
     //Create a text for command
     var commandUIDiv = document.createElement("div");
-    commandUIDiv.id = 'commandDiv_' + div_ID;
 
     commandHeading = document.createElement('h1');
     commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
@@ -77,7 +76,9 @@ function renderCommandUI(command, div_ID) {
     editButton.style.marginRight = "10px";
     editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" style="margin-left:5px;" />');
     editButton.addEventListener("click", () => {
-        console.log('edit button');
+        if (commandUI !== null) {
+            commandUI.showInput();
+        }
     });
 
     var runButton = document.createElement('button');
@@ -697,5 +698,7 @@ function runCommand(command) {
 }
 
 module.exports = {
-    renderUI: renderUI
+    renderUI: renderUI,
+    createUI: createUI,
+    renderCommandUI: renderCommandUI
 };

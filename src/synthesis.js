@@ -34,10 +34,6 @@ function parseArgs(commandStr) {
         //Get the argv representation and skip the first one
         var argvArr = stringArgv(commandStr);
 
-        console.log(argvArr);
-        console.log(cObj);
-        console.log(cObj['_'].indexOf('commit'));
-
         for (var i = 1; i < argvArr.length; i++) {
             var arg = argvArr[i];
             // if the arg is present in positional array, add it to params
@@ -193,5 +189,6 @@ function getType(value) {
     return constants.yamlTypes.string;
 }
 
+module.exports.parseArgs = parseArgs;
 module.exports.addCommandEntry = addCommandEntry;
 module.exports.getSynthesis = getSynthesis;
