@@ -12,7 +12,7 @@ $(document).ready(() => {
     //House keeping
     $('#topPanel').height('50%');
     $('#bottomPanel').height('45%');
-    // $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
+    $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
 
     //Creating Editor
     var editor = require('./editor.js');
