@@ -32,7 +32,7 @@ class cell {
         dropdownDiv.appendChild(selectList);
         for (var key in constants.cellTypeIcon) {
             var option = document.createElement('option');
-            option.value = key;
+            option.value = constants.cellType[key];
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
             selectList.appendChild(option);
         }
@@ -84,10 +84,11 @@ class cell {
         this.cellInput = cellInput;
         this.uiDiv = uiDiv;
         this.cellUI = this.createNewUI();
+        this.runButton = runButton;
 
         //event handling
         selectList.addEventListener('change', () => {
-            console.log('changed to: ', selectList.value);
+            this.selectionChange(selectList.value);
         });
         cellInput.addEventListener('keypress', (ev) => {
             if (ev.key === "Enter") {
@@ -105,8 +106,27 @@ class cell {
         return this.cellElement;
     }
 
-    runRaw(rawText){
+    runRaw(rawText) {
         this.cellUI.runRaw(rawText);
+    }
+
+    selectionChange(cellType) {
+        // Dump the current cell object and create a new cell object
+        cellType = Number(cellType);
+        this.cellUI = this.createNewUI(cellType);
+
+        // Other UI housekeeping here
+        switch (cellType) {
+            case constants.cellType.markdown:
+                // Hide run button
+                this.runButton.style.display = 'none';
+                break;
+            case constants.cellType.command:
+            default:
+                // Show run button
+                this.runButton.style.display = 'inline';
+                break;
+        }
     }
 
     showGUI(rawText) {
@@ -118,7 +138,6 @@ class cell {
     }
 
     showInput(rawText = null) {
-        console.log('showing input');
 
         if (rawText !== null) {
             this.cellInput.value = rawText;
@@ -128,7 +147,7 @@ class cell {
         this.inputDiv.style.display = 'block';
     }
 
-    createNewUI(cellType = constants.cellType.command) {
+    createNewUI(cellType) {
         switch (cellType) {
             case constants.cellType.markdown:
                 return new markdownUI(this);
@@ -142,7 +161,6 @@ class cell {
 class UI {
 
     constructor(cell) {
-        //do something here
         this.cell = cell;
     }
 
@@ -175,29 +193,24 @@ class commandUI extends UI {
         this.rawCommands = [];
         this.commandObjs = [];
         this.rawText = "";
-        //do something here
     }
 
     getUI(rawText) {
         // Generate GUI
         this.rawText = rawText;
         var cObj = synthesis.parseArgs(rawText);
-        var guiDiv = renderer.renderCommandUI(cObj, this);
-        return guiDiv;
+        return renderer.renderCommandUI(cObj, this);
     }
 
     getType() {
-        // Proxy for an abstract method
         return constants.cellType.command;
     }
 
     runRaw(rawText) {
-        // Proxy for an abstract method
         require('./terminal.js').runCommand(rawText);
     }
 
     showInput(rawText) {
-        // Proxy for an abstract method
         this.cell.showInput(rawText);
     }
 }
@@ -208,27 +221,22 @@ class markdownUI extends UI {
     constructor(cell) {
         super(cell);
         this.rawText = "";
-        //do something here
     }
 
     getUI(rawText) {
-        // Proxy for an abstract method
         this.rawText = rawText;
-        console.log('init cell input here');
+        return renderer.renderMarkdownUI(rawText, this);
     }
 
     getType() {
-        // Proxy for an abstract method
         return constants.cellType.markdown;
     }
 
     runRaw(rawText) {
-        // Proxy for an abstract method
-        console.log('running the command');
+        // Do nothing
     }
 
     showInput(rawText = null) {
-        // Proxy for an abstract method
         this.cell.showInput(this.rawText);
     }
 }

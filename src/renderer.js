@@ -104,6 +104,17 @@ function renderCommandUI(command, commandUI = null) {
     return commandUIDiv;
 }
 
+function renderMarkdownUI(markdownText, markdownUI) {
+    var pDiv = document.createElement('div')
+    // pDiv.insertAdjacentHTML('beforeend', '<br />');
+    pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(markdownText));
+    pDiv.addEventListener('dblclick', () => {
+        markdownUI.showInput();
+    });
+
+    return pDiv;
+}
+
 function renderParamUI(mainParamDiv, params) {
     var paramCount = params.length;
     for (var i = 0; i < paramCount; i++) {
@@ -704,5 +715,6 @@ function runCommand(command) {
 module.exports = {
     renderUI: renderUI,
     createUI: createUI,
-    renderCommandUI: renderCommandUI
+    renderCommandUI: renderCommandUI,
+    renderMarkdownUI: renderMarkdownUI
 };
