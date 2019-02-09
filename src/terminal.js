@@ -47,6 +47,15 @@ function initializeTerminal() {
     ptyProcess.write(data);
   });
 
+  ptyProcess.on('data', function (data) {
+    xterm.write(data);
+  });
+
+  console.log('pid', ptyProcess.pid)
+  ptyProcess.on('terminate', () => {
+    console.log('child process!!!');
+  });
+
   function fitTerminal() {
     xterm.fit();
     ptyProcess.resize(xterm.cols, xterm.rows);
@@ -77,10 +86,6 @@ function initializeTerminal() {
     synthesis.addCommandEntry(command);
     editor.setEditorText(synthesis.getSynthesis());
   }
-
-  ptyProcess.on('data', function (data) {
-    xterm.write(data);
-  });
 
   ptyProcess.on('exit', (code) => {
     // should log 123

@@ -6,16 +6,11 @@ class cell {
     constructor() {
         // initialize cell input
         this.cellElement = null;
-        this.uiElement = null;
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
-    }
+        this.cellUI = null;
 
-    getUI() {
-        if (this.cellElement !== null) {
-            return cellElement;
-        }
         var cellDiv = document.createElement('div');
 
         var inputDiv = document.createElement('div');
@@ -64,7 +59,7 @@ class cell {
         viewButton.addEventListener('click', () => {
             this.showGUI(cellInput.value);
         });
-        
+
         //Run button
         var runButton = document.createElement('button');
         runButton.classList.add('btn');
@@ -88,6 +83,7 @@ class cell {
         this.inputDiv = inputDiv;
         this.cellInput = cellInput;
         this.uiDiv = uiDiv;
+        this.cellUI = this.createNewUI();
 
         //event handling
         selectList.addEventListener('change', () => {
@@ -103,47 +99,54 @@ class cell {
                 }
             }
         });
+    }
 
+    getUI() {
         return this.cellElement;
     }
 
-    runRaw(rawText) {
-
+    runRaw(rawText){
+        this.cellUI.runRaw(rawText);
     }
 
     showGUI(rawText) {
-        console.log('showing GUI for: ', rawText);
-
-        // Generate GUI
-        var cObj = synthesis.parseArgs(rawText);
-        console.log(cObj);
-        var guiDiv = renderer.renderCommandUI(cObj, this);
-        console.log(guiDiv)
+        var guiDiv = this.cellUI.getUI(rawText);
         this.uiDiv.innerHTML = '';
         this.uiDiv.appendChild(guiDiv);
-
         this.inputDiv.style.display = 'none';
         this.uiDiv.style.display = 'block';
     }
 
-    showInput() {
+    showInput(rawText = null) {
         console.log('showing input');
 
-        // Generate Text
+        if (rawText !== null) {
+            this.cellInput.value = rawText;
+        }
 
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
+    }
+
+    createNewUI(cellType = constants.cellType.command) {
+        switch (cellType) {
+            case constants.cellType.markdown:
+                return new markdownUI(this);
+            case constants.cellType.command:
+            default:
+                return new commandUI(this);
+        }
     }
 }
 
 class UI {
 
-    constructor() {
+    constructor(cell) {
         //do something here
-        var UIDiv = null
+        this.cell = cell;
     }
 
-    getUI() {
+    getUI(rawText) {
         // Proxy for an abstract method
         throw new Error('You have to implement the method in the extended class!');
     }
@@ -158,7 +161,7 @@ class UI {
         throw new Error('You have to implement the method in the extended class!');
     }
 
-    runGUI() {
+    showInput(rawText) {
         // Proxy for an abstract method
         throw new Error('You have to implement the method in the extended class!');
     }
@@ -167,16 +170,20 @@ class UI {
 
 class commandUI extends UI {
 
-    constructor() {
-        super();
+    constructor(cell) {
+        super(cell);
         this.rawCommands = [];
         this.commandObjs = [];
+        this.rawText = "";
         //do something here
     }
 
-    getUI() {
-        // Proxy for an abstract method
-        console.log('init cell input here');
+    getUI(rawText) {
+        // Generate GUI
+        this.rawText = rawText;
+        var cObj = synthesis.parseArgs(rawText);
+        var guiDiv = renderer.renderCommandUI(cObj, this);
+        return guiDiv;
     }
 
     getType() {
@@ -186,25 +193,27 @@ class commandUI extends UI {
 
     runRaw(rawText) {
         // Proxy for an abstract method
-        console.log('running the command');
+        require('./terminal.js').runCommand(rawText);
     }
 
-    runGUI() {
+    showInput(rawText) {
         // Proxy for an abstract method
-        console.log('running the command');
+        this.cell.showInput(rawText);
     }
 }
 
 
 class markdownUI extends UI {
 
-    constructor() {
-        super();
+    constructor(cell) {
+        super(cell);
+        this.rawText = "";
         //do something here
     }
 
-    getUI() {
+    getUI(rawText) {
         // Proxy for an abstract method
+        this.rawText = rawText;
         console.log('init cell input here');
     }
 
@@ -218,9 +227,9 @@ class markdownUI extends UI {
         console.log('running the command');
     }
 
-    runGUI() {
+    showInput(rawText = null) {
         // Proxy for an abstract method
-        console.log('running the command');
+        this.cell.showInput(this.rawText);
     }
 }
 

@@ -77,7 +77,7 @@ function renderCommandUI(command, commandUI = null) {
     editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" style="margin-left:5px;" />');
     editButton.addEventListener("click", () => {
         if (commandUI !== null) {
-            commandUI.showInput();
+            commandUI.showInput(getCommandString(command));
         }
     });
 
@@ -655,7 +655,7 @@ function pad(num, maxVal) {
     return s;
 }
 
-function runCommand(command) {
+function getCommandString(command) {
     //parse the parameters and run the command
     var commandString = "";
 
@@ -693,8 +693,12 @@ function runCommand(command) {
     commandString += paramList.join(' ');
     console.log(commandString);
 
-    var terminal = require('./terminal.js');
-    terminal.runCommand(commandString);
+    return commandString;
+}
+
+function runCommand(command) {
+    var commandString = getCommandString(command);
+    require('./terminal.js').runCommand(commandString);
 }
 
 module.exports = {

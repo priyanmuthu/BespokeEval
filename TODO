@@ -6,6 +6,8 @@ Todo:
   ✔ enable multiple commands @done(19-02-01 01:55)
   ✔ markdown between commands @done(19-02-01 01:56)
   ☐ Notebook UI
+  ☐ Use proper class structure
+  ☐ Multiline markdown
   ☐ dropdown for numbers
   ☐ Grey out unselected divs
   ☐ cherry pick commands
