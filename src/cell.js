@@ -3,9 +3,11 @@ const synthesis = require('./synthesis.js');
 const renderer = require('./renderer.js');
 
 class cell {
-    constructor() {
+    constructor(deleteCell) {
+        this.deleteCell = deleteCell;
         this.cDiv = document.createElement('div');
         this.cDiv.style.padding = '10px';
+        this.cDiv.classList.add('cellselect');
         this.cellUI = this.createNewUI();
         this.cDiv.appendChild(this.cellUI.getUI());
         $('.selectpicker').selectpicker();
@@ -33,6 +35,10 @@ class cell {
                 return new commandUI(this);
         }
     }
+
+    delete() {
+        this.deleteCell(this.cDiv);
+    }
 }
 
 class UI {
@@ -59,6 +65,10 @@ class UI {
     showInput(rawText) {
         // Proxy for an abstract method
         throw new Error('You have to implement the method in the extended class!');
+    }
+
+    delete() {
+        this.cell.delete();
     }
 
 }
@@ -112,6 +122,21 @@ class commandUI extends UI {
         var bSpan = document.createElement('span');
         bSpan.classList.add('input-group-addon');
         inputInnerDiv.appendChild(bSpan);
+
+        //delete button
+        var deleteButton = document.createElement('button');
+        deleteButton.classList.add('btn');
+        deleteButton.classList.add('btn-default');
+        deleteButton.type = "submit";
+        bSpan.appendChild(deleteButton);
+        var dIcon = document.createElement('i');
+        dIcon.classList.add('glyphicon');
+        dIcon.classList.add('glyphicon-trash');
+        deleteButton.appendChild(dIcon);
+        deleteButton.addEventListener('click', () => {
+            this.delete();
+        });
+
         //view button
         var viewButton = document.createElement('button');
         viewButton.classList.add('btn');
@@ -174,6 +199,7 @@ class commandUI extends UI {
     }
 
     showGUI(rawText) {
+        if (rawText === "") { return; }
         // Generate GUI
         this.rawText = rawText;
         var cObj = synthesis.parseArgs(rawText);
@@ -197,6 +223,7 @@ class commandUI extends UI {
     }
 
     runRaw(rawText) {
+        if (rawText === "") { return; }
         require('./terminal.js').runCommand(rawText);
     }
 
@@ -204,7 +231,7 @@ class commandUI extends UI {
         // console.log('selection change');
         this.cell.selectionChange(cellType, rawText);
     }
-
+  
 }
 
 
@@ -252,16 +279,31 @@ class markdownUI extends UI {
         cellInput.style.resize = 'vertical';
         var heightLimit = 60;
         cellInput.style.minHeight = heightLimit + 'px';
-        cellInput.oninput = function() {
+        cellInput.oninput = function () {
             // textarea.style.height = ""; /* Reset the height*/
             cellInput.style.height = Math.max(cellInput.scrollHeight, heightLimit) + "px";
-          };
+        };
         inputInnerDiv.appendChild(cellInput);
 
-        //Run and view button
+        //delete and view button
         var bSpan = document.createElement('span');
         bSpan.classList.add('input-group-addon');
         inputInnerDiv.appendChild(bSpan);
+
+        //delete button
+        var deleteButton = document.createElement('button');
+        deleteButton.classList.add('btn');
+        deleteButton.classList.add('btn-default');
+        deleteButton.type = "submit";
+        bSpan.appendChild(deleteButton);
+        var dIcon = document.createElement('i');
+        dIcon.classList.add('glyphicon');
+        dIcon.classList.add('glyphicon-trash');
+        deleteButton.appendChild(dIcon);
+        deleteButton.addEventListener('click', () => {
+            this.delete();
+        });
+
         //view button
         var viewButton = document.createElement('button');
         viewButton.classList.add('btn');
@@ -295,7 +337,7 @@ class markdownUI extends UI {
                 if (ev.ctrlKey) {
                     this.showGUI(cellInput.value);
                 }
-                else if(ev.shiftKey) {
+                else if (ev.shiftKey) {
                     this.showGUI(cellInput.value);
                 }
             }
@@ -308,6 +350,7 @@ class markdownUI extends UI {
     }
 
     showGUI(rawText) {
+        if (rawText === "") { return; }
         // Generate GUI
         this.rawText = rawText;
         var guiDiv = renderer.renderMarkdownUI(rawText, this);

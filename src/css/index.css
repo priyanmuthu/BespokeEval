@@ -15,6 +15,11 @@ label{
     font-size: 16px;
 }
 
+div.cellselect:focus-within {
+    border-style: solid;
+    border-width: 2px;
+}
+
 input[type="submit"],
 input[type="reset"],
 input[type="button"],

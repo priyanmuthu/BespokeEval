@@ -41,10 +41,16 @@ $(document).ready(() => {
 
 function addCell() {
     var formDiv = document.getElementById('formDiv');
-    var newCell = new celljs.cell();
+    var newCell = new celljs.cell(deleteCell);
     cellArray.push(newCell);
     formDiv.appendChild(newCell.getUI());
     $('.selectpicker').selectpicker();
+}
+
+function deleteCell(cellElement) {
+    var idx = cellArray.indexOf(cellElement);
+    if (idx !== -1) { cellArray.splice(idx, 1); }
+    formDiv.removeChild(cellElement);
 }
 
 
