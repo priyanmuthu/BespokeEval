@@ -4,12 +4,76 @@ const renderer = require('./renderer.js');
 
 class cell {
     constructor() {
+        this.cDiv = document.createElement('div');
+        this.cellUI = this.createNewUI();
+        this.cDiv.appendChild(this.cellUI.getUI());
+        $('.selectpicker').selectpicker();
+    }
+
+    getUI() {
+        return this.cDiv;
+    }
+
+    selectionChange(cellType, rawText = '') {
+        // Dump the current cell object and create a new cell object
+        cellType = Number(cellType);
+        this.cellUI = this.createNewUI(cellType);
+        this.cDiv.innerHTML = '';
+        this.cDiv.appendChild(this.cellUI.getUI(rawText));
+        $('.selectpicker').selectpicker();
+    }
+
+    createNewUI(cellType = constants.cellType.markdown) {
+        switch (cellType) {
+            case constants.cellType.markdown:
+                return new markdownUI(this);
+            case constants.cellType.command:
+            default:
+                return new commandUI(this);
+        }
+    }
+}
+
+class UI {
+
+    constructor(cell) {
+        this.cell = cell;
+    }
+
+    getUI(rawText) {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
+    getType() {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
+    runRaw(rawText) {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
+    showInput(rawText) {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
+}
+
+class commandUI extends UI {
+
+    constructor(cell) {
+        super(cell);
+        this.rawCommands = [];
+        this.commandObjs = [];
+        this.rawText = "";
         // initialize cell input
         this.cellElement = null;
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
-        this.cellUI = null;
 
         var cellDiv = document.createElement('div');
 
@@ -36,7 +100,6 @@ class cell {
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
             selectList.appendChild(option);
         }
-
         var cellInput = document.createElement('input');
         cellInput.classList.add('form-control');
         cellInput.type = 'text';
@@ -83,12 +146,12 @@ class cell {
         this.inputDiv = inputDiv;
         this.cellInput = cellInput;
         this.uiDiv = uiDiv;
-        this.cellUI = this.createNewUI();
+        // this.cellUI = this.createNewUI();
         this.runButton = runButton;
 
         //event handling
         selectList.addEventListener('change', () => {
-            this.selectionChange(selectList.value);
+            this.selectionChange(selectList.value, cellInput.value);
         });
         cellInput.addEventListener('keypress', (ev) => {
             if (ev.key === "Enter") {
@@ -102,35 +165,16 @@ class cell {
         });
     }
 
-    getUI() {
+    getUI(rawText = '') {
+        this.cellInput.value = rawText;
         return this.cellElement;
     }
 
-    runRaw(rawText) {
-        this.cellUI.runRaw(rawText);
-    }
-
-    selectionChange(cellType) {
-        // Dump the current cell object and create a new cell object
-        cellType = Number(cellType);
-        this.cellUI = this.createNewUI(cellType);
-
-        // Other UI housekeeping here
-        switch (cellType) {
-            case constants.cellType.markdown:
-                // Hide run button
-                this.runButton.style.display = 'none';
-                break;
-            case constants.cellType.command:
-            default:
-                // Show run button
-                this.runButton.style.display = 'inline';
-                break;
-        }
-    }
-
     showGUI(rawText) {
-        var guiDiv = this.cellUI.getUI(rawText);
+        // Generate GUI
+        this.rawText = rawText;
+        var cObj = synthesis.parseArgs(rawText);
+        var guiDiv = renderer.renderCommandUI(cObj, this);
         this.uiDiv.innerHTML = '';
         this.uiDiv.appendChild(guiDiv);
         this.inputDiv.style.display = 'none';
@@ -138,68 +182,11 @@ class cell {
     }
 
     showInput(rawText = null) {
-
         if (rawText !== null) {
             this.cellInput.value = rawText;
         }
-
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
-    }
-
-    createNewUI(cellType) {
-        switch (cellType) {
-            case constants.cellType.markdown:
-                return new markdownUI(this);
-            case constants.cellType.command:
-            default:
-                return new commandUI(this);
-        }
-    }
-}
-
-class UI {
-
-    constructor(cell) {
-        this.cell = cell;
-    }
-
-    getUI(rawText) {
-        // Proxy for an abstract method
-        throw new Error('You have to implement the method in the extended class!');
-    }
-
-    getType() {
-        // Proxy for an abstract method
-        throw new Error('You have to implement the method in the extended class!');
-    }
-
-    runRaw(rawText) {
-        // Proxy for an abstract method
-        throw new Error('You have to implement the method in the extended class!');
-    }
-
-    showInput(rawText) {
-        // Proxy for an abstract method
-        throw new Error('You have to implement the method in the extended class!');
-    }
-
-}
-
-class commandUI extends UI {
-
-    constructor(cell) {
-        super(cell);
-        this.rawCommands = [];
-        this.commandObjs = [];
-        this.rawText = "";
-    }
-
-    getUI(rawText) {
-        // Generate GUI
-        this.rawText = rawText;
-        var cObj = synthesis.parseArgs(rawText);
-        return renderer.renderCommandUI(cObj, this);
     }
 
     getType() {
@@ -210,9 +197,11 @@ class commandUI extends UI {
         require('./terminal.js').runCommand(rawText);
     }
 
-    showInput(rawText) {
-        this.cell.showInput(rawText);
+    selectionChange(cellType, rawText) {
+        // console.log('selection change');
+        this.cell.selectionChange(cellType, rawText);
     }
+
 }
 
 
@@ -221,24 +210,131 @@ class markdownUI extends UI {
     constructor(cell) {
         super(cell);
         this.rawText = "";
+        // initialize cell input
+        this.cellElement = null;
+        this.inputDiv = null;
+        this.uiDiv = null;
+        this.cellInput = null;
+
+        var cellDiv = document.createElement('div');
+
+        var inputDiv = document.createElement('div');
+        inputDiv.style.display = 'block';
+        cellDiv.appendChild(inputDiv);
+
+        var inputInnerDiv = document.createElement('div');
+        inputInnerDiv.classList.add('input-group');
+        inputDiv.appendChild(inputInnerDiv);
+
+        //dropdown choose
+        var dropdownDiv = document.createElement('span');
+        dropdownDiv.classList.add('input-group-addon');
+        inputInnerDiv.appendChild(dropdownDiv);
+        var selectList = document.createElement('select');
+        // selectList.classList.add('form-control');
+        selectList.classList.add('selectpicker');
+        selectList.setAttribute('data-width', 'fit');
+        dropdownDiv.appendChild(selectList);
+        for (var key in constants.cellTypeIcon) {
+            var option = document.createElement('option');
+            option.value = constants.cellType[key];
+            option.setAttribute('data-icon', constants.cellTypeIcon[key]);
+            selectList.appendChild(option);
+        }
+        selectList.selectedIndex = 1;
+
+        var cellInput = document.createElement('textarea');
+        cellInput.classList.add('form-control');
+        cellInput.rows = 2;
+        cellInput.style.resize = 'vertical';
+        var heightLimit = 60;
+        cellInput.style.minHeight = heightLimit + 'px';
+        cellInput.oninput = function() {
+            // textarea.style.height = ""; /* Reset the height*/
+            cellInput.style.height = Math.max(cellInput.scrollHeight, heightLimit) + "px";
+          };
+        inputInnerDiv.appendChild(cellInput);
+
+        //Run and view button
+        var bSpan = document.createElement('span');
+        bSpan.classList.add('input-group-addon');
+        inputInnerDiv.appendChild(bSpan);
+        //view button
+        var viewButton = document.createElement('button');
+        viewButton.classList.add('btn');
+        viewButton.classList.add('btn-default');
+        viewButton.type = "submit";
+        bSpan.appendChild(viewButton);
+        var vIcon = document.createElement('i');
+        vIcon.classList.add('glyphicon');
+        vIcon.classList.add('glyphicon-tasks');
+        viewButton.appendChild(vIcon);
+        viewButton.addEventListener('click', () => {
+            this.showGUI(cellInput.value);
+        });
+
+        // Creating the GUI div
+        var uiDiv = document.createElement('div');
+        uiDiv.style.display = 'none';
+        cellDiv.appendChild(uiDiv);
+
+        this.cellElement = cellDiv;
+        this.inputDiv = inputDiv;
+        this.cellInput = cellInput;
+        this.uiDiv = uiDiv;
+
+        //event handling
+        selectList.addEventListener('change', () => {
+            this.selectionChange(selectList.value, cellInput.value);
+        });
+        cellInput.addEventListener('keypress', (ev) => {
+            if (ev.key === "Enter") {
+                if (ev.ctrlKey) {
+                    this.showGUI(cellInput.value);
+                }
+                else if(ev.shiftKey) {
+                    this.showGUI(cellInput.value);
+                }
+            }
+        });
     }
 
-    getUI(rawText) {
+    getUI(rawText = '') {
+        this.cellInput.value = rawText;
+        return this.cellElement;
+    }
+
+    showGUI(rawText) {
+        // Generate GUI
         this.rawText = rawText;
-        return renderer.renderMarkdownUI(rawText, this);
+        var guiDiv = renderer.renderMarkdownUI(rawText, this);
+        this.uiDiv.innerHTML = '';
+        this.uiDiv.appendChild(guiDiv);
+        this.inputDiv.style.display = 'none';
+        this.uiDiv.style.display = 'block';
     }
 
     getType() {
         return constants.cellType.markdown;
     }
 
+    showInput(rawText = null) {
+        if (rawText !== null) {
+            this.cellInput.value = rawText;
+        }
+        this.uiDiv.style.display = 'none';
+        this.inputDiv.style.display = 'block';
+    }
+
     runRaw(rawText) {
         // Do nothing
     }
 
-    showInput(rawText = null) {
-        this.cell.showInput(this.rawText);
+    selectionChange(cellType, rawText) {
+        // console.log('selection change');
+        this.cell.selectionChange(cellType, rawText);
     }
+
 }
 
 
