@@ -27,8 +27,8 @@ const yamlTypes = {
 };
 
 const cellType = {
-    command: 1,
-    markdown: 2
+    command: 0,
+    markdown: 1
 }
 
 const cellTypeIcon = {

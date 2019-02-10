@@ -5,6 +5,8 @@ const { dialog } = require('electron').remote;
 const Awesomplete = require('awesomplete');
 // const synthesis = require('./synthesis.js');
 const utils = require('./utils.js');
+const celljs = require('./cell.js');
+var cellArray = [];
 
 $(document).ready(() => {
     // Do everything here
@@ -24,18 +26,25 @@ $(document).ready(() => {
     initDynamicResize(editor, terminal);
     initCollapseUI();
 
-    const celljs = require('./cell.js');
-    var formDiv = document.getElementById('formDiv');
-    var newCell = new celljs.cell();
-    formDiv.appendChild(newCell.getUI());
-    $('.selectpicker').selectpicker();
+    $("#addCellButton").click(() => {
+        addCell();
+    });
 
+    // Have at least one cell by default
+    addCell();
 
     // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
     // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
     // synthesis.parseArgs('git commit -a -m "this is a commit message"');
 });
 
+function addCell() {
+    var formDiv = document.getElementById('formDiv');
+    var newCell = new celljs.cell();
+    cellArray.push(newCell);
+    formDiv.appendChild(newCell.getUI());
+    $('.selectpicker').selectpicker();
+}
 
 
 function initDynamicResize(editor, terminal) {

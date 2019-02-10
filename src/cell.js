@@ -5,6 +5,7 @@ const renderer = require('./renderer.js');
 class cell {
     constructor() {
         this.cDiv = document.createElement('div');
+        this.cDiv.style.padding = '10px';
         this.cellUI = this.createNewUI();
         this.cDiv.appendChild(this.cellUI.getUI());
         $('.selectpicker').selectpicker();
@@ -23,7 +24,7 @@ class cell {
         $('.selectpicker').selectpicker();
     }
 
-    createNewUI(cellType = constants.cellType.markdown) {
+    createNewUI(cellType = constants.cellType.command) {
         switch (cellType) {
             case constants.cellType.markdown:
                 return new markdownUI(this);
@@ -87,7 +88,7 @@ class commandUI extends UI {
 
         //dropdown choose
         var dropdownDiv = document.createElement('span');
-        dropdownDiv.classList.add('input-group-btn');
+        dropdownDiv.classList.add('input-group-addon');
         inputInnerDiv.appendChild(dropdownDiv);
         var selectList = document.createElement('select');
         // selectList.classList.add('form-control');
@@ -103,11 +104,13 @@ class commandUI extends UI {
         var cellInput = document.createElement('input');
         cellInput.classList.add('form-control');
         cellInput.type = 'text';
+        var heightLimit = 60;
+        cellInput.style.minHeight = heightLimit + 'px';
         inputInnerDiv.appendChild(cellInput);
 
         //Run and view button
         var bSpan = document.createElement('span');
-        bSpan.classList.add('input-group-btn');
+        bSpan.classList.add('input-group-addon');
         inputInnerDiv.appendChild(bSpan);
         //view button
         var viewButton = document.createElement('button');
@@ -241,7 +244,7 @@ class markdownUI extends UI {
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
             selectList.appendChild(option);
         }
-        selectList.selectedIndex = 1;
+        selectList.selectedIndex = constants.cellType.markdown;
 
         var cellInput = document.createElement('textarea');
         cellInput.classList.add('form-control');
