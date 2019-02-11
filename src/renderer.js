@@ -71,10 +71,10 @@ function renderCommandUI(command, commandUI = null) {
     editButton.classList.add('btn');
     editButton.classList.add('btn-default');
     editButton.classList.add('pull-right');
-    editButton.innerText = "Edit";
+    // editButton.innerText = "Edit";
     editButton.style.minWidth = "40px";
     editButton.style.marginRight = "10px";
-    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" style="margin-left:5px;" />');
+    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
     editButton.addEventListener("click", () => {
         if (commandUI !== null) {
             commandUI.showInput(getCommandString(command));
@@ -85,9 +85,9 @@ function renderCommandUI(command, commandUI = null) {
     runButton.classList.add('btn');
     runButton.classList.add('btn-primary');
     runButton.classList.add('pull-right');
-    runButton.innerText = "Run";
+    // runButton.innerText = "Run";
     runButton.style.minWidth = "40px";
-    runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" style="margin-left:5px;" />');
+    runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" />');
     runButton.addEventListener("click", () => {
         runCommand(command);
     });
@@ -106,7 +106,17 @@ function renderCommandUI(command, commandUI = null) {
 
 function renderMarkdownUI(markdownText, markdownUI) {
     var pDiv = document.createElement('div')
-    // pDiv.insertAdjacentHTML('beforeend', '<br />');
+    var editButton = document.createElement('button');
+    editButton.classList.add('btn');
+    editButton.classList.add('btn-default');
+    editButton.classList.add('pull-right');
+    editButton.style.minWidth = "40px";
+    editButton.style.marginRight = "10px";
+    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
+    editButton.addEventListener("click", () => {
+        markdownUI.showInput();
+    });
+    pDiv.appendChild(editButton);
     pDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(markdownText));
     pDiv.addEventListener('dblclick', () => {
         markdownUI.showInput();
