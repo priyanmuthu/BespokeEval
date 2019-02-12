@@ -16,14 +16,11 @@ $(document).ready(() => {
     $('#bottomPanel').height('45%');
     $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
 
-    //Creating Editor
-    var editor = require('./editor.js');
-    editor.InitializeEditor();
     // Creating the terminal
     var terminal = require('./terminal.js');
     terminal.initializeTerminal();
 
-    initDynamicResize(editor, terminal);
+    initDynamicResize(terminal);
     initCollapseUI();
 
     $("#addCellButton").click(() => {
@@ -54,14 +51,13 @@ function deleteCell(cellElement) {
 }
 
 
-function initDynamicResize(editor, terminal) {
+function initDynamicResize(terminal) {
     var window = require('electron').remote.getCurrentWindow();
     window.on('resize', () => {
         resizeUI();
     });
 
     function resizeUI() {
-        editor.editorObj.layout();
         terminal.fitTerminal();
     }
 }

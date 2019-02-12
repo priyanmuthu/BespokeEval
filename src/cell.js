@@ -8,6 +8,9 @@ class cell {
         this.cDiv = document.createElement('div');
         this.cDiv.style.padding = '10px';
         this.cDiv.classList.add('cellselect');
+        // this.cDiv.addEventListener('focusin', () => {
+        //     console.log('focused');
+        // });
         this.cellUI = this.createNewUI();
         this.cDiv.appendChild(this.cellUI.getUI());
         $('.selectpicker').selectpicker();
@@ -80,6 +83,7 @@ class commandUI extends UI {
         this.rawCommands = [];
         this.commandObjs = [];
         this.rawText = "";
+        this.previousRawText = '';
         // initialize cell input
         this.cellElement = null;
         this.inputDiv = null;
@@ -201,11 +205,14 @@ class commandUI extends UI {
     showGUI(rawText) {
         if (rawText === "") { return; }
         // Generate GUI
-        this.rawText = rawText;
-        var cObj = synthesis.parseArgs(rawText);
-        var guiDiv = renderer.renderCommandUI(cObj, this);
-        this.uiDiv.innerHTML = '';
-        this.uiDiv.appendChild(guiDiv);
+        if (this.rawCommands[this.rawCommands.length - 1] !== rawText) {
+            this.rawCommands.push(rawText);
+            var cObj = synthesis.parseArgs(rawText);
+            this.commandObjs.push(cObj);
+            var guiDiv = renderer.renderCommandUI(cObj, this);
+            this.uiDiv.innerHTML = '';
+            this.uiDiv.appendChild(guiDiv);
+        }
         this.inputDiv.style.display = 'none';
         this.uiDiv.style.display = 'block';
     }
@@ -231,7 +238,7 @@ class commandUI extends UI {
         // console.log('selection change');
         this.cell.selectionChange(cellType, rawText);
     }
-  
+
 }
 
 

@@ -70,43 +70,6 @@ function cleanArg(arg) {
     return arg;
 }
 
-function parseArgsNonPositional(commandStr) {
-    try {
-        var cObj = yargsParser(commandStr, parserConfig);
-
-        var command = commandStr.split(' ')[0];
-
-        var idx = cObj['_'].indexOf(command);
-        if (idx !== -1) cObj['_'].splice(idx, 1);
-
-        //Create YAML supported object
-        var cYAMLObj = {};
-        cYAMLObj[constants.yamlStrings.commandName] = command;
-        cYAMLObj[constants.yamlStrings.rawCommand] = commandStr;
-        cYAMLObj[constants.yamlStrings.parameterArray] = [];
-        for (const key of Object.keys(cObj)) {
-            // Create param obj
-            if (key == '_') {
-                continue;
-            }
-            cYAMLObj[constants.yamlStrings.parameterArray].push(getParamObject(key, cObj[key]));
-        }
-        for (var i = 0; i < cObj['_'].length; i++) {
-            var pObj = {};
-            pObj[constants.yamlStrings.parameterName] = "";
-            pObj[constants.yamlStrings.parameterType] = getType(cObj['_'][i]);
-            pObj[constants.yamlStrings.defaultValue] = cObj['_'][i];
-            pObj[constants.yamlStrings.required] = true;
-            cYAMLObj[constants.yamlStrings.parameterArray].push(pObj);
-        }
-        return cYAMLObj;
-    }
-    catch (e) {
-        console.error(e);
-    }
-    return null;
-}
-
 function getSynthesis() {
     // get all object keys
     // var fCommand = getFrequentCommand();
@@ -124,6 +87,79 @@ function getSynthesis() {
     // for each key synthesize
     var cObj = commandObjs[commandObjs.length - 1];
     return utils.getYAMLText([cObj]); //Always pass command object as array
+}
+
+function mergeCommandObjects(commandObjects, command) {
+    if (variable.constructor !== Array) { return {}; }
+    var mergedDict = {};
+    // For each command
+    for (var i = 0; i < commandObjects.length; i++) {
+        var cObj = commandObjects[i];
+        if (cObj[constants.yamlStrings.commandName] !== command) { continue; }
+        var paramArr = cObj[constants.yamlStrings.parameterArray];
+        for (var j = 0; j < paramArr.length; j++) {
+            var param = paramArr[j];
+            if (param[constants.yamlStrings.parameterName] === '') {
+                // TODO: Handle this later.
+                continue;
+            }
+            var pName = param[constants.yamlStrings.parameterName];
+            if (pName in mergedDict) {
+                mergedDict[pName].push(param);
+            }
+            else {
+                mergedDict[pName] = [param];
+            }
+        }
+    }
+
+    console.log(mergedDict);
+
+    // Process merged dictionary
+    var resDict = {};
+    for (var pName in mergedDict) {
+        var pArr = mergedDict[pName];
+        var typeSet = new Set(pArr.map(p => p[constants.yamlStrings.parameterType]));
+        if (typeSet.size === 1) {
+            // All of them are of same type, go ahead and make inference
+            var pType = [...typeSet][0];
+            switch (typeSet) {
+                case constants.yamlTypes.string:
+                    //convert to dropdown
+                    var newParam = {};
+                    newParam[constants.yamlStrings.parameterName] = pName;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.dropdown;
+                    newParam[constants.yamlStrings.value] = pArr.map(p => p[constants.yamlStrings.defaultValue]);
+                    resDict[pName] = newParam;
+                    break;
+                case constants.yamlTypes.file:
+                    // File inference
+                    // var newParam = {};
+                    // newParam[constants.yamlStrings.parameterName] = pName;
+                    // newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.file;
+                    // // TODO: File inferences
+                    // resDict[pName] = newParam;
+                    break;
+                case constants.yamlTypes.number:
+                    // Range of number
+                    var newParam = {};
+                    newParam[constants.yamlStrings.parameterName] = pName;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.dropdown;
+                    var numArr = pArr.map(p => Number(p[constants.yamlStrings.defaultValue]));
+                    newParam[constants.yamlStrings.maxValue] = Math.max(numArr);
+                    newParam[constants.yamlStrings.minValue] = Math.min(numArr);
+                    resDict[pName] = newParam;
+                    break;
+                default:
+                    // dont do anything. eg: time
+            }
+        }
+        else {
+            // All are not the same. Hence either make it a string or dropdown
+        }
+    }
+
+    return resDict;
 }
 
 function getFrequentCommand() {
