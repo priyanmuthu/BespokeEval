@@ -245,22 +245,34 @@ function renderNumberParam(param) {
     paramName.appendChild(paramcheck);
     pDiv.appendChild(paramName);
 
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('form-group');
+    pDiv.appendChild(inputDiv);
+
     var paramEdit = document.createElement('input');
     paramEdit.classList.add('form-control');
     paramEdit.type = 'number';
     paramEdit.id = 'input_param_' + numberCount;
 
-    if (constants.yamlStrings.minValue in param) {
-        paramEdit.min = "" + param[constants.yamlStrings.minValue];
+    if (constants.yamlStrings.maxValue in param
+        && constants.yamlStrings.minValue in param) {
+        var rangeSlider = document.createElement('input');
+        rangeSlider.type = 'range';
+        rangeSlider.classList.add('custom-range');
+        rangeSlider.max = param[constants.yamlStrings.maxValue];
+        rangeSlider.min = param[constants.yamlStrings.minValue];
+        rangeSlider.style.padding = '10px';
+        rangeSlider.addEventListener('change', () => {
+            paramEdit.value = rangeSlider.value;
+        });
+        inputDiv.appendChild(rangeSlider);
     }
-    if (constants.yamlStrings.maxValue in param) {
-        paramEdit.max = "" + param[constants.yamlStrings.maxValue];
-    }
+
     if (constants.yamlStrings.defaultValue in param) {
         paramEdit.value = param[constants.yamlStrings.defaultValue];
     }
     paramEdit.placeholder = param[constants.yamlStrings.parameterName];
-    pDiv.appendChild(paramEdit);
+    inputDiv.appendChild(paramEdit);
 
     param[constants.yamlStrings.evaluate] = function () {
         var valStr = paramEdit.value;
@@ -482,10 +494,10 @@ function renderFileDialog(param) {
 
     var filters = [
         { name: 'All Files', extensions: ['*'] }
-      ];
-    
-    if(constants.yamlStrings.extensions in param){
-        filters.unshift({name: 'Restricted', extensions: param[constants.yamlStrings.extensions]});
+    ];
+
+    if (constants.yamlStrings.extensions in param) {
+        filters.unshift({ name: 'Restricted', extensions: param[constants.yamlStrings.extensions] });
     }
 
     let options = {

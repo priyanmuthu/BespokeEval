@@ -150,10 +150,10 @@ function mergeCommandObjects(commandObjects, command) {
                     // Range of number
                     var newParam = {};
                     newParam[constants.yamlStrings.parameterName] = pName;
-                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.dropdown;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.number;
                     var numArr = pArr.map(p => Number(p[constants.yamlStrings.defaultValue]));
-                    newParam[constants.yamlStrings.maxValue] = Math.max(numArr);
-                    newParam[constants.yamlStrings.minValue] = Math.min(numArr);
+                    newParam[constants.yamlStrings.maxValue] = Math.max.apply(Math, numArr);
+                    newParam[constants.yamlStrings.minValue] = Math.min.apply(Math, numArr);
                     resDict[pName] = newParam;
                     break;
                 default:

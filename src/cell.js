@@ -84,6 +84,7 @@ class commandUI extends UI {
         this.commandObjs = [];
         this.rawText = "";
         this.previousRawText = '';
+        this.renderObj = null;
         // initialize cell input
         this.cellElement = null;
         this.inputDiv = null;
@@ -210,16 +211,17 @@ class commandUI extends UI {
             var cObj = synthesis.parseArgs(rawText);
             this.commandObjs.push(cObj);
             if (this.commandObjs.length === 1) {
+                this.renderObj = cObj;
                 var guiDiv = renderer.renderCommandUI(cObj, this);
                 this.uiDiv.innerHTML = '';
                 this.uiDiv.appendChild(guiDiv);
             }
             else {
-                var renderObj = synthesis.parseArgs(rawText);
-                var command = renderObj[constants.yamlStrings.commandName];
+                this.renderObj = synthesis.parseArgs(rawText);
+                var command = this.renderObj[constants.yamlStrings.commandName];
                 var synthDiv = synthesis.mergeCommandObjects(this.commandObjs, command);
                 console.log(synthDiv);
-                var paramArr = renderObj[constants.yamlStrings.parameterArray];
+                var paramArr = this.renderObj[constants.yamlStrings.parameterArray];
                 for (var i = 0; i < paramArr.length; i++) {
                     var param = paramArr[i];
                     var pName = param[constants.yamlStrings.parameterName];
@@ -231,7 +233,7 @@ class commandUI extends UI {
                         paramArr[i] = newParam;
                     }
                 }
-                var guiDiv = renderer.renderCommandUI(renderObj, this);
+                var guiDiv = renderer.renderCommandUI(this.renderObj, this);
                 this.uiDiv.innerHTML = '';
                 this.uiDiv.appendChild(guiDiv);
             }
