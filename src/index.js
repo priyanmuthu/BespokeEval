@@ -30,7 +30,7 @@ $(document).ready(() => {
     // Have at least one cell by default
     addCell();
 
-    collapseUI();
+    // collapseUI();
     // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
     // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
     // synthesis.parseArgs('git commit -a -m "this is a commit message"');
