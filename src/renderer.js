@@ -480,8 +480,18 @@ function renderFileDialog(param) {
     icon.classList.add('glyphicon-folder-open');
     fButton.appendChild(icon);
 
+    var filters = [
+        { name: 'All Files', extensions: ['*'] }
+      ];
+    
+    if(constants.yamlStrings.extensions in param){
+        filters.unshift({name: 'Restricted', extensions: param[constants.yamlStrings.extensions]});
+    }
+
     let options = {
-        defaultPath: __dirname
+        defaultPath: __dirname,
+        filters: filters,
+        properties: ['openFile']
     }
 
     fButton.addEventListener('click', () => {

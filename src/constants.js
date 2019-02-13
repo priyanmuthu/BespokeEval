@@ -12,7 +12,8 @@ const yamlStrings = {
     'required': 'required',
     'rawCommand': 'raw',
     'minValue': 'min',
-    'maxValue': 'max'
+    'maxValue': 'max',
+    'extensions': 'extensions'
 };
 
 const yamlTypes = {

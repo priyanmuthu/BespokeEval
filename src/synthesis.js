@@ -90,9 +90,10 @@ function getSynthesis() {
 }
 
 function mergeCommandObjects(commandObjects, command) {
-    if (variable.constructor !== Array) { return {}; }
+    if (commandObjects.constructor !== Array) { return {}; }
     var mergedDict = {};
     // For each command
+    console.log(commandObjects);
     for (var i = 0; i < commandObjects.length; i++) {
         var cObj = commandObjects[i];
         if (cObj[constants.yamlStrings.commandName] !== command) { continue; }
@@ -123,22 +124,27 @@ function mergeCommandObjects(commandObjects, command) {
         if (typeSet.size === 1) {
             // All of them are of same type, go ahead and make inference
             var pType = [...typeSet][0];
-            switch (typeSet) {
+            switch (pType) {
                 case constants.yamlTypes.string:
                     //convert to dropdown
                     var newParam = {};
                     newParam[constants.yamlStrings.parameterName] = pName;
                     newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.dropdown;
-                    newParam[constants.yamlStrings.value] = pArr.map(p => p[constants.yamlStrings.defaultValue]);
+                    var valArr = pArr.map(p => p[constants.yamlStrings.defaultValue]);
+                    valArr = [...new Set(valArr)];
+                    newParam[constants.yamlStrings.value] = valArr;
                     resDict[pName] = newParam;
                     break;
                 case constants.yamlTypes.file:
                     // File inference
-                    // var newParam = {};
-                    // newParam[constants.yamlStrings.parameterName] = pName;
-                    // newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.file;
-                    // // TODO: File inferences
-                    // resDict[pName] = newParam;
+                    var newParam = {};
+                    newParam[constants.yamlStrings.parameterName] = pName;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.file;
+                    // TODO: File inferences
+                    var re = /(?:\.([^.]+))?$/;
+                    var extArr = pArr.map(p => re.exec(p[constants.yamlStrings.defaultValue])[1]);
+                    newParam[constants.yamlStrings.extensions] = [...new Set(extArr)];
+                    resDict[pName] = newParam;
                     break;
                 case constants.yamlTypes.number:
                     // Range of number
@@ -228,3 +234,4 @@ function getType(value) {
 module.exports.parseArgs = parseArgs;
 module.exports.addCommandEntry = addCommandEntry;
 module.exports.getSynthesis = getSynthesis;
+module.exports.mergeCommandObjects = mergeCommandObjects;
