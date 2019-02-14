@@ -42,6 +42,15 @@ class cell {
     delete() {
         this.deleteCell(this.cDiv);
     }
+
+    getState() {
+        return this.cellUI.getState();
+    }
+
+    loadState(state) {
+        this.selectionChange(state[constants.yamlStrings.cellType]);
+        this.cellUI.loadState(state);
+    }
 }
 
 class UI {
@@ -74,16 +83,24 @@ class UI {
         this.cell.delete();
     }
 
+    getState() {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
+    loadState(state) {
+        // Proxy for an abstract method
+        throw new Error('You have to implement the method in the extended class!');
+    }
+
 }
 
 class commandUI extends UI {
 
     constructor(cell) {
         super(cell);
-        this.rawCommands = [];
         this.commandObjs = [];
         this.rawText = "";
-        this.previousRawText = '';
         this.renderObj = null;
         // initialize cell input
         this.cellElement = null;
@@ -206,8 +223,8 @@ class commandUI extends UI {
     showGUI(rawText) {
         if (rawText === "") { return; }
         // Generate GUI
-        if (this.rawCommands[this.rawCommands.length - 1] !== rawText) {
-            this.rawCommands.push(rawText);
+        if (this.rawText !== rawText) {
+            this.rawText = rawText;
             var cObj = synthesis.parseArgs(rawText);
             this.commandObjs.push(cObj);
             if (this.commandObjs.length === 1) {
@@ -262,6 +279,23 @@ class commandUI extends UI {
     selectionChange(cellType, rawText) {
         // console.log('selection change');
         this.cell.selectionChange(cellType, rawText);
+    }
+
+    getState() {
+        var state = {};
+        state[constants.yamlStrings.rawText] = this.cellInput.value;
+        state[constants.yamlStrings.commandObjects] = this.commandObjs;
+        state[constants.yamlStrings.renderObject] = this.renderObj;
+        state[constants.yamlStrings.cellType] = this.getType();
+        return state;
+
+    }
+
+    loadState(state) {
+        this.rawText = '';//;
+        this.commandObjs = state[constants.yamlStrings.commandObjects];
+        this.cellInput.value = state[constants.yamlStrings.rawText];
+        this.renderObj = state[constants.yamlStrings.renderObject];
     }
 
 }
@@ -413,6 +447,16 @@ class markdownUI extends UI {
         this.cell.selectionChange(cellType, rawText);
     }
 
+    getState() {
+        var state = {};
+        state[constants.yamlStrings.rawText] = this.cellInput.value;
+        state[constants.yamlStrings.cellType] = this.getType();
+        return state;
+    }
+
+    loadState(state) {
+        this.cellInput.value = state[constants.yamlStrings.rawText];
+    }
 }
 
 

@@ -13,7 +13,11 @@ const yamlStrings = {
     'rawCommand': 'raw',
     'minValue': 'min',
     'maxValue': 'max',
-    'extensions': 'extensions'
+    'extensions': 'extensions',
+    'rawText': 'rawText',
+    'commandObjects': 'commandObjects',
+    'renderObject': 'renderObject',
+    'cellType': 'cellType'
 };
 
 const yamlTypes = {
