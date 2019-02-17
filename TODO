@@ -7,9 +7,14 @@ Todo:
   ✔ markdown between commands @done(19-02-01 01:56)
   ✔ Notebook UI - inital version @done(19-02-12 12:01)
   ✔ Multiline markdown @done(19-02-12 12:02)
+  ✔ Get extension from file bug @done(19-02-17 09:40)
+  ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
   ☐ GUI edit - for modifications - menu down etc..
-  ☐ Menu option to save and load file - for UI
   ☐ Run / Show all
+  ☐ Pipe commands
+  ☐ Cell output
+  ☐ output file as input in the next command
+  ☐ Pipe command
   ☐ Dropdown array set
   ☐ Use proper class structure
   ☐ dropdown / slider for numbers
