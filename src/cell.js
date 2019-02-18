@@ -99,7 +99,7 @@ class commandUI extends UI {
 
     constructor(cell) {
         super(cell);
-        this.commandObjs = [];
+        this.commandObjs = {};
         this.rawText = "";
         this.renderObj = null;
         // initialize cell input
@@ -225,38 +225,22 @@ class commandUI extends UI {
         // Generate GUI
         if (this.rawText !== rawText) {
             this.rawText = rawText;
-            var cObj = synthesis.parseArgs(rawText);
-            this.commandObjs.push(cObj);
-            if (this.commandObjs.length === 1) {
-                this.renderObj = cObj;
-                var guiDiv = renderer.renderCommandUI(cObj, this);
-                this.uiDiv.innerHTML = '';
-                this.uiDiv.appendChild(guiDiv);
-            }
-            else {
-                this.renderObj = synthesis.parseArgs(rawText);
-                var command = this.renderObj[constants.yamlStrings.commandName];
-                var synthDiv = synthesis.mergeCommandObjects(this.commandObjs, command);
-                console.log(synthDiv);
-                var paramArr = this.renderObj[constants.yamlStrings.parameterArray];
-                for (var i = 0; i < paramArr.length; i++) {
-                    var param = paramArr[i];
-                    var pName = param[constants.yamlStrings.parameterName];
-                    if (pName in synthDiv) {
-                        var newParam = synthDiv[pName];
-                        if (constants.yamlStrings.defaultValue in param) {
-                            newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
-                        }
-                        paramArr[i] = newParam;
-                    }
+            var sObj = synthesis.parseScript(rawText);
+            sObj.forEach((c, i) => {
+                var key = c[constants.yamlStrings.commandName];
+                if (key in this.commandObjs) {
+                    this.commandObjs[key].push(c);
                 }
-                var guiDiv = renderer.renderCommandUI(this.renderObj, this);
-                this.uiDiv.innerHTML = '';
-                this.uiDiv.appendChild(guiDiv);
-            }
+                else {
+                    this.commandObjs[key] = [c];
+                }
+            });
+
+            var mergedObject = synthesis.mergeScriptObjects(this.commandObjs,
+                synthesis.parseScript(rawText));
         }
-        this.inputDiv.style.display = 'none';
-        this.uiDiv.style.display = 'block';
+        // this.inputDiv.style.display = 'none';
+        // this.uiDiv.style.display = 'block';
     }
 
     showInput(rawText = null) {

@@ -17,15 +17,13 @@ function parseArgs(commandStr) {
     try {
         var cObj = yargsParser(commandStr, parserConfig);
 
-        var command = commandStr.split(' ')[0];
-
-        var idx = cObj['_'].indexOf(command);
-        if (idx !== -1) cObj['_'].splice(idx, 1);
+        var commandName = cObj['_'][0];
+        cObj['_'].splice(0, 1);
 
         //Create YAML supported object
         var cYAMLObj = {};
 
-        cYAMLObj[constants.yamlStrings.commandName] = command;
+        cYAMLObj[constants.yamlStrings.commandName] = commandName;
         cYAMLObj[constants.yamlStrings.rawCommand] = commandStr;
 
         //Going in the positional order
@@ -60,6 +58,32 @@ function parseArgs(commandStr) {
     return null;
 }
 
+function parseScript(scriptStr) {
+    var commandStrArr = []
+    var argArr = stringArgv(scriptStr);
+
+    var currentCommand = "";
+    for (var i in argArr) {
+        if (argArr[i] === "|") {
+            commandStrArr.push(currentCommand);
+            currentCommand = "";
+            continue;
+        }
+        var argStr = (argArr[i].includes(' ') || argArr[i].includes('|'))
+            ? "\"" + argArr[i] + "\"" : argArr[i];
+        currentCommand = currentCommand.concat(' ', argStr);
+    }
+
+    if (currentCommand != "") {
+        commandStrArr.push(currentCommand);
+        currentCommand = "";
+    }
+
+    var commandArr = commandStrArr.map(c => parseArgs(c.trim()));
+
+    return commandArr;
+}
+
 function cleanArg(arg) {
     if (arg.startsWith('--')) {
         return arg.replace('--', '');
@@ -89,13 +113,39 @@ function getSynthesis() {
     return utils.getYAMLText([cObj]); //Always pass command object as array
 }
 
-function mergeCommandObjects(commandObjects, command) {
-    if (commandObjects.constructor !== Array) { return {}; }
+function mergeScriptObjects(commandObjects, scriptObject) {
+    for (var i in scriptObject) {
+        var cmdObj = scriptObject[i];
+        // TODO
+        var cmdName = cmdObj[constants.yamlStrings.commandName];
+        if (!(cmdName in commandObjects)) { continue; }
+        // There are objects
+        var mObj = mergeCommandObjects(commandObjects[cmdName], cmdName);
+        var paramArr = cmdObj[constants.yamlStrings.parameterArray];
+        for (var i = 0; i < paramArr.length; i++) {
+            var param = paramArr[i];
+            var pName = param[constants.yamlStrings.parameterName];
+            if (pName in mObj) {
+                var newParam = mObj[pName];
+                if (constants.yamlStrings.defaultValue in param) {
+                    newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
+                }
+                paramArr[i] = newParam;
+            }
+        }
+    }
+
+    console.log(scriptObject);
+    return scriptObject;
+}
+
+function mergeCommandObjects(commandObjectsArr, command) {
+    if (commandObjectsArr.constructor !== Array) { return {}; }
     var mergedDict = {};
     // For each command
-    console.log(commandObjects);
-    for (var i = 0; i < commandObjects.length; i++) {
-        var cObj = commandObjects[i];
+    if (commandObjectsArr.length <= 1) { return mergedDict; }
+    for (var i = 0; i < commandObjectsArr.length; i++) {
+        var cObj = commandObjectsArr[i];
         if (cObj[constants.yamlStrings.commandName] !== command) { continue; }
         var paramArr = cObj[constants.yamlStrings.parameterArray];
         for (var j = 0; j < paramArr.length; j++) {
@@ -239,3 +289,5 @@ module.exports.parseArgs = parseArgs;
 module.exports.addCommandEntry = addCommandEntry;
 module.exports.getSynthesis = getSynthesis;
 module.exports.mergeCommandObjects = mergeCommandObjects;
+module.exports.parseScript = parseScript;
+module.exports.mergeScriptObjects = mergeScriptObjects;

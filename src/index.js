@@ -43,7 +43,6 @@ $(document).ready(() => {
 
 function addMenu() {
     const menu = defaultMenu(app, shell);
-    console.log(menu);
     menu.splice(1, 0, {
         label: 'File',
         submenu: [
