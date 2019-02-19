@@ -100,11 +100,13 @@ function renderScriptUI(scriptObject, scriptUI = null) {
 
     for (var i = 1; i < scriptObject.length; i++) {
         var linkDiv = document.createElement('div');
-        linkDiv.classList.add('text-center')
+        linkDiv.classList.add('text-center');
         var icon = document.createElement('i');
         icon.classList.add('fa');
         icon.classList.add('fa-link');
         linkDiv.appendChild(icon);
+        linkDiv.insertAdjacentHTML('beforeend', '<strong> pipe </strong>');
+        linkDiv.appendChild(icon.cloneNode(true));
         scriptDiv.appendChild(linkDiv);
 
         // command div

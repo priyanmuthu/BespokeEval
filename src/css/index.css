@@ -33,11 +33,6 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-user-select: none;
 }
 
-.fa {
-    width: 100%;
-    line-height: 1;
-}
-
 .panel-body{
     background-color: #282828;
 }
