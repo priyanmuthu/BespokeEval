@@ -226,12 +226,9 @@ function renderStringParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var paramEdit = document.createElement('input');
@@ -250,10 +247,6 @@ function renderStringParam(param) {
         return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
-
     return pDiv;
 }
 
@@ -270,12 +263,9 @@ function renderNumberParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -313,10 +303,6 @@ function renderNumberParam(param) {
         return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
-
     return pDiv;
 }
 
@@ -345,12 +331,9 @@ function renderTimeParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
     pDiv.insertAdjacentHTML('beforeend', '<br/>');
 
@@ -363,10 +346,6 @@ function renderTimeParam(param) {
     pDiv.appendChild(paramEdit);
 
     param[constants.yamlStrings.evaluate] = result[constants.yamlStrings.evaluate];
-
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
 
     return pDiv;
 }
@@ -423,12 +402,9 @@ function renderDropdownParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -466,10 +442,6 @@ function renderDropdownParam(param) {
         return dInput.value;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
-
     return pDiv;
 }
 
@@ -487,12 +459,9 @@ function renderFileDialog(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     //input div
@@ -576,10 +545,6 @@ function renderFileDialog(param) {
         return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
-
     return pDiv;
 }
 
@@ -597,12 +562,9 @@ function renderFolderDialog(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    var paramcheck = document.createElement('input');
-    paramcheck.type = 'checkbox'
-    paramcheck.checked = true;
-    paramcheck.classList.add('pull-right');
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(paramcheck);
+    paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     //input div
@@ -653,11 +615,24 @@ function renderFolderDialog(param) {
         return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return paramcheck.checked;
-    }
-
     return pDiv;
+}
+
+function createRightDiv(param){
+    var rightDiv = document.createElement('div');
+    rightDiv.classList.add('pull-right');
+    rightDiv.appendChild(createIncludeCheckbox(param));
+    return rightDiv;
+}
+
+function createIncludeCheckbox(param) {
+    var paramCheck = document.createElement('input');
+    paramCheck.type = 'checkbox'
+    paramCheck.checked = true;
+    param[constants.yamlStrings.isinclude] = function () {
+        return paramCheck.checked;
+    }
+    return paramCheck;
 }
 
 function createInfo(infoText) {
@@ -806,7 +781,7 @@ function getCommandString(command) {
 
 function runScript(script) {
     var scriptString = getScriptString(script);
-    require('./terminal.js').runCommand(scriptString);
+    // require('./terminal.js').runCommand(scriptString);
 }
 
 function runCommand(command) {
