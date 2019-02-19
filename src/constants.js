@@ -41,6 +41,11 @@ const cellTypeIcon = {
     markdown: 'glyphicon-font'
 }
 
+const fileViewSupport = [
+    'config',
+    'txt'
+]
+
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 module.exports = {
@@ -48,5 +53,6 @@ module.exports = {
     yamlTypes: yamlTypes,
     trackingPort: trackingPort,
     cellType: cellType,
-    cellTypeIcon: cellTypeIcon
+    cellTypeIcon: cellTypeIcon,
+    fileViewSupport: fileViewSupport
 };

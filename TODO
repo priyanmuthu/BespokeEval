@@ -10,6 +10,7 @@ Todo:
   ✔ Get extension from file bug @done(19-02-17 09:40)
   ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
   ☐ GUI edit - for modifications - menu down etc..
+  ☐ View file support
   ☐ Run / Show all
   ☐ Pipe commands
   ☐ Cell output

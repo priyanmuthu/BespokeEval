@@ -87,7 +87,10 @@ function renderScriptUI(scriptObject, scriptUI = null) {
     runButton.classList.add('pull-right');
     // runButton.innerText = "Run";
     runButton.style.minWidth = "40px";
-    runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" />');
+    var rIcon = document.createElement('i');
+    rIcon.classList.add('glyphicon');
+    rIcon.classList.add('glyphicon-play');
+    runButton.appendChild(rIcon);
     runButton.addEventListener("click", () => {
         runScript(scriptObject);
     });
@@ -506,21 +509,33 @@ function renderFileDialog(param) {
     }
     inputDiv.appendChild(paramEdit);
 
-    // File dialog
+    // Button group
     var fSpan = document.createElement('span');
     fSpan.classList.add('input-group-btn');
     inputDiv.appendChild(fSpan);
+
+    // For view file support
+    // var vButton = document.createElement('button');
+    // vButton.classList.add('btn');
+    // vButton.classList.add('btn-default');
+    // vButton.type = "submit";
+    // var vIcon = document.createElement('i');
+    // vIcon.classList.add('fa');
+    // vIcon.classList.add('fa-eye');
+    // vButton.disabled = true;
+    // vButton.appendChild(vIcon);
+    // fSpan.appendChild(vButton);
+
     var fButton = document.createElement('button');
     fButton.id = "File_Button_" + fileDialogCount;
     fButton.classList.add('btn');
     fButton.classList.add('btn-default');
     fButton.type = "submit";
-    fSpan.appendChild(fButton);
-
     var icon = document.createElement('i');
     icon.classList.add('glyphicon');
     icon.classList.add('glyphicon-folder-open');
     fButton.appendChild(icon);
+    fSpan.appendChild(fButton);
 
     var filters = [
         { name: 'All Files', extensions: ['*'] }
@@ -542,7 +557,19 @@ function renderFileDialog(param) {
                 paramEdit.value = files[0];
             }
         });
-    })
+    });
+
+    // For view file support
+    // paramEdit.addEventListener('input', () => {
+    //     if (utils.checkIfFilePath(paramEdit.value)) {
+    //         if(constants.fileViewSupport.includes(utils.getFileExtension(paramEdit.value))){
+    //             vButton.disabled = false;
+    //             // Proceed
+    //         }
+    //     }
+    // });
+
+    //TODO: view file support
 
     param['eval'] = function () {
         var valStr = paramEdit.value;

@@ -107,10 +107,10 @@ class commandUI extends UI {
         this.cellInput = null;
 
         var cellDiv = document.createElement('div');
-        cellDiv.classList.add('cellselect');
-        cellDiv.style.padding = '5px';
-
+        
         var inputDiv = document.createElement('div');
+        inputDiv.style.padding = '5px';
+        inputDiv.classList.add('cellselect');
         inputDiv.style.display = 'block';
         cellDiv.appendChild(inputDiv);
 

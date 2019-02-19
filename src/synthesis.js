@@ -191,7 +191,7 @@ function mergeCommandObjects(commandObjectsArr, command) {
                     newParam[constants.yamlStrings.parameterName] = pName;
                     newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.file;
                     // TODO: File inferences
-                    var extArr = pArr.map(p => getFileExtension(p[constants.yamlStrings.defaultValue]));
+                    var extArr = pArr.map(p => utils.getFileExtension(p[constants.yamlStrings.defaultValue]));
                     newParam[constants.yamlStrings.extensions] = [...new Set(extArr)];
                     resDict[pName] = newParam;
                     break;
@@ -215,11 +215,6 @@ function mergeCommandObjects(commandObjectsArr, command) {
     }
 
     return resDict;
-}
-
-function getFileExtension(filepath){
-    var re = /(?:\.([^.]+))?$/;
-    return re.exec(filepath)[1];
 }
 
 function getFrequentCommand() {
