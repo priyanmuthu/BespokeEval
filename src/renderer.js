@@ -105,8 +105,8 @@ function renderScriptUI(scriptObject, scriptUI = null) {
         icon.classList.add('fa');
         icon.classList.add('fa-link');
         linkDiv.appendChild(icon);
-        linkDiv.insertAdjacentHTML('beforeend', '<strong> pipe </strong>');
-        linkDiv.appendChild(icon.cloneNode(true));
+        // linkDiv.insertAdjacentHTML('beforeend', '<strong> pipe </strong>');
+        // linkDiv.appendChild(icon.cloneNode(true));
         scriptDiv.appendChild(linkDiv);
 
         // command div

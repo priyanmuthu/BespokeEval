@@ -6,8 +6,6 @@ class cell {
     constructor(deleteCell) {
         this.deleteCell = deleteCell;
         this.cDiv = document.createElement('div');
-        this.cDiv.style.padding = '10px';
-        this.cDiv.classList.add('cellselect');
         // this.cDiv.addEventListener('focusin', () => {
         //     console.log('focused');
         // });
@@ -109,6 +107,8 @@ class commandUI extends UI {
         this.cellInput = null;
 
         var cellDiv = document.createElement('div');
+        cellDiv.classList.add('cellselect');
+        cellDiv.style.padding = '5px';
 
         var inputDiv = document.createElement('div');
         inputDiv.style.display = 'block';
@@ -190,6 +190,11 @@ class commandUI extends UI {
         // Creating the GUI div
         var uiDiv = document.createElement('div');
         uiDiv.style.display = 'none';
+        uiDiv.style.borderStyle = 'solid';
+        uiDiv.style.borderWidth = '2px';
+        uiDiv.style.borderColor = '#404040';
+        uiDiv.style.borderRadius = '10px';
+        uiDiv.style.padding = '10px';
         cellDiv.appendChild(uiDiv);
 
         this.cellElement = cellDiv;
@@ -252,6 +257,16 @@ class commandUI extends UI {
         if (rawText !== null) {
             this.cellInput.value = rawText;
         }
+        this.uiDiv.style.display = 'none';
+        this.inputDiv.style.display = 'block';
+    }
+
+    toggleUIDiv() {
+        this.inputDiv.style.display = 'none';
+        this.uiDiv.style.display = 'block';
+    }
+
+    toggleInputDiv() {
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
     }
