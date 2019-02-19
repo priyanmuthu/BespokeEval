@@ -60,13 +60,13 @@ function createUI(yamlObj) {
     return mainDiv;
 }
 
-function renderCommandUI(command, commandUI = null) {
-    //Create a text for command
-    var commandUIDiv = document.createElement("div");
+function renderScriptUI(scriptObject, scriptUI = null) {
+    // Get all the command UI
+    var scriptDiv = document.createElement('div');
+    if (scriptObject.length == 0) { return scriptDiv; }
 
-    commandHeading = document.createElement('h1');
-    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
-
+    // Edit and run button
+    var buttonDiv = document.createElement('div');
     var editButton = document.createElement('button');
     editButton.classList.add('btn');
     editButton.classList.add('btn-default');
@@ -76,8 +76,8 @@ function renderCommandUI(command, commandUI = null) {
     editButton.style.marginRight = "10px";
     editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
     editButton.addEventListener("click", () => {
-        if (commandUI !== null) {
-            commandUI.showInput(getCommandString(command));
+        if (scriptUI !== null) {
+            scriptUI.showInput(getScriptString(scriptObject));
         }
     });
 
@@ -89,10 +89,38 @@ function renderCommandUI(command, commandUI = null) {
     runButton.style.minWidth = "40px";
     runButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-play" />');
     runButton.addEventListener("click", () => {
-        runCommand(command);
+        runScript(scriptObject);
     });
-    commandHeading.appendChild(runButton);
-    commandHeading.appendChild(editButton);
+    buttonDiv.appendChild(runButton);
+    buttonDiv.appendChild(editButton);
+    scriptDiv.appendChild(buttonDiv);
+
+    //for each command
+    scriptDiv.appendChild(renderCommandUI(scriptObject[0]));
+
+    for (var i = 1; i < scriptObject.length; i++) {
+        var linkDiv = document.createElement('div');
+        linkDiv.classList.add('text-center')
+        var icon = document.createElement('i');
+        icon.classList.add('fa');
+        icon.classList.add('fa-link');
+        linkDiv.appendChild(icon);
+        scriptDiv.appendChild(linkDiv);
+
+        // command div
+        scriptDiv.appendChild(renderCommandUI(scriptObject[i]));
+    }
+
+    return scriptDiv;
+}
+
+function renderCommandUI(command, commandUI = null) {
+    console.log(command);
+    //Create a text for command
+    var commandUIDiv = document.createElement("div");
+
+    commandHeading = document.createElement('h3');
+    commandHeading.innerHTML = commandHeading.innerHTML + "<b>Command:</b> " + command[constants.yamlStrings.commandName];
     commandUIDiv.appendChild(commandHeading);
 
     var mainParamDiv = document.createElement('div');
@@ -698,6 +726,14 @@ function pad(num, maxVal) {
     return s;
 }
 
+function getScriptString(scriptObj) {
+    var scriptStringArr = [];
+    for (var i in scriptObj) {
+        scriptStringArr.push(getCommandString(scriptObj[i]));
+    }
+    return scriptStringArr.join(" | ");
+}
+
 function getCommandString(command) {
     //parse the parameters and run the command
     var commandString = "";
@@ -739,6 +775,11 @@ function getCommandString(command) {
     return commandString;
 }
 
+function runScript(script) {
+    var scriptString = getScriptString(script);
+    require('./terminal.js').runCommand(scriptString);
+}
+
 function runCommand(command) {
     var commandString = getCommandString(command);
     require('./terminal.js').runCommand(commandString);
@@ -748,5 +789,6 @@ module.exports = {
     renderUI: renderUI,
     createUI: createUI,
     renderCommandUI: renderCommandUI,
-    renderMarkdownUI: renderMarkdownUI
+    renderMarkdownUI: renderMarkdownUI,
+    renderScriptUI: renderScriptUI
 };
