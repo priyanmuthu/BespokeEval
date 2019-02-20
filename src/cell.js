@@ -232,27 +232,34 @@ class commandUI extends UI {
         // Generate GUI
         if (this.rawText !== rawText) {
             this.rawText = rawText;
-            var sObj = synthesis.parseScript(rawText);
-            sObj.forEach((c, i) => {
-                var key = c[constants.yamlStrings.commandName];
-                if (key in commandUI.commandObjs) {
-                    commandUI.commandObjs[key].push(c);
-                }
-                else {
-                    commandUI.commandObjs[key] = [c];
-                }
-            });
-
-            var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs,
-                synthesis.parseScript(rawText));
-            this.renderObj = mergedObject;
-            var guiDiv = renderer.renderScriptUI(mergedObject, this);
-
-            this.uiDiv.innerHTML = '';
-            this.uiDiv.appendChild(guiDiv);
+            this.addScript(rawText);
+            this.renderScript(rawText);
         }
         this.inputDiv.style.display = 'none';
         this.uiDiv.style.display = 'block';
+    }
+
+    addScript(scriptText) {
+        var sObj = synthesis.parseScript(scriptText);
+        sObj.forEach((c, i) => {
+            var key = c[constants.yamlStrings.commandName];
+            if (key in commandUI.commandObjs) {
+                commandUI.commandObjs[key].push(c);
+            }
+            else {
+                commandUI.commandObjs[key] = [c];
+            }
+        });
+    }
+
+    renderScript(scriptText) {
+        var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs,
+            synthesis.parseScript(scriptText));
+        this.renderObj = mergedObject;
+        var guiDiv = renderer.renderScriptUI(mergedObject, this);
+
+        this.uiDiv.innerHTML = '';
+        this.uiDiv.appendChild(guiDiv);
     }
 
     showInput(rawText = null) {
@@ -280,6 +287,7 @@ class commandUI extends UI {
     runRaw(rawText) {
         if (rawText === "") { return; }
         require('./terminal.js').runCommand(rawText);
+        this.addScript(rawText);
     }
 
     selectionChange(cellType, rawText) {
@@ -290,7 +298,7 @@ class commandUI extends UI {
     getState() {
         var state = {};
         state[constants.yamlStrings.rawText] = this.cellInput.value;
-        // state[constants.yamlStrings.commandObjects] = commandUI.commandObjs;
+        state[constants.yamlStrings.commandObjects] = commandUI.commandObjs;
         state[constants.yamlStrings.renderObject] = this.renderObj;
         state[constants.yamlStrings.cellType] = this.getType();
         return state;
@@ -299,11 +307,10 @@ class commandUI extends UI {
 
     loadState(state) {
         this.rawText = '';//;
-        // commandUI.commandObjs = state[constants.yamlStrings.commandObjects];
+        commandUI.commandObjs = state[constants.yamlStrings.commandObjects];
         this.cellInput.value = state[constants.yamlStrings.rawText];
         this.renderObj = state[constants.yamlStrings.renderObject];
     }
-
 }
 
 

@@ -92,6 +92,7 @@ function renderScriptUI(scriptObject, scriptUI = null) {
     rIcon.classList.add('glyphicon-play');
     runButton.appendChild(rIcon);
     runButton.addEventListener("click", () => {
+        scriptUI.addScript(getScriptString(scriptObject));
         runScript(scriptObject);
     });
     buttonDiv.appendChild(runButton);
