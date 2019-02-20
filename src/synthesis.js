@@ -1,5 +1,5 @@
 const yargsParser = require('yargs-parser');
-const parserConfig = { 'configuration': { 'short-option-groups': false, 'camel-case-expansion': false } };
+const parserConfig = { 'configuration': { 'short-option-groups': false, 'camel-case-expansion': false, 'flatten-duplicate-arrays': false } };
 const constants = require('./constants.js');
 const utils = require('./utils.js');
 var stringArgv = require("string-argv");
@@ -39,6 +39,7 @@ function parseArgs(commandStr) {
             else if (cleanArg(arg) in cObj) {
                 // flag in object
                 cYAMLObj[constants.yamlStrings.parameterArray].push(getParamObject(arg, cObj[cleanArg(arg)]));
+                delete cObj[cleanArg(arg)];
             }
         }
         return cYAMLObj;
@@ -189,6 +190,16 @@ function mergeCommandObjects(commandObjectsArr, command) {
                     }
                     resDict[pName] = newParam;
                     break;
+                case constants.yamlTypes.array:
+                    //convert to dropdown
+                    var newParam = {};
+                    newParam[constants.yamlStrings.parameterName] = pName;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.array;
+                    var valArr = pArr.map(p => p[constants.yamlStrings.defaultValue]);
+                    valArr = [...new Set(valArr)];
+                    newParam[constants.yamlStrings.value] = valArr;
+                    resDict[pName] = newParam;
+                    break;
                 default:
                 // dont do anything. eg: time
             }
@@ -226,11 +237,19 @@ function getParamObject(key, val) {
     pObj[constants.yamlStrings.parameterName] = key;
     pObj[constants.yamlStrings.parameterType] = getType(val);
     pObj[constants.yamlStrings.defaultValue] = val;
+    if(val.constructor === Array){
+        pObj[constants.yamlStrings.defaultValue] = val.flat(1).join(', ');
+    }
     pObj[constants.yamlStrings.required] = true;
     return pObj;
 }
 
 function getType(value) {
+
+    //finding array values
+    if (value.constructor === Array) {
+        return constants.yamlTypes.array;
+    }
 
     // const filePattern = /^(\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{2,})$/;
     const filePattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)*([A-z0-9-_]+\.[a-zA-Z0-9]{2,})$/;

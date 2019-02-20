@@ -121,7 +121,6 @@ function renderScriptUI(scriptObject, scriptUI = null) {
 }
 
 function renderCommandUI(command, commandUI = null) {
-    console.log(command);
     //Create a text for command
     var commandUIDiv = document.createElement("div");
 
@@ -189,6 +188,9 @@ function renderParamUI(mainParamDiv, params) {
                 break;
             case constants.yamlTypes.folder:
                 pDiv = renderFolderDialog(param);
+                break;
+            case constants.yamlTypes.array:
+                pDiv = renderArrayParam(param);
                 break;
             default:
                 pDiv = renderStringParam(param);
@@ -287,7 +289,7 @@ function renderNumberParam(param) {
         rangeSlider.max = param[constants.yamlStrings.maxValue];
         rangeSlider.min = param[constants.yamlStrings.minValue];
         rangeSlider.style.padding = '10px';
-        if(constants.yamlStrings.step in param){
+        if (constants.yamlStrings.step in param) {
             rangeSlider.step = param[constants.yamlStrings.step];
         }
         if (constants.yamlStrings.defaultValue in param) {
@@ -302,7 +304,7 @@ function renderNumberParam(param) {
     if (constants.yamlStrings.defaultValue in param) {
         paramEdit.value = param[constants.yamlStrings.defaultValue];
     }
-    if(constants.yamlStrings.step in param){
+    if (constants.yamlStrings.step in param) {
         paramEdit.step = param[constants.yamlStrings.step];
     }
     paramEdit.placeholder = param[constants.yamlStrings.parameterName];
@@ -451,6 +453,65 @@ function renderDropdownParam(param) {
 
     param[constants.yamlStrings.evaluate] = function () {
         return dInput.value;
+    }
+
+    return pDiv;
+}
+
+function renderArrayParam(param) {
+    //Render the param UI
+
+    var pDiv = document.createElement('div');
+    pDiv.style.color = "#000000";
+
+    // label
+    var paramName = document.createElement('label');
+    paramName.style.color = "#ffffff";
+    paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+
+    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(paramName);
+
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('form-group');
+    inputDiv.classList.add('has-feedback');
+    pDiv.appendChild(inputDiv);
+
+    //input
+    var dInput = document.createElement('input');
+    dInput.id = "dropdown_" + dropdownCount;
+    dropdownCount += 1;
+    dInput.type = "text";
+    dInput.classList.add('form-control');
+    inputDiv.appendChild(dInput);
+
+    var icon = document.createElement('span');
+    icon.classList.add('glyphicon');
+    icon.classList.add('glyphicon-chevron-down');
+    icon.classList.add('form-control-feedback');
+    inputDiv.appendChild(icon);
+
+    var valArray = param[constants.yamlStrings.value];
+    console.log(valArray);
+    var dropdownAP = new Awesomplete(dInput, { list: valArray, minChars: 0 });
+    dropdownAP.evaluate();
+    dropdownAP.close();
+    dInput.addEventListener('click', () => {
+        dropdownAP.open();
+    });
+
+    if (constants.yamlStrings.defaultValue in param) {
+        dInput.value = param[constants.yamlStrings.defaultValue];
+    }
+
+    param[constants.yamlStrings.evaluate] = function () {
+        var valStr = dInput.value;
+        return valStr.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
     }
 
     return pDiv;
@@ -661,8 +722,7 @@ function createTypeDropdown(param) {
     var uList = document.createElement('ul');
     uList.classList.add('dropdown-menu');
     dropdownDiv.appendChild(uList);
-    for(var key in constants.paramTypes){
-        console.log(key);
+    for (var key in constants.paramTypes) {
         var li = document.createElement('li');
         var link = document.createElement('a');
         link.innerText = key;
@@ -803,6 +863,7 @@ function getCommandString(command) {
     var paramList = [];
     for (var i = 0; i < paramCount; i++) {
         var param = params[i];
+        
         if (constants.yamlStrings.markdown in param) {
             continue;
         }
@@ -815,8 +876,16 @@ function getCommandString(command) {
                     paramList.push(param[constants.yamlStrings.parameterName]);
                 }
                 break;
+            case constants.yamlTypes.array:
+                var valArr = param[constants.yamlStrings.evaluate]();
+                for (var v = 0; v < valArr.length; v++) {
+                    if (param[constants.yamlStrings.parameterName] !== "") {
+                        paramList.push(param[constants.yamlStrings.parameterName]);
+                    }
+                    paramList.push(valArr[v]);
+                }
+                break;
             default:
-                var paramElements = [];
                 if (param[constants.yamlStrings.parameterName] !== "") {
                     paramList.push(param[constants.yamlStrings.parameterName]);
                 }

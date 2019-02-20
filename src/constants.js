@@ -29,7 +29,9 @@ const yamlTypes = {
     'dropdown': 'dropdown',
     'file': 'file',
     'folder': 'folder',
-    'number': 'number'
+    'number': 'number',
+    'array': 'array',
+    'arrayFiles': 'arrayFiles'
 };
 
 const paramTypes = {
