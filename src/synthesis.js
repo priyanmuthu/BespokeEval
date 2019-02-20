@@ -115,7 +115,7 @@ function mergeCommandObjects(commandObjectsArr, command) {
     if (commandObjectsArr.constructor !== Array) { return {}; }
     var mergedDict = {};
     // For each command
-    if (commandObjectsArr.length <= 1) { return mergedDict; }
+    // if (commandObjectsArr.length <= 1) { return mergedDict; }
     for (var i = 0; i < commandObjectsArr.length; i++) {
         var cObj = commandObjectsArr[i];
         if (cObj[constants.yamlStrings.commandName] !== command) { continue; }
@@ -173,14 +173,19 @@ function mergeCommandObjects(commandObjectsArr, command) {
                     newParam[constants.yamlStrings.parameterName] = pName;
                     newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.number;
                     var numArr = pArr.map(p => Number(p[constants.yamlStrings.defaultValue]));
-                    newParam[constants.yamlStrings.maxValue] = Math.max.apply(Math, numArr);
-                    newParam[constants.yamlStrings.minValue] = Math.min.apply(Math, numArr);
+                    var maxVal = Math.max.apply(Math, numArr);
+                    var minVal = Math.min.apply(Math, numArr);
+                    if (maxVal !== minVal) {
+                        newParam[constants.yamlStrings.maxValue] = maxVal;
+                        newParam[constants.yamlStrings.minValue] = minVal;
+                    }
+                    console.log('herE:', numArr);
                     // For floating point numbers
                     if (numArr.some((n) => {
-                        return n%1 === 0;
+                        return n % 1 !== 0;
                     })) {
                         var maxPrec = Math.max.apply(Math, numArr.map(n => utils.getPrecision(n)));
-                        newParam[constants.yamlStrings.step] = Math.pow(10, -1*maxPrec);
+                        newParam[constants.yamlStrings.step] = Math.pow(10, -1 * maxPrec);
                     }
                     resDict[pName] = newParam;
                     break;
