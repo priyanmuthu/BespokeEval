@@ -97,7 +97,9 @@ class commandUI extends UI {
 
     constructor(cell) {
         super(cell);
-        this.commandObjs = {};
+        if (commandUI.commandObjs === undefined) {
+            commandUI.commandObjs = {};
+        }
         this.rawText = "";
         this.renderObj = null;
         // initialize cell input
@@ -107,7 +109,7 @@ class commandUI extends UI {
         this.cellInput = null;
 
         var cellDiv = document.createElement('div');
-        
+
         var inputDiv = document.createElement('div');
         inputDiv.style.padding = '5px';
         inputDiv.classList.add('cellselect');
@@ -233,15 +235,15 @@ class commandUI extends UI {
             var sObj = synthesis.parseScript(rawText);
             sObj.forEach((c, i) => {
                 var key = c[constants.yamlStrings.commandName];
-                if (key in this.commandObjs) {
-                    this.commandObjs[key].push(c);
+                if (key in commandUI.commandObjs) {
+                    commandUI.commandObjs[key].push(c);
                 }
                 else {
-                    this.commandObjs[key] = [c];
+                    commandUI.commandObjs[key] = [c];
                 }
             });
 
-            var mergedObject = synthesis.mergeScriptObjects(this.commandObjs,
+            var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs,
                 synthesis.parseScript(rawText));
             this.renderObj = mergedObject;
             var guiDiv = renderer.renderScriptUI(mergedObject, this);
@@ -288,7 +290,7 @@ class commandUI extends UI {
     getState() {
         var state = {};
         state[constants.yamlStrings.rawText] = this.cellInput.value;
-        state[constants.yamlStrings.commandObjects] = this.commandObjs;
+        // state[constants.yamlStrings.commandObjects] = commandUI.commandObjs;
         state[constants.yamlStrings.renderObject] = this.renderObj;
         state[constants.yamlStrings.cellType] = this.getType();
         return state;
@@ -297,7 +299,7 @@ class commandUI extends UI {
 
     loadState(state) {
         this.rawText = '';//;
-        this.commandObjs = state[constants.yamlStrings.commandObjects];
+        // commandUI.commandObjs = state[constants.yamlStrings.commandObjects];
         this.cellInput.value = state[constants.yamlStrings.rawText];
         this.renderObj = state[constants.yamlStrings.renderObject];
     }

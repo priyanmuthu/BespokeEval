@@ -4,15 +4,6 @@ const constants = require('./constants.js');
 const utils = require('./utils.js');
 var stringArgv = require("string-argv");
 
-var commandObjs = [];
-
-function addCommandEntry(commandStr) {
-    var cObj = parseArgs(commandStr);
-    if (cObj != undefined || cObj != null) {
-        commandObjs.push(cObj);
-    }
-}
-
 function parseArgs(commandStr) {
     try {
         var cObj = yargsParser(commandStr, parserConfig);
@@ -92,25 +83,6 @@ function cleanArg(arg) {
         return arg.replace('-', '');
     }
     return arg;
-}
-
-function getSynthesis() {
-    // get all object keys
-    // var fCommand = getFrequentCommand();
-    // var filteredObjs = commandObjs.filter(obj => {
-    //     return obj[constants.yamlStrings.commandName] === fCommand
-    // });
-    // console.log(filteredObjs);
-    // var allKeys = [];
-    // for (var i = 0; i < filteredObjs.length; i++) {
-    //     var curKeys = filteredObjs[i][constants.yamlStrings.parameterArray].map(p => p[constants.yamlStrings.parameterName]);
-    //     allKeys = [...new Set([...allKeys, ...curKeys])];
-    // }
-    // console.log(allKeys);
-
-    // for each key synthesize
-    var cObj = commandObjs[commandObjs.length - 1];
-    return utils.getYAMLText([cObj]); //Always pass command object as array
 }
 
 function mergeScriptObjects(commandObjects, scriptObject) {
@@ -238,15 +210,6 @@ function getFrequentCommand() {
 }
 
 function getParamObject(key, val) {
-    var type = getType(val);
-    switch (type) {
-        default:
-            return getStringParamObject(key, val);
-            break;
-    }
-}
-
-function getStringParamObject(key, val) {
     var pObj = {};
     pObj[constants.yamlStrings.parameterName] = key;
     pObj[constants.yamlStrings.parameterType] = getType(val);
@@ -281,8 +244,6 @@ function getType(value) {
 }
 
 module.exports.parseArgs = parseArgs;
-module.exports.addCommandEntry = addCommandEntry;
-module.exports.getSynthesis = getSynthesis;
 module.exports.mergeCommandObjects = mergeCommandObjects;
 module.exports.parseScript = parseScript;
 module.exports.mergeScriptObjects = mergeScriptObjects;
