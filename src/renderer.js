@@ -226,7 +226,7 @@ function renderStringParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
@@ -263,7 +263,7 @@ function renderNumberParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
@@ -331,7 +331,7 @@ function renderTimeParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
@@ -402,7 +402,7 @@ function renderDropdownParam(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
@@ -459,7 +459,7 @@ function renderFileDialog(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-    
+
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
@@ -618,21 +618,61 @@ function renderFolderDialog(param) {
     return pDiv;
 }
 
-function createRightDiv(param){
+function createRightDiv(param) {
     var rightDiv = document.createElement('div');
     rightDiv.classList.add('pull-right');
+    // rightDiv.style.cssFloat = 'left';
+    // rightDiv.appendChild(createTypeDropdown(param));
     rightDiv.appendChild(createIncludeCheckbox(param));
     return rightDiv;
 }
 
+function createTypeDropdown(param) {
+    var dropdownDiv = document.createElement('div');
+    dropdownDiv.classList.add('dropdown');
+    dropdownDiv.style.cssFloat = 'left';
+    dropdownDiv.style.color = '#000000'
+    dropdownDiv.style.marginRight = '20px';
+    var ddButton = document.createElement('span');
+    // ddButton.classList.add('btn');
+    // ddButton.classList.add('btn-default');
+    ddButton.classList.add('dropdown-toggle');
+    ddButton.classList.add('fa');
+    ddButton.classList.add('fa-cogs');
+    ddButton.style.color = '#FFFFFF';
+    // ddButton.type = 'button';
+    ddButton.setAttribute('data-toggle', 'dropdown');
+    // ddSpan = document.createElement('span');
+    // ddSpan.classList.add('caret');
+    // ddButton.appendChild(ddSpan);
+    dropdownDiv.appendChild(ddButton);
+
+    var uList = document.createElement('ul');
+    uList.classList.add('dropdown-menu');
+    dropdownDiv.appendChild(uList);
+    for(var key in constants.paramTypes){
+        console.log(key);
+        var li = document.createElement('li');
+        var link = document.createElement('a');
+        link.innerText = key;
+        link.href = '#';
+        li.appendChild(link);
+        uList.appendChild(li);
+    }
+    return dropdownDiv;
+}
+
 function createIncludeCheckbox(param) {
+    var paramCheckDiv = document.createElement('div');
+    paramCheckDiv.style.cssFloat = 'left';
     var paramCheck = document.createElement('input');
     paramCheck.type = 'checkbox'
     paramCheck.checked = true;
     param[constants.yamlStrings.isinclude] = function () {
         return paramCheck.checked;
     }
-    return paramCheck;
+    paramCheckDiv.appendChild(paramCheck);
+    return paramCheckDiv;
 }
 
 function createInfo(infoText) {

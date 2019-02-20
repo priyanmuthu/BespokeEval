@@ -31,6 +31,16 @@ const yamlTypes = {
     'number': 'number'
 };
 
+const paramTypes = {
+    'string': 'string',
+    'boolean': 'boolean',
+    'time': 'time',
+    'dropdown': 'dropdown',
+    'file': 'file',
+    'folder': 'folder',
+    'number': 'number'
+};
+
 const cellType = {
     command: 0,
     markdown: 1
@@ -54,5 +64,6 @@ module.exports = {
     trackingPort: trackingPort,
     cellType: cellType,
     cellTypeIcon: cellTypeIcon,
-    fileViewSupport: fileViewSupport
+    fileViewSupport: fileViewSupport,
+    paramTypes: paramTypes
 };

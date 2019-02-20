@@ -243,7 +243,7 @@ class commandUI extends UI {
 
             var mergedObject = synthesis.mergeScriptObjects(this.commandObjs,
                 synthesis.parseScript(rawText));
-
+            this.renderObj = mergedObject;
             var guiDiv = renderer.renderScriptUI(mergedObject, this);
 
             this.uiDiv.innerHTML = '';
