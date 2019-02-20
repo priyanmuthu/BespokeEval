@@ -175,10 +175,17 @@ function mergeCommandObjects(commandObjectsArr, command) {
                     var numArr = pArr.map(p => Number(p[constants.yamlStrings.defaultValue]));
                     newParam[constants.yamlStrings.maxValue] = Math.max.apply(Math, numArr);
                     newParam[constants.yamlStrings.minValue] = Math.min.apply(Math, numArr);
+                    // For floating point numbers
+                    if (numArr.some((n) => {
+                        return n%1 === 0;
+                    })) {
+                        var maxPrec = Math.max.apply(Math, numArr.map(n => utils.getPrecision(n)));
+                        newParam[constants.yamlStrings.step] = Math.pow(10, -1*maxPrec);
+                    }
                     resDict[pName] = newParam;
                     break;
                 default:
-                    // dont do anything. eg: time
+                // dont do anything. eg: time
             }
         }
         else {
@@ -225,6 +232,9 @@ function getType(value) {
     const folderPattern = /^([.]{0,2}\/)*([A-z0-9-_+]+\/)+([A-z0-9-_]+)*$/;
     const timerPattern = /^([0-9]{2}:){2}([0-9]{2})$/;
     const numberPattern = /^([0-9]*).?([0-9]+)$/;
+    if (numberPattern.test(value)) {
+        return constants.yamlTypes.number;
+    }
     if (filePattern.test(value)) {
         return constants.yamlTypes.file;
     }
@@ -233,9 +243,6 @@ function getType(value) {
     }
     if (timerPattern.test(value)) {
         return constants.yamlTypes.time;
-    }
-    if (numberPattern.test(value)) {
-        return constants.yamlTypes.number;
     }
     if (typeof value == typeof true) {
         return constants.yamlTypes.boolean;

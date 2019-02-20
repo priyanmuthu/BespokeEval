@@ -17,7 +17,8 @@ const yamlStrings = {
     'rawText': 'rawText',
     'commandObjects': 'commandObjects',
     'renderObject': 'renderObject',
-    'cellType': 'cellType'
+    'cellType': 'cellType',
+    'step': 'step'
 };
 
 const yamlTypes = {

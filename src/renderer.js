@@ -276,6 +276,7 @@ function renderNumberParam(param) {
     var paramEdit = document.createElement('input');
     paramEdit.classList.add('form-control');
     paramEdit.type = 'number';
+    paramEdit.step = 'any';
     paramEdit.id = 'input_param_' + numberCount;
 
     if (constants.yamlStrings.maxValue in param
@@ -286,6 +287,12 @@ function renderNumberParam(param) {
         rangeSlider.max = param[constants.yamlStrings.maxValue];
         rangeSlider.min = param[constants.yamlStrings.minValue];
         rangeSlider.style.padding = '10px';
+        if(constants.yamlStrings.step in param){
+            rangeSlider.step = param[constants.yamlStrings.step];
+        }
+        if (constants.yamlStrings.defaultValue in param) {
+            rangeSlider.value = param[constants.yamlStrings.defaultValue];
+        }
         rangeSlider.addEventListener('change', () => {
             paramEdit.value = rangeSlider.value;
         });
@@ -294,6 +301,9 @@ function renderNumberParam(param) {
 
     if (constants.yamlStrings.defaultValue in param) {
         paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    if(constants.yamlStrings.step in param){
+        paramEdit.step = param[constants.yamlStrings.step];
     }
     paramEdit.placeholder = param[constants.yamlStrings.parameterName];
     inputDiv.appendChild(paramEdit);
@@ -822,7 +832,7 @@ function getCommandString(command) {
 
 function runScript(script) {
     var scriptString = getScriptString(script);
-    // require('./terminal.js').runCommand(scriptString);
+    require('./terminal.js').runCommand(scriptString);
 }
 
 function runCommand(command) {

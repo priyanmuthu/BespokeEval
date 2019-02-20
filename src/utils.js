@@ -34,8 +34,17 @@ function getFileExtension(filepath) {
     return re.exec(filepath)[1];
 }
 
+function getPrecision (num) {
+    var numAsStr = num.toFixed(10); //number can be presented in exponential format, avoid it
+    numAsStr = numAsStr.replace(/0+$/g, '');
+  
+    var precision = String(numAsStr).replace('.', '').length - num.toFixed().length;
+    return precision;  
+  }
+
 module.exports.readFileText = readFileText;
 module.exports.getYAMLObject = getYAMLObject;
 module.exports.getYAMLText = getYAMLText;
 module.exports.getFileExtension = getFileExtension;
 module.exports.checkIfFilePath = checkIfFilePath;
+module.exports.getPrecision = getPrecision;
