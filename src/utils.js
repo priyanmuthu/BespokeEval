@@ -2,15 +2,15 @@ const fs = require('fs')
 const path = require('path');
 const yaml = require('js-yaml');
 function readFileText(path) {
-    var yamlText = null;
+    var fileText = null;
     try {
-        yamlText = fs.readFileSync(path).toString();
+        fileText = fs.readFileSync(path).toString();
     }
     catch (err) {
         console.log(err);
     }
 
-    return yamlText;
+    return fileText;
 }
 
 function getYAMLObject(text) {

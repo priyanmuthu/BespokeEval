@@ -7,6 +7,8 @@ let dropdownCount = 0;
 let fileDialogCount = 0;
 let folderDialogCount = 0;
 let numberCount = 0;
+// This is required
+let modalCount = 0;
 
 const utils = require('./utils.js');
 const constants = require('./constants.js');
@@ -16,7 +18,8 @@ let mdConverter = new showdown.Converter();
 const Awesomplete = require('awesomplete');
 const { dialog } = require('electron').remote;
 const path = require('path');
-
+const fs = require('fs');
+const editor = require('./editor.js');
 
 function renderUI() {
     var editorText = window.editor.getValue();
@@ -556,16 +559,18 @@ function renderFileDialog(param) {
     inputDiv.appendChild(fSpan);
 
     // For view file support
-    // var vButton = document.createElement('button');
-    // vButton.classList.add('btn');
-    // vButton.classList.add('btn-default');
-    // vButton.type = "submit";
-    // var vIcon = document.createElement('i');
-    // vIcon.classList.add('fa');
-    // vIcon.classList.add('fa-eye');
+    var vButton = document.createElement('button');
+    vButton.classList.add('btn');
+    vButton.classList.add('btn-default');
+    vButton.type = "submit";
+    var vIcon = document.createElement('i');
+    vIcon.classList.add('fa');
+    vIcon.classList.add('fa-eye');
     // vButton.disabled = true;
-    // vButton.appendChild(vIcon);
-    // fSpan.appendChild(vButton);
+    vButton.appendChild(vIcon);
+    // vButton.setAttribute('data-toggle', 'modal');
+    // vButton.setAttribute('data-target', '#' + modalID);
+    fSpan.appendChild(vButton);
 
     var fButton = document.createElement('button');
     fButton.id = "File_Button_" + fileDialogCount;
@@ -577,6 +582,9 @@ function renderFileDialog(param) {
     icon.classList.add('glyphicon-folder-open');
     fButton.appendChild(icon);
     fSpan.appendChild(fButton);
+
+    var modalHolderDiv = document.createElement('div');
+    pDiv.appendChild(modalHolderDiv);
 
     var filters = [
         { name: 'All Files', extensions: ['*'] }
@@ -600,6 +608,9 @@ function renderFileDialog(param) {
         });
     });
 
+    vButton.addEventListener('click', () => {
+        viewFile(paramEdit.value, modalHolderDiv)
+    });
     // For view file support
     // paramEdit.addEventListener('input', () => {
     //     if (utils.checkIfFilePath(paramEdit.value)) {
@@ -618,6 +629,74 @@ function renderFileDialog(param) {
     }
 
     return pDiv;
+}
+
+function viewFile(filePath, modalHolderDiv) {
+    var fullPath = path.resolve(filePath);
+    if (!fs.existsSync(fullPath)) {
+        console.log(fullPath);
+        alert("file doesn't exists");
+        return;
+    }
+    var ext = utils.getFileExtension(fullPath);
+    if (ext in constants.textFiles) {
+        showTextFiles(fullPath, modalHolderDiv, constants.textFiles[ext]);
+    }
+}
+
+function showTextFiles(filePath, holderDiv, fileLang) {
+    var modalRes = createModal();
+    holderDiv.innerHTML = '';
+    holderDiv.appendChild(modalRes.modalDiv);
+    var modalBodyDiv = modalRes.modalBodyDiv;
+    var editorDiv = document.createElement('div');
+    editorDiv.style.width = '100%';
+    editorDiv.style.minHeight = '400px';
+    modalBodyDiv.appendChild(editorDiv);
+    var didContentChange = false;
+    onContentChange = function () {
+        didContentChange = true;
+    }
+    var editorObj = editor.InitializeEditor(editorDiv, filePath, fileLang, onContentChange);
+
+    $('#' + modalRes.modalID).on('hide.bs.modal', () => {
+        console.log('hide called', didContentChange);
+        // if content changed: ask to save
+    });
+
+    $('#' + modalRes.modalID).modal('show');
+}
+
+function createModal() {
+    var modalID = 'fileModal' + modalCount;
+    modalCount += 1;
+    var modalDiv = document.createElement('div');
+    // modalDiv.style.width = '80%';
+    modalDiv.id = modalID;
+    modalDiv.classList.add('modal');
+    modalDiv.classList.add('fade');
+    modalDiv.setAttribute('role', 'dialog');
+    var modalDialogDiv = document.createElement('div');
+    modalDialogDiv.classList.add('modal-dialog');
+    modalDialogDiv.classList.add('modal-lg');
+    modalDialogDiv.classList.add('modal-dialog-centered');
+    modalDialogDiv.setAttribute('role', 'document');
+    modalDiv.appendChild(modalDialogDiv);
+    var modalContentDiv = document.createElement('div');
+    modalContentDiv.classList.add('modal-content');
+    modalDialogDiv.appendChild(modalContentDiv);
+    modalContentDiv.insertAdjacentHTML('beforeend',
+        `
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    `);
+
+    var modalBodyDiv = document.createElement('div');
+    modalContentDiv.appendChild(modalBodyDiv);
+    modalBodyDiv.innerHTML = '';
+
+    return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalID: modalID };
 }
 
 function renderFolderDialog(param) {
@@ -863,7 +942,7 @@ function getCommandString(command) {
     var paramList = [];
     for (var i = 0; i < paramCount; i++) {
         var param = params[i];
-        
+
         if (constants.yamlStrings.markdown in param) {
             continue;
         }

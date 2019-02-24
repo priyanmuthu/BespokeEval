@@ -54,10 +54,15 @@ const cellTypeIcon = {
     markdown: 'glyphicon-font'
 }
 
-const fileViewSupport = [
-    'config',
-    'txt'
-]
+const textFiles = {
+    'json': 'json',
+    'config': 'text',
+    'txt': 'text',
+    'yaml': 'yaml',
+    'md': 'markdown',
+    'js': 'javascript',
+    'xml': 'xml'
+};
 
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
@@ -67,6 +72,6 @@ module.exports = {
     trackingPort: trackingPort,
     cellType: cellType,
     cellTypeIcon: cellTypeIcon,
-    fileViewSupport: fileViewSupport,
+    textFiles: textFiles,
     paramTypes: paramTypes
 };
