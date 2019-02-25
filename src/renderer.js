@@ -635,12 +635,15 @@ function viewFile(filePath, modalHolderDiv) {
     var fullPath = path.resolve(filePath);
     if (!fs.existsSync(fullPath)) {
         console.log(fullPath);
-        alert("file doesn't exists");
+        alert("File doesn't exists");
         return;
     }
     var ext = utils.getFileExtension(fullPath);
     if (ext in constants.textFiles) {
         showTextFiles(fullPath, modalHolderDiv, constants.textFiles[ext]);
+    }
+    else {
+        alert('File type not supported');
     }
 }
 
