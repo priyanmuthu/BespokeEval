@@ -23,6 +23,7 @@ function InitializeEditor(editorDiv, filePath, language, contentChange) {
     });
     // workaround monaco-css not understanding the environment
     var editor;
+    var getText;
     self.module = undefined;
     amdRequire(['vs/editor/editor.main'], function() {
         editor = monaco.editor.create(editorDiv, {
@@ -82,7 +83,10 @@ function InitializeEditor(editorDiv, filePath, language, contentChange) {
         // });
         
     });
-    return editor;
+    getText = function(){
+        return editor.getValue();
+    }
+    return {getText: getText};
 }
 
 module.exports.InitializeEditor = InitializeEditor;

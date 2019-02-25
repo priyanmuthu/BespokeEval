@@ -13,6 +13,10 @@ function readFileText(path) {
     return fileText;
 }
 
+function writeTextToFile(filePath, fileText) {
+    fs.writeFileSync(filePath, fileText);
+}
+
 function getYAMLObject(text) {
     return yaml.load(text);
 }
@@ -34,13 +38,13 @@ function getFileExtension(filepath) {
     return re.exec(filepath)[1];
 }
 
-function getPrecision (num) {
+function getPrecision(num) {
     var numAsStr = num.toFixed(10); //number can be presented in exponential format, avoid it
     numAsStr = numAsStr.replace(/0+$/g, '');
-  
+
     var precision = String(numAsStr).replace('.', '').length - num.toFixed().length;
-    return precision;  
-  }
+    return precision;
+}
 
 module.exports.readFileText = readFileText;
 module.exports.getYAMLObject = getYAMLObject;

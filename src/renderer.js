@@ -16,7 +16,7 @@ const constants = require('./constants.js');
 const showdown = require('showdown');
 let mdConverter = new showdown.Converter();
 const Awesomplete = require('awesomplete');
-const { dialog } = require('electron').remote;
+const { dialog, BrowserWindow } = require('electron').remote;
 const path = require('path');
 const fs = require('fs');
 const editor = require('./editor.js');
@@ -662,9 +662,29 @@ function showTextFiles(filePath, holderDiv, fileLang) {
     $('#' + modalRes.modalID).on('hide.bs.modal', () => {
         console.log('hide called', didContentChange);
         // if content changed: ask to save
+        if (didContentChange) {
+            const options = { type: 'info', buttons: ['Save', 'Cancel'], message: 'Save Changes?' };
+            dialog.showMessageBox(null, options, (res, checked) => {
+                console.log('res');
+                if (res == 0) {
+                    fs.writeFileSync(filePath, editorObj.getText());
+                }
+            });
+        }
     });
 
     $('#' + modalRes.modalID).modal('show');
+
+    // Save File
+    var modalFooterDiv = modalRes.modalFooterDiv;
+    var saveButton = document.createElement('button');
+    saveButton.classList.add('btn');
+    saveButton.classList.add('btn-default');
+    saveButton.innerText = 'Save';
+    modalFooterDiv.appendChild(saveButton);
+    saveButton.addEventListener('click', () => {
+        fs.writeFileSync(filePath, editorObj.getText());
+    });
 }
 
 function createModal() {
@@ -696,7 +716,11 @@ function createModal() {
     modalContentDiv.appendChild(modalBodyDiv);
     modalBodyDiv.innerHTML = '';
 
-    return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalID: modalID };
+    var modalFooterDiv = document.createElement('div');
+    modalFooterDiv.classList.add('modal-footer');
+    modalContentDiv.appendChild(modalFooterDiv);
+
+    return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalFooterDiv: modalFooterDiv, modalID: modalID };
 }
 
 function renderFolderDialog(param) {
