@@ -68,6 +68,8 @@ const videoFiles = {
     'mp4': 'video/mp4'
 }
 
+const modalMaxHeight = '900px';
+
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 module.exports = {
@@ -78,5 +80,6 @@ module.exports = {
     cellTypeIcon: cellTypeIcon,
     textFiles: textFiles,
     videoFiles: videoFiles,
-    paramTypes: paramTypes
+    paramTypes: paramTypes,
+    modalMaxHeight: modalMaxHeight
 };

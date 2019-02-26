@@ -16,7 +16,8 @@ const constants = require('./constants.js');
 const showdown = require('showdown');
 let mdConverter = new showdown.Converter();
 const Awesomplete = require('awesomplete');
-const { dialog, BrowserWindow } = require('electron').remote;
+const { dialog } = require('electron').remote;
+const remote = require('electron').remote;
 const path = require('path');
 const fs = require('fs');
 const editor = require('./editor.js');
@@ -655,13 +656,25 @@ function showVideoFiles(filePath, holderDiv) {
     holderDiv.innerHTML = '';
     holderDiv.appendChild(modalRes.modalDiv);
     var videoDiv = document.createElement('div');
+    videoDiv.align = 'center';
+    // BW size
+    var windowHeight = remote.getCurrentWindow().getBounds().height;
+    var modalHeight = 0.6 * windowHeight;
+    modalHeight = modalHeight - (modalHeight % 100);
+    console.log(modalHeight);
+    videoDiv.style.height = modalHeight + 'px';
+
+    videoDiv.classList.add('video-container');
     var modalBodyDiv = modalRes.modalBodyDiv;
     modalBodyDiv.appendChild(videoDiv);
     var video = document.createElement('video');
-    //Todo: align center
+    video.style.objectFit = 'contain';
+    video.style.width = '100%';
+    video.style.height = '100%';
     //Todo: set maximum height for modal
     //Todo: markdown to html, might make things simple - in parameterized string form
     video.controls = true;
+    // video.style.maxHeight = constants.modalMaxHeight;
     videoDiv.appendChild(video);
     var src = document.createElement('source');
     video.appendChild(src);
@@ -718,11 +731,11 @@ function createModal() {
     var modalID = 'fileModal' + modalCount;
     modalCount += 1;
     var modalDiv = document.createElement('div');
-    // modalDiv.style.width = '80%';
     modalDiv.id = modalID;
     modalDiv.classList.add('modal');
     modalDiv.classList.add('fade');
     modalDiv.setAttribute('role', 'dialog');
+    modalDiv.style.maxHeight = constants.modalMaxHeight;
     var modalDialogDiv = document.createElement('div');
     modalDialogDiv.classList.add('modal-dialog');
     modalDialogDiv.classList.add('modal-lg');
@@ -740,6 +753,7 @@ function createModal() {
     `);
 
     var modalBodyDiv = document.createElement('div');
+    modalBodyDiv.style.maxHeight = constants.modalMaxHeight;
     modalContentDiv.appendChild(modalBodyDiv);
     modalBodyDiv.innerHTML = '';
 
