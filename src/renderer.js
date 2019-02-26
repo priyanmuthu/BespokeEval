@@ -642,9 +642,32 @@ function viewFile(filePath, modalHolderDiv) {
     if (ext in constants.textFiles) {
         showTextFiles(fullPath, modalHolderDiv, constants.textFiles[ext]);
     }
+    else if (ext in constants.videoFiles) {
+        showVideoFiles(fullPath, modalHolderDiv);
+    }
     else {
         alert('File type not supported');
     }
+}
+
+function showVideoFiles(filePath, holderDiv) {
+    var modalRes = createModal();
+    holderDiv.innerHTML = '';
+    holderDiv.appendChild(modalRes.modalDiv);
+    var videoDiv = document.createElement('div');
+    var modalBodyDiv = modalRes.modalBodyDiv;
+    modalBodyDiv.appendChild(videoDiv);
+    var video = document.createElement('video');
+    //Todo: align center
+    //Todo: set maximum height for modal
+    //Todo: markdown to html, might make things simple - in parameterized string form
+    video.controls = true;
+    videoDiv.appendChild(video);
+    var src = document.createElement('source');
+    video.appendChild(src);
+    src.src = filePath;
+    $('#' + modalRes.modalID).modal('show');
+    return;
 }
 
 function showTextFiles(filePath, holderDiv, fileLang) {
@@ -688,6 +711,7 @@ function showTextFiles(filePath, holderDiv, fileLang) {
     saveButton.addEventListener('click', () => {
         fs.writeFileSync(filePath, editorObj.getText());
     });
+    return;
 }
 
 function createModal() {

@@ -64,6 +64,10 @@ const textFiles = {
     'xml': 'xml'
 };
 
+const videoFiles = {
+    'mp4': 'video/mp4'
+}
+
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 module.exports = {
@@ -73,5 +77,6 @@ module.exports = {
     cellType: cellType,
     cellTypeIcon: cellTypeIcon,
     textFiles: textFiles,
+    videoFiles: videoFiles,
     paramTypes: paramTypes
 };
