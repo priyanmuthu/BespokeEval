@@ -46,8 +46,8 @@ const paramTypes = {
 
 const cellType = {
     command: 0,
-    markdown: 1,
-    raw: 2
+    raw: 1,
+    markdown: 2
 }
 
 const cellTypeIcon = {

@@ -131,7 +131,7 @@ class commandUI extends UI {
         selectList.classList.add('selectpicker');
         selectList.setAttribute('data-width', 'fit');
         dropdownDiv.appendChild(selectList);
-        for (var key in constants.cellTypeIcon) {
+        for (var key in constants.cellType) {
             var option = document.createElement('option');
             option.value = constants.cellType[key];
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
@@ -343,7 +343,7 @@ class RawScriptUI extends UI {
         selectList.classList.add('selectpicker');
         selectList.setAttribute('data-width', 'fit');
         dropdownDiv.appendChild(selectList);
-        for (var key in constants.cellTypeIcon) {
+        for (var key in constants.cellType) {
             var option = document.createElement('option');
             option.value = constants.cellType[key];
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
@@ -541,7 +541,7 @@ class markdownUI extends UI {
         selectList.classList.add('selectpicker');
         selectList.setAttribute('data-width', 'fit');
         dropdownDiv.appendChild(selectList);
-        for (var key in constants.cellTypeIcon) {
+        for (var key in constants.cellType) {
             var option = document.createElement('option');
             option.value = constants.cellType[key];
             option.setAttribute('data-icon', constants.cellTypeIcon[key]);
