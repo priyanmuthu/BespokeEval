@@ -318,18 +318,15 @@ class RawScriptUI extends UI {
     constructor(cell) {
         super(cell);
         this.rawText = "";
-        this.renderObj = null;
         // initialize cell input
         this.cellElement = null;
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
-        console.log('creating raw script ui');
+
         var cellDiv = document.createElement('div');
 
         var inputDiv = document.createElement('div');
-        inputDiv.style.padding = '5px';
-        inputDiv.classList.add('cellselect');
         inputDiv.style.display = 'block';
         cellDiv.appendChild(inputDiv);
 
@@ -354,14 +351,19 @@ class RawScriptUI extends UI {
         }
         selectList.selectedIndex = constants.cellType.raw;
 
-        var cellInput = document.createElement('input');
+        var cellInput = document.createElement('textarea');
         cellInput.classList.add('form-control');
-        cellInput.type = 'text';
+        cellInput.rows = 2;
+        cellInput.style.resize = 'vertical';
         var heightLimit = 60;
         cellInput.style.minHeight = heightLimit + 'px';
+        cellInput.oninput = function () {
+            // textarea.style.height = ""; /* Reset the height*/
+            cellInput.style.height = Math.max(cellInput.scrollHeight, heightLimit) + "px";
+        };
         inputInnerDiv.appendChild(cellInput);
 
-        //Run and view button
+        //delete and view button
         var bSpan = document.createElement('span');
         bSpan.classList.add('input-group-addon');
         inputInnerDiv.appendChild(bSpan);
@@ -434,7 +436,7 @@ class RawScriptUI extends UI {
                 if (ev.ctrlKey) {
                     this.runRaw(cellInput.value);
                 }
-                else {
+                else if(ev.shiftKey){
                     this.showGUI(cellInput.value);
                 }
             }
