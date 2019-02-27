@@ -9,6 +9,9 @@ Todo:
   ✔ Multiline markdown @done(19-02-12 12:02)
   ✔ Get extension from file bug @done(19-02-17 09:40)
   ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
+  ☐ File changes in the current directory
+  ☐ Set directory
+  ☐ Cherry pick
   ☐ GUI edit - for modifications - menu down etc..
   ☐ Array files param and array param - spaces in the value
   ☐ Multiple values for the flag - flag repeat - fix multiple files -  in the parse args
