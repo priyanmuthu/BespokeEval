@@ -10,15 +10,14 @@ Todo:
   ✔ Get extension from file bug @done(19-02-17 09:40)
   ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
   ☐ GUI edit - for modifications - menu down etc..
-  ☐ Array files param
+  ☐ Array files param and array param - spaces in the value
   ☐ Multiple values for the flag - flag repeat - fix multiple files -  in the parse args
   ☐ Floating point number representation
   ☐ View file support
   ☐ Run / Show all
-  ☐ Pipe commands
+  ✔ Pipe commands @done(19-02-26 15:29)
   ☐ Cell output
-  ☐ output file as input in the next command
-  ☐ Pipe command
+  ☐ output file as input  in the next command
   ☐ Dropdown array set
   ☐ Use proper class structure
   ☐ dropdown / slider for numbers

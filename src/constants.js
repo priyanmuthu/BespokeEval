@@ -46,12 +46,14 @@ const paramTypes = {
 
 const cellType = {
     command: 0,
-    markdown: 1
+    markdown: 1,
+    raw: 2
 }
 
 const cellTypeIcon = {
     command: 'glyphicon-console',
-    markdown: 'glyphicon-font'
+    markdown: 'glyphicon-font',
+    raw: 'glyphicon-list-alt'
 }
 
 const textFiles = {

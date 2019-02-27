@@ -162,6 +162,54 @@ function renderMarkdownUI(markdownText, markdownUI) {
     return pDiv;
 }
 
+function renderRawScript(rawScript, rawScriptUI) {
+    var pDiv = document.createElement('div')
+    // Edit and run button
+    var buttonDiv = document.createElement('div');
+    buttonDiv.classList.add('clearfix');
+    var editButton = document.createElement('button');
+    editButton.classList.add('btn');
+    editButton.classList.add('btn-default');
+    editButton.classList.add('pull-right');
+    // editButton.innerText = "Edit";
+    editButton.style.minWidth = "40px";
+    editButton.style.marginRight = "10px";
+    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
+    editButton.addEventListener("click", () => {
+        if (scriptUI !== null) {
+            scriptUI.showInput(rawScript);
+        }
+    });
+
+    var runButton = document.createElement('button');
+    runButton.classList.add('btn');
+    runButton.classList.add('btn-primary');
+    runButton.classList.add('pull-right');
+    // runButton.innerText = "Run";
+    runButton.style.minWidth = "40px";
+    var rIcon = document.createElement('i');
+    rIcon.classList.add('glyphicon');
+    rIcon.classList.add('glyphicon-play');
+    runButton.appendChild(rIcon);
+    runButton.addEventListener("click", () => {
+        runRawText(rawScript);
+    });
+    buttonDiv.appendChild(runButton);
+    buttonDiv.appendChild(editButton);
+    pDiv.appendChild(buttonDiv);
+
+    var mdText = "```\n" + rawScript + "\n```";
+    var mdDiv = document.createElement('div');
+    mdDiv.style.margin = '10px';
+    mdDiv.insertAdjacentHTML('beforeend', mdConverter.makeHtml(mdText));
+    pDiv.appendChild(mdDiv);
+    pDiv.addEventListener('dblclick', () => {
+        rawScriptUI.showInput();
+    });
+
+    return pDiv;
+}
+
 function renderParamUI(mainParamDiv, params) {
     var paramCount = params.length;
     for (var i = 0; i < paramCount; i++) {
@@ -195,6 +243,9 @@ function renderParamUI(mainParamDiv, params) {
                 break;
             case constants.yamlTypes.array:
                 pDiv = renderArrayParam(param);
+                break;
+            case constants.yamlTypes.arrayFiles:
+                pDiv = renderArrayFileDialog(param);
                 break;
             default:
                 pDiv = renderStringParam(param);
@@ -515,7 +566,7 @@ function renderArrayParam(param) {
 
     param[constants.yamlStrings.evaluate] = function () {
         var valStr = dInput.value;
-        return valStr.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        return valStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
     }
 
     return pDiv;
@@ -671,8 +722,6 @@ function showVideoFiles(filePath, holderDiv) {
     video.style.objectFit = 'contain';
     video.style.width = '100%';
     video.style.height = '100%';
-    //Todo: set maximum height for modal
-    //Todo: markdown to html, might make things simple - in parameterized string form
     video.controls = true;
     // video.style.maxHeight = constants.modalMaxHeight;
     videoDiv.appendChild(video);
@@ -762,6 +811,88 @@ function createModal() {
     modalContentDiv.appendChild(modalFooterDiv);
 
     return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalFooterDiv: modalFooterDiv, modalID: modalID };
+}
+
+function renderArrayFileDialog(param) {
+    var pDiv = document.createElement('div');
+    pDiv.id = "file_div_" + fileDialogCount;
+    fileDialogCount += 1;
+    // pDiv.classList.add('input-group');
+    pDiv.classList.add('form-group');
+
+    // label
+    var paramName = document.createElement('label');
+    paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+
+    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(paramName);
+
+    //input div
+    var inputDiv = document.createElement('div');
+    inputDiv.classList.add('input-group');
+    pDiv.appendChild(inputDiv);
+    //input
+    var paramEdit = document.createElement('input');
+    paramEdit.classList.add('form-control');
+    paramEdit.type = 'text';
+    paramEdit.id = 'file_input_' + fileDialogCount;
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    inputDiv.appendChild(paramEdit);
+
+    // Button group
+    var fSpan = document.createElement('span');
+    fSpan.classList.add('input-group-btn');
+    inputDiv.appendChild(fSpan);
+
+    var fButton = document.createElement('button');
+    fButton.id = "File_Button_" + fileDialogCount;
+    fButton.classList.add('btn');
+    fButton.classList.add('btn-default');
+    fButton.type = "submit";
+    var icon = document.createElement('i');
+    icon.classList.add('glyphicon');
+    icon.classList.add('glyphicon-folder-open');
+    fButton.appendChild(icon);
+    fSpan.appendChild(fButton);
+
+    var modalHolderDiv = document.createElement('div');
+    pDiv.appendChild(modalHolderDiv);
+
+    var filters = [
+        { name: 'All Files', extensions: ['*'] }
+    ];
+
+    if (constants.yamlStrings.extensions in param) {
+        filters.unshift({ name: 'Restricted', extensions: param[constants.yamlStrings.extensions] });
+    }
+
+    let options = {
+        defaultPath: __dirname,
+        filters: filters,
+        properties: ['openFile', 'multiSelections']
+    }
+
+    fButton.addEventListener('click', () => {
+        dialog.showOpenDialog(options, (files) => {
+            if (files != undefined) {
+                paramEdit.value = files.join(', ');
+            }
+        });
+    });
+
+    param[constants.yamlStrings.evaluate] = function () {
+        var valStr = paramEdit.value;
+        return valStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+    }
+
+    return pDiv;
 }
 
 function renderFolderDialog(param) {
@@ -1021,12 +1152,16 @@ function getCommandString(command) {
                 }
                 break;
             case constants.yamlTypes.array:
+            case constants.yamlTypes.arrayFiles:
                 var valArr = param[constants.yamlStrings.evaluate]();
+                console.log('valarr', valArr);
                 for (var v = 0; v < valArr.length; v++) {
                     if (param[constants.yamlStrings.parameterName] !== "") {
                         paramList.push(param[constants.yamlStrings.parameterName]);
                     }
-                    paramList.push(valArr[v]);
+                    var valItem = valArr[v].trim();
+                    valItem = valItem.includes(' ') ? '"' + valItem + '"' : valItem;
+                    paramList.push(valItem);
                 }
                 break;
             default:
@@ -1045,7 +1180,8 @@ function getCommandString(command) {
 
 function runScript(script) {
     var scriptString = getScriptString(script);
-    require('./terminal.js').runCommand(scriptString);
+    console.log(scriptString);
+    // require('./terminal.js').runCommand(scriptString);
 }
 
 function runCommand(command) {
@@ -1053,10 +1189,15 @@ function runCommand(command) {
     require('./terminal.js').runCommand(commandString);
 }
 
+function runRawText(rawText){
+    require('./terminal.js').runCommand(rawText);
+}
+
 module.exports = {
     renderUI: renderUI,
     createUI: createUI,
     renderCommandUI: renderCommandUI,
     renderMarkdownUI: renderMarkdownUI,
-    renderScriptUI: renderScriptUI
+    renderScriptUI: renderScriptUI,
+    renderRawScript: renderRawScript
 };

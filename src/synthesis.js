@@ -237,7 +237,7 @@ function getParamObject(key, val) {
     pObj[constants.yamlStrings.parameterName] = key;
     pObj[constants.yamlStrings.parameterType] = getType(val);
     pObj[constants.yamlStrings.defaultValue] = val;
-    if(val.constructor === Array){
+    if (val.constructor === Array) {
         pObj[constants.yamlStrings.defaultValue] = val.flat(1).join(', ');
     }
     pObj[constants.yamlStrings.required] = true;
@@ -248,6 +248,10 @@ function getType(value) {
 
     //finding array values
     if (value.constructor === Array) {
+        var types = [...new Set(value.map(v => getType(v)))];
+        if (types.length == 1 && types[0] === constants.yamlTypes.file) {
+            return constants.yamlTypes.arrayFiles;
+        }
         return constants.yamlTypes.array;
     }
 
