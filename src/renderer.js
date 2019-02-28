@@ -565,8 +565,7 @@ function renderArrayParam(param) {
     }
 
     param[constants.yamlStrings.evaluate] = function () {
-        var valStr = dInput.value;
-        return valStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+        return utils.commaSeparateValues(dInput.value);
     }
 
     return pDiv;
@@ -888,8 +887,7 @@ function renderArrayFileDialog(param) {
     });
 
     param[constants.yamlStrings.evaluate] = function () {
-        var valStr = paramEdit.value;
-        return valStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+        return utils.commaSeparateValues(paramEdit.value);
     }
 
     return pDiv;

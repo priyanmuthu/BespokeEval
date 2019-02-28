@@ -46,9 +46,15 @@ function getPrecision(num) {
     return precision;
 }
 
+function commaSeparateValues(valueArrStr) {
+    return valueArrStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+}
+
 module.exports.readFileText = readFileText;
 module.exports.getYAMLObject = getYAMLObject;
 module.exports.getYAMLText = getYAMLText;
 module.exports.getFileExtension = getFileExtension;
 module.exports.checkIfFilePath = checkIfFilePath;
 module.exports.getPrecision = getPrecision;
+module.exports.writeTextToFile = writeTextToFile;
+module.exports.commaSeparateValues = commaSeparateValues;
