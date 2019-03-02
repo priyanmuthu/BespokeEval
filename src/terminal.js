@@ -8,6 +8,7 @@ function initializeTerminal() {
   const express = require('express');
   const bodyParser = require('body-parser');
   const constants = require('./constants.js');
+  const utils = require('./utils.js');
 
   // Initialize command listener before initializing the terminal
   const app = express();
@@ -33,8 +34,6 @@ function initializeTerminal() {
     cwd: process.cwd(),
     env: process.env
   });
-  ptyProcess.write("export PATH=$PATH:$(pwd)/src\r");
-  ptyProcess.write("clear\r");
   // Initialize xterm.js and attach it to the DOM
   Terminal.Terminal.applyAddon(fit);
   const xterm = new Terminal.Terminal();
@@ -92,15 +91,43 @@ function initializeTerminal() {
     console.log('exit');
     console.log(code);
   });
-
   module.exports.xterm = xterm;
   module.exports.ptyProcess = ptyProcess;
+
+  // Init processes
+  // ptyProcess.write("export PATH=$PATH:$(pwd)/src\r");
+  // ptyProcess.write("clear\r");
 }
 
 function runCommand(commandText) {
+  runCommandString(commandText);
+  //Get child process
+  // var isCommandComplete = false;
+  // var commandCompleteTimer = setInterval(() => {
+  //   // console.log('interval method running');
+  //   getChildProcess(module.exports.ptyProcess.pid, (output) => {
+  //     if (!(/\S/.test(output))) {
+  //       // command complete
+  //       isCommandComplete = true;
+  //     }
+  //   });
+  //   if (isCommandComplete) {
+  //     // Do something. command run complete
+  //     clearInterval(commandCompleteTimer);
+  //   }
+  // }, 100);
+}
+
+function runCommandString(commandText) {
   commandText = commandText.trim();
   commandText = commandText + "\n";
   module.exports.ptyProcess.write(commandText);
+}
+
+function getChildProcess(pid, callback) {
+  utils.RunCommandAsProcess(`pgrep -P ${pid} -l`, (output) => {
+    callback(output);
+  });
 }
 
 

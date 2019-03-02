@@ -12,6 +12,7 @@ Todo:
   ☐ File changes in the current directory
   ☐ Set directory
   ☐ Cherry pick
+  ☐ Fix save files
   ☐ GUI edit - for modifications - menu down etc..
   ☐ Array files param and array param - spaces in the value
   ☐ Multiple values for the flag - flag repeat - fix multiple files -  in the parse args

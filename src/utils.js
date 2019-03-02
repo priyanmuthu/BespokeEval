@@ -50,6 +50,19 @@ function commaSeparateValues(valueArrStr) {
     return valueArrStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
 }
 
+function RunCommandAsProcess(commandString, callback) {
+    const { exec } = require('child_process');
+    exec(commandString, (err, stdout, stderr) => {
+        if (err) {
+            // node couldn't execute the command
+            callback('');
+        }
+
+        // the *entire* stdout and stderr (buffered)
+        callback(stdout);
+    });
+}
+
 module.exports.readFileText = readFileText;
 module.exports.getYAMLObject = getYAMLObject;
 module.exports.getYAMLText = getYAMLText;
@@ -58,3 +71,4 @@ module.exports.checkIfFilePath = checkIfFilePath;
 module.exports.getPrecision = getPrecision;
 module.exports.writeTextToFile = writeTextToFile;
 module.exports.commaSeparateValues = commaSeparateValues;
+module.exports.RunCommandAsProcess = RunCommandAsProcess;
