@@ -1122,6 +1122,69 @@ function getScriptString(scriptObj) {
     return scriptStringArr.join(" | ");
 }
 
+function renderHistoryList(scriptObj) {
+    var modalRes = createModal();
+    var modalBodyDiv = modalRes.modalBodyDiv;
+    var historyDiv = document.createElement('div');
+    historyDiv.style.color = '#000000';
+    historyDiv.style.margin = '10px';
+    modalBodyDiv.appendChild(historyDiv);
+
+    // Render history here
+    for (var comKey in scriptObj) {
+        // show the array
+        console.log(comKey);
+        var commands = scriptObj[comKey];
+        var commandDiv = document.createElement('div');
+        commandDiv.style.padding = '10px';
+        commandDiv.style.borderStyle = 'solid';
+        commandDiv.style.borderWidth = '1px';
+        commandDiv.style.borderRadius = '10px';
+        commandDiv.style.borderColor = '#404040';
+        historyDiv.appendChild(commandDiv);
+
+        var commandLabel = document.createElement('label');
+        commandLabel.innerText = 'Command: ' + comKey;
+        commandDiv.appendChild(commandLabel);
+
+        var comList = document.createElement('ul');
+        comList.style.margin = '10px';
+        comList.classList.add('list-group');
+        commandDiv.appendChild(comList);
+
+        for (var i = 0; i < commands.length; i++) {
+            const com = commands[i];
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item')
+            listItem.classList.add('clearfix')
+            comList.appendChild(listItem);
+            listItem.insertAdjacentHTML('beforeend', com[constants.yamlStrings.rawCommand]);
+
+            var deleteButton = document.createElement('button');
+            deleteButton.classList.add('btn');
+            deleteButton.classList.add('btn-default');
+            deleteButton.classList.add('pull-right');
+            listItem.appendChild(deleteButton);
+            var icon = document.createElement('i');
+            icon.classList.add('glyphicon');
+            icon.classList.add('glyphicon-trash');
+            deleteButton.appendChild(icon);
+
+            deleteButton.addEventListener('click', () => {
+                const idx = commands.indexOf(com);
+                if (idx > -1) {
+                    commands.splice(idx, 1);
+                    console.log(commands, idx);
+                    comList.removeChild(listItem);
+                }
+            });
+        }
+
+    }
+
+    return modalRes;
+}
+
 function getCommandString(command) {
     //parse the parameters and run the command
     var commandString = "";
@@ -1187,7 +1250,7 @@ function runCommand(command) {
     require('./terminal.js').runCommand(commandString);
 }
 
-function runRawText(rawText){
+function runRawText(rawText) {
     require('./terminal.js').runCommand(rawText);
 }
 
@@ -1197,5 +1260,6 @@ module.exports = {
     renderCommandUI: renderCommandUI,
     renderMarkdownUI: renderMarkdownUI,
     renderScriptUI: renderScriptUI,
-    renderRawScript: renderRawScript
+    renderRawScript: renderRawScript,
+    renderHistoryList: renderHistoryList
 };

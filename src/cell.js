@@ -32,7 +32,7 @@ class cell {
             case constants.cellType.markdown:
                 return new markdownUI(this);
             case constants.cellType.raw:
-                return new RawScriptUI(this);
+                return new rawScriptUI(this);
             case constants.cellType.command:
             default:
                 return new commandUI(this);
@@ -224,8 +224,15 @@ class commandUI extends UI {
         });
     }
 
+    static getHistory() {
+        return renderer.renderHistoryList(commandUI.commandObjs);
+    }
+
     getUI(rawText = '') {
-        this.cellInput.value = rawText;
+        console.log('getui', rawText);
+        if (rawText !== undefined && rawText !== null) {
+            this.cellInput.value = rawText;
+        }
         return this.cellElement;
     }
 
@@ -313,7 +320,7 @@ class commandUI extends UI {
     }
 }
 
-class RawScriptUI extends UI {
+class rawScriptUI extends UI {
 
     constructor(cell) {
         super(cell);
@@ -327,6 +334,8 @@ class RawScriptUI extends UI {
         var cellDiv = document.createElement('div');
 
         var inputDiv = document.createElement('div');
+        inputDiv.style.padding = '5px';
+        inputDiv.classList.add('cellselect');
         inputDiv.style.display = 'block';
         cellDiv.appendChild(inputDiv);
 
@@ -436,7 +445,7 @@ class RawScriptUI extends UI {
                 if (ev.ctrlKey) {
                     this.runRaw(cellInput.value);
                 }
-                else if(ev.shiftKey){
+                else if (ev.shiftKey) {
                     this.showGUI(cellInput.value);
                 }
             }
@@ -444,7 +453,9 @@ class RawScriptUI extends UI {
     }
 
     getUI(rawText = '') {
-        this.cellInput.value = rawText;
+        if (rawText !== undefined && rawText !== null) {
+            this.cellInput.value = rawText;
+        }
         return this.cellElement;
     }
 
@@ -525,6 +536,8 @@ class markdownUI extends UI {
         var cellDiv = document.createElement('div');
 
         var inputDiv = document.createElement('div');
+        inputDiv.style.padding = '5px';
+        inputDiv.classList.add('cellselect');
         inputDiv.style.display = 'block';
         cellDiv.appendChild(inputDiv);
 
@@ -621,7 +634,9 @@ class markdownUI extends UI {
     }
 
     getUI(rawText = '') {
-        this.cellInput.value = rawText;
+        if (rawText !== undefined && rawText !== null) {
+            this.cellInput.value = rawText;
+        }
         return this.cellElement;
     }
 
@@ -673,3 +688,4 @@ class markdownUI extends UI {
 module.exports.cell = cell;
 module.exports.commandUI = commandUI;
 module.exports.markdownUI = markdownUI;
+module.exports.rawScriptUI = rawScriptUI;

@@ -34,12 +34,24 @@ $(document).ready(() => {
     //Adding Menu
     addMenu();
 
+    $("#historyButton").click(() => {
+        showHistory();
+    });
 
     // collapseUI();
     // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
     // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
     // synthesis.parseArgs('git commit -a -m "this is a commit message"');
 });
+
+function showHistory() {
+    // console.log(celljs.commandUI.commandObjs);
+    var historyModalDiv = document.getElementById('historyModalDiv');
+    var modalRes = celljs.commandUI.getHistory();
+    historyModalDiv.appendChild(modalRes.modalDiv);
+    $('#'+modalRes.modalID).modal('show');
+
+}
 
 function addMenu() {
     const menu = defaultMenu(app, shell);
@@ -112,7 +124,7 @@ function loadState() {
 function addCell(state = null) {
     var formDiv = document.getElementById('formDiv');
     var newCell = new celljs.cell(deleteCell);
-    if (state !== null) { newCell.loadState(state); }
+    if (state !== undefined && state !== null) { newCell.loadState(state); }
     cellArray.push(newCell);
     formDiv.appendChild(newCell.getUI());
     $('.selectpicker').selectpicker();
