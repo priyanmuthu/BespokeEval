@@ -7,9 +7,12 @@
       default: "input.mp4"
       required: true
     - parameter: "-c"
-      type: string
+      type: dropdown
+      value:
+        - dal
+        - dfs
+        - copy
       default: "copy"
-      required: true
     - parameter: "-ss"
       type: time
       default: 00:02:20

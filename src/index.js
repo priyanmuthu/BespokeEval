@@ -1,10 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
-const {dialog} = require('electron').remote;
+const { dialog, Menu, app, shell } = require('electron').remote;
+const defaultMenu = require('electron-default-menu');
 // const YAMLPATH = path.join(__dirname, 'example.yaml');
 const Awesomplete = require('awesomplete');
-
+// const synthesis = require('./synthesis.js');
+const utils = require('./utils.js');
+const celljs = require('./cell.js');
+const constants = require('./constants.js');
+var cellArray = [];
 
 $(document).ready(() => {
     // Do everything here
@@ -12,47 +16,174 @@ $(document).ready(() => {
     //House keeping
     $('#topPanel').height('50%');
     $('#bottomPanel').height('45%');
-
-    //Creating Editor
-    var editor = require('./editor.js');
-
-    var window = require('electron').remote.getCurrentWindow();
-    window.on('resize', () => {
-        console.log('resize');
-        editor.editorObj.layout();
-        // console.log(editor.editorObj);
-    });
+    $.fn.selectpicker.Constructor.DEFAULTS.template.caret = '';
 
     // Creating the terminal
     var terminal = require('./terminal.js');
     terminal.initializeTerminal();
-    
 
-    $('#panelButton').click(() => {
-        console.log('button click');
-        var bottomPanel = '#bottomPanel';
-        var topPanel = '#topPanel';
-        var panelButtonIcon = '#panelButtonIcon';
-        var disp = $('#bottomPanel').css('display');
-        console.log($(bottomPanel).height()/$(bottomPanel).parent().height());
-        console.log(disp);
-        if(disp == 'block'){
-            console.log('block -> hidden');
-            $(bottomPanel).hide();
-            $(bottomPanel).height('0%');
-            $(topPanel).height('95%');
-            $(panelButtonIcon).removeClass('glyphicon-menu-down');
-            $(panelButtonIcon).addClass('glyphicon-menu-up');
+    initDynamicResize(terminal);
+    initCollapseUI();
+
+    $("#addCellButton").click(() => {
+        addCell();
+    });
+
+    // Have at least one cell by default
+    addCell();
+
+    //Adding Menu
+    addMenu();
+
+    $("#historyButton").click(() => {
+        showHistory();
+    });
+
+    // collapseUI();
+    // console.log(synthesis.addCommandEntry('ffmpeg -i input.mp4 -c copy -ss 00:02:20 -t 00:04:00 output.mp4'));
+    // synthesis.parseArgs('ffmpeg -i input.mp4 -vn -ab 320 output.mp3');
+    // synthesis.parseArgs('git commit -a -m "this is a commit message"');
+});
+
+function showHistory() {
+    // console.log(celljs.commandUI.commandObjs);
+    var historyModalDiv = document.getElementById('historyModalDiv');
+    var modalRes = celljs.commandUI.getHistory();
+    historyModalDiv.appendChild(modalRes.modalDiv);
+    $('#'+modalRes.modalID).modal('show');
+
+}
+
+function addMenu() {
+    const menu = defaultMenu(app, shell);
+    menu.splice(1, 0, {
+        label: 'File',
+        submenu: [
+            {
+                label: 'Save to file',
+                accelerator: 'CmdOrCtrl+S',
+                click(item, focusedWindow) {
+                    console.log('clicked save: ', item);
+                    saveState();
+                }
+            },
+            {
+                label: 'Load from file',
+                accelerator: 'CmdOrCtrl+O',
+                click(item, focusedWindow) {
+                    console.log('clicked load: ', item);
+                    loadState();
+                }
+            }
+        ]
+    });
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menu));
+}
+
+function saveState() {
+    var options = {
+        defaultPath: __dirname,
+        filters: [
+            { name: 'YAML', extensions: ['yaml'] }
+        ]
+    };
+    dialog.showSaveDialog(null, options, (path) => {
+        if (path === undefined || path === null) { return; }
+        var cellState = cellArray.map(c => c.getState());
+        var totalState = {};
+        totalState[constants.stateStrings.cellArray] = cellState;
+        totalState[constants.stateStrings.commandObjs] = celljs.commandUI.commandObjs;
+        var yamlText = utils.getYAMLText(totalState);
+        try {
+            fs.writeFileSync(path, yamlText);
         }
-        else if(disp == 'none'){
-            console.log('hidden -> block');
-            //Show the panel
-            $(topPanel).height('50%');
-            $(bottomPanel).height('45%');
-            $(bottomPanel).show();
-            $(panelButtonIcon).removeClass('glyphicon-menu-up');
-            $(panelButtonIcon).addClass('glyphicon-menu-down');
+        catch (e) {
+            console.error(e);
         }
     });
-})
+}
 
+function loadState() {
+    var options = {
+        defaultPath: __dirname,
+        filters: [
+            { name: 'YAML', extensions: ['yaml'] }
+        ],
+        properties: ['openFile']
+    };
+    dialog.showOpenDialog(options, (files) => {
+        console.log(files);
+        if (files === undefined || files == null) { return; }
+        var filePath = files[0];
+        var yamlText = fs.readFileSync(filePath);
+        var yamlObj = utils.getYAMLObject(yamlText);
+        var cellArray = yamlObj[constants.stateStrings.cellArray];
+        celljs.commandUI.commandObjs = yamlObj[constants.stateStrings.commandObjs];
+        clearNotebook();
+        for (var i = 0; i < cellArray.length; i++) {
+            addCell(cellArray[i]);
+        }
+    });
+}
+
+function addCell(state = null) {
+    var formDiv = document.getElementById('formDiv');
+    var newCell = new celljs.cell(deleteCell);
+    if (state !== undefined && state !== null) { newCell.loadState(state); }
+    cellArray.push(newCell);
+    formDiv.appendChild(newCell.getUI());
+    $('.selectpicker').selectpicker();
+}
+
+function clearNotebook() {
+    var formDiv = document.getElementById('formDiv');
+    formDiv.innerHTML = '';
+    cellArray = [];
+}
+
+function deleteCell(cellElement) {
+    var idx = cellArray.indexOf(cellElement);
+    if (idx !== -1) { cellArray.splice(idx, 1); }
+    formDiv.removeChild(cellElement);
+}
+
+
+function initDynamicResize(terminal) {
+    var window = require('electron').remote.getCurrentWindow();
+    window.on('resize', () => {
+        resizeUI();
+    });
+
+    function resizeUI() {
+        terminal.fitTerminal();
+    }
+}
+
+function initCollapseUI() {
+    $('#panelButton').click(() => {
+        collapseUI();
+    });
+}
+
+function collapseUI() {
+    var bottomPanel = '#bottomPanel';
+    var topPanel = '#topPanel';
+    var panelButtonIcon = '#panelButtonIcon';
+    var disp = $('#bottomPanel').css('display');
+    if (disp == 'block') {
+        $(bottomPanel).hide();
+        $(bottomPanel).height('0%');
+        $(topPanel).height('95%');
+        $(panelButtonIcon).removeClass('glyphicon-menu-down');
+        $(panelButtonIcon).addClass('glyphicon-menu-up');
+    }
+    else if (disp == 'none') {
+        //Show the panel
+        $(topPanel).height('50%');
+        $(bottomPanel).height('45%');
+        $(bottomPanel).show();
+        $(panelButtonIcon).removeClass('glyphicon-menu-up');
+        $(panelButtonIcon).addClass('glyphicon-menu-down');
+    }
+}

@@ -21,9 +21,18 @@
   <link href="css/renderer.css" rel="stylesheet">
   <script src="js/bootstrap.min.js"></script>
 
+  <!-- Bootstrap-select -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
   <link rel="stylesheet" href="../node_modules/xterm/dist/xterm.css" />
   <script src="../node_modules/xterm/dist/xterm.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!-- <script type="text/javascript" src="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css" /> -->
@@ -36,29 +45,54 @@
 
 <body>
   <div class="container-fluid" style="width:100%; height:100%;">
-    <div id="topPanel" class="row" style="width:100%; min-height: 50%; overflow-y: scroll; padding-left: 10px; padding-right: 10px;">
+    <div id="topPanel" class="row"
+      style="width:100%; min-height: 50%; overflow-y: scroll; padding-left: 10px; padding-right: 10px; margin: 0%;">
+      <!-- <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="nav navbar-nav navbar-right">
+            <button id="historyButton" class="btn btn-default navbar-btn">
+              <i class="fa fa-history"></i>
+            </button>
+          </div>
+        </div>
+      </nav> -->
+      <div>
+      </div>
       <div id="formDiv">
+      </div>
+      <div id="tempModalDiv" style="color:#000000;"> 
+      </div>
+      <div class="form-inline" style="padding: 10px;">
+        <button id="addCellButton" class="btn btn-default"><i style="margin-right: 5px;"
+            class="glyphicon glyphicon-plus"></i>Add Cell</button>
+        <button id="historyButton" class="btn btn-default navbar-btn">
+          <i class="fa fa-history" style="margin-right: 5px;"></i>History
+        </button>
+        <div id="historyModalDiv">
+        </div>
       </div>
     </div>
 
-    <div class="row" style="width:100%; height:5%; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;">
+    <div class="row"
+      style="width:100%; height:5%; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;">
       <button id="panelButton" class="accordion pull-right">
-        <i id="panelButtonIcon" class="glyphicon glyphicon-menu-down pull-right"></i>
+        <i id="panelButtonIcon" class="glyphicon glyphicon-menu-down pull-right" style="height:100%; width:100%"></i>
       </button>
     </div>
 
-    <div id="bottomPanel" class="row accordion-panel" style="width:100%; height:45%; padding-left: 10px; padding-right: 10px;">
-      <div class="col-md-6" style="height:100%;">
+    <div id="bottomPanel" class="row accordion-panel"
+      style="width:100%; height:45%; padding-left: 10px; padding-right: 10px;">
+      <div class="col-md-12" style="height:100%;">
         <div style="height:100%; border:1px solid rgb(0, 0, 0); padding: 5px;">
-          <div id="xterm"></div>
+          <div id="xterm" style="height:100%;"></div>
         </div>
       </div>
-      <div class="col-md-6" style="height:100%;">
+      <!-- <div class="col-md-6" style="height:100%;">
         <div id="editorouterdiv" style="height:100%; border:1px solid rgb(0, 0, 0);  padding: 5px;">
           <div id="editordiv" style="height:100%">
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </body>

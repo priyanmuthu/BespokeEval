@@ -13,9 +13,12 @@
       default: "input.mp4"
       required: true
     - parameter: "-c"
-      type: string
+      type: dropdown
+      value:
+        - dal
+        - dfs
+        - copy
       default: "copy"
-      required: true
     - type: md
       md: |
         - -ss: crop start time
