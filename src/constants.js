@@ -52,7 +52,9 @@ const paramTypes = {
     'dropdown': 'dropdown',
     'file': 'file',
     'folder': 'folder',
-    'number': 'number'
+    'number': 'number',
+    'array': 'array',
+    'arrayFiles': 'file array'
 };
 
 const cellType = {

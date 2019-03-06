@@ -286,7 +286,7 @@ function renderStringParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var paramEdit = document.createElement('input');
@@ -323,7 +323,7 @@ function renderNumberParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -401,7 +401,7 @@ function renderTimeParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
     pDiv.insertAdjacentHTML('beforeend', '<br/>');
 
@@ -472,7 +472,7 @@ function renderDropdownParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -529,7 +529,7 @@ function renderArrayParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -587,7 +587,7 @@ function renderFileDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     //input div
@@ -828,7 +828,7 @@ function renderArrayFileDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     //input div
@@ -910,7 +910,7 @@ function renderFolderDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    paramName.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param));
     pDiv.appendChild(paramName);
 
     //input div
@@ -967,17 +967,79 @@ function renderFolderDialog(param) {
 function createRightDiv(param) {
     var rightDiv = document.createElement('div');
     rightDiv.classList.add('pull-right');
-    // rightDiv.style.cssFloat = 'left';
-    // rightDiv.appendChild(createTypeDropdown(param));
+    rightDiv.style.cssFloat = 'left';
+    // rightDiv.appendChild(createTypeSetting(param));
     rightDiv.appendChild(createIncludeCheckbox(param));
     return rightDiv;
+}
+
+function createTypeSetting(param) {
+    var typeSettingDiv = document.createElement('div');
+    typeSettingDiv.style.cssFloat = 'left';
+
+    var typeSettingButton = document.createElement('a');
+    typeSettingButton.style.color = '#FFFFFF';
+    typeSettingButton.style.marginRight = '10px';
+    typeSettingDiv.appendChild(typeSettingButton);
+    // typeSettingButton.classList.add('btn');
+    // typeSettingButton.classList.add('btn-default');
+    var icon = document.createElement('i');
+    icon.classList.add('fa');
+    icon.classList.add('fa-cog');
+    typeSettingButton.appendChild(icon);
+
+    typeSettingButton.addEventListener('click', () => {
+        createTypeSettingModal(param);
+    });
+
+    return typeSettingDiv;
+}
+
+function createTypeSettingModal(param) {
+    var modalRes = createModal();
+    var modalBodyDiv = modalRes.modalBodyDiv;
+    //Create the body here, as a form input
+    var settingDiv = document.createElement('div');
+    settingDiv.style.margin = '20px';
+    modalBodyDiv.appendChild(settingDiv);
+    var labelName = document.createElement('h3');
+    labelName.innerText = 'Parameter: ' + param[constants.yamlStrings.parameterName];
+    settingDiv.appendChild(labelName);
+    var typeSelect = createTypeSelect(param[constants.yamlStrings.parameterType]);
+    settingDiv.appendChild(typeSelect.typeSelectDiv);
+
+    var tempModalDiv = document.getElementById('tempModalDiv');
+    tempModalDiv.innerHTML = '';
+    tempModalDiv.appendChild(modalRes.modalDiv);
+    $('#' + modalRes.modalID).modal('show');
+}
+
+function createTypeSelect(defaultValue = '') {
+    console.log(defaultValue);
+    var typeSelectDiv = document.createElement('div');
+    typeSelectDiv.classList.add('form-group');
+    var typeLabel = document.createElement('label');
+    typeLabel.innerText = 'Type';
+    typeSelectDiv.appendChild(typeLabel);
+    var selectList = document.createElement('select');
+    selectList.classList.add('form-control');
+    typeSelectDiv.appendChild(selectList);
+    for (var key in constants.paramTypes) {
+        var opt = document.createElement('option');
+        var link = document.createElement('a');
+        opt.innerText = constants.paramTypes[key];
+        opt.value = key;
+        if (defaultValue === key) { opt.selected = 'selected'; }
+        selectList.appendChild(opt);
+    }
+    return { typeSelectDiv: typeSelectDiv, selectList: selectList };
 }
 
 function createTypeDropdown(param) {
     var dropdownDiv = document.createElement('div');
     dropdownDiv.classList.add('dropdown');
     dropdownDiv.style.cssFloat = 'left';
-    dropdownDiv.style.color = '#000000'
+    dropdownDiv.style.color = '#000000';
     dropdownDiv.style.marginRight = '20px';
     var ddButton = document.createElement('span');
     // ddButton.classList.add('btn');
@@ -1009,8 +1071,11 @@ function createTypeDropdown(param) {
 
 function createIncludeCheckbox(param) {
     var paramCheckDiv = document.createElement('div');
+    paramCheckDiv.classList.add('form-check');
     paramCheckDiv.style.cssFloat = 'left';
+    // paramCheckDiv.style.display = 'inline-block';
     var paramCheck = document.createElement('input');
+    paramCheck.classList.add('form-check-input');
     paramCheck.type = 'checkbox'
     paramCheck.checked = true;
     param[constants.yamlStrings.isinclude] = function () {
@@ -1243,7 +1308,7 @@ function getCommandString(command) {
 function runScript(script) {
     var scriptString = getScriptString(script);
     console.log(scriptString);
-    // require('./terminal.js').runCommand(scriptString);
+    require('./terminal.js').runCommand(scriptString);
 }
 
 function runCommand(command) {

@@ -667,7 +667,7 @@ class markdownUI extends UI {
         this.uiDiv.innerHTML = '';
         this.uiDiv.appendChild(guiDiv);
         
-        toggleUIDiv();
+        this.toggleUIDiv();
     }
 
     getType() {
@@ -679,7 +679,7 @@ class markdownUI extends UI {
             this.cellInput.value = rawText;
         }
         
-        toggleInputDiv();
+        this.toggleInputDiv();
     }
 
     toggleUIDiv() {
