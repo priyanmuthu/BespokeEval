@@ -21,6 +21,17 @@ const yamlStrings = {
     'step': 'step'
 };
 
+const stateStrings = {
+    commandObjs: 'commandObjs',
+    cellArray: 'cellArray',
+    rawText: 'rawText',
+    cellInput: 'cellInput',
+    renderObject: 'renderObject',
+    cellType: 'cellType',
+    commandObjects: 'commandObjects',
+    UIVisible: 'UIVisible'
+};
+
 const yamlTypes = {
     'string': 'string',
     'markdown': 'md',
@@ -83,5 +94,6 @@ module.exports = {
     textFiles: textFiles,
     videoFiles: videoFiles,
     paramTypes: paramTypes,
-    modalMaxHeight: modalMaxHeight
+    modalMaxHeight: modalMaxHeight,
+    stateStrings: stateStrings
 };

@@ -109,6 +109,7 @@ class commandUI extends UI {
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
+        this.UIVisible = false;
 
         var cellDiv = document.createElement('div');
 
@@ -240,10 +241,10 @@ class commandUI extends UI {
         if (rawText === "") { return; }
         // Generate GUI
         if (this.rawText !== rawText) {
-            this.rawText = rawText;
             this.addScript(rawText);
-            this.renderScript(rawText);
         }
+        this.rawText = rawText;
+        this.renderScript(rawText);
         this.toggleUIDiv();
     }
 
@@ -261,6 +262,7 @@ class commandUI extends UI {
     }
 
     renderScript(scriptText) {
+        console.log(scriptText);
         var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs,
             synthesis.parseScript(scriptText));
         this.renderObj = mergedObject;
@@ -280,11 +282,13 @@ class commandUI extends UI {
     toggleUIDiv() {
         this.inputDiv.style.display = 'none';
         this.uiDiv.style.display = 'block';
+        this.UIVisible = true;
     }
 
     toggleInputDiv() {
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
+        this.UIVisible = false;
     }
 
     getType() {
@@ -304,19 +308,25 @@ class commandUI extends UI {
 
     getState() {
         var state = {};
-        state[constants.yamlStrings.rawText] = this.cellInput.value;
-        state[constants.yamlStrings.commandObjects] = commandUI.commandObjs;
-        state[constants.yamlStrings.renderObject] = this.renderObj;
-        state[constants.yamlStrings.cellType] = this.getType();
+        state[constants.stateStrings.cellInput] = this.cellInput.value;
+        state[constants.stateStrings.rawText] = this.rawText;
+        // state[constants.stateStrings.commandObjects] = commandUI.commandObjs;
+        state[constants.stateStrings.renderObject] = this.renderObj;
+        state[constants.stateStrings.UIVisible] = this.UIVisible;
+        state[constants.stateStrings.cellType] = this.getType();
         return state;
 
     }
 
     loadState(state) {
-        this.rawText = '';//;
-        commandUI.commandObjs = state[constants.yamlStrings.commandObjects];
-        this.cellInput.value = state[constants.yamlStrings.rawText];
-        this.renderObj = state[constants.yamlStrings.renderObject];
+        this.rawText = state[constants.stateStrings.rawText];
+        // commandUI.commandObjs = state[constants.stateStrings.commandObjects];
+        this.cellInput.value = state[constants.stateStrings.cellInput];
+        this.renderObj = state[constants.stateStrings.renderObject];
+        this.UIVisible = state[constants.stateStrings.UIVisible];
+        if(this.UIVisible){
+            this.showGUI(this.cellInput.value);
+        }
     }
 }
 
@@ -330,6 +340,7 @@ class rawScriptUI extends UI {
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
+        this.UIVisible = false;
 
         var cellDiv = document.createElement('div');
 
@@ -487,11 +498,13 @@ class rawScriptUI extends UI {
     toggleUIDiv() {
         this.inputDiv.style.display = 'none';
         this.uiDiv.style.display = 'block';
+        this.UIVisible = true;
     }
 
     toggleInputDiv() {
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
+        this.UIVisible = false;
     }
 
     getType() {
@@ -512,6 +525,7 @@ class rawScriptUI extends UI {
         var state = {};
         state[constants.yamlStrings.rawText] = this.cellInput.value;
         state[constants.yamlStrings.cellType] = this.getType();
+        state[constants.stateStrings.UIVisible] = this.UIVisible;
         return state;
 
     }
@@ -519,6 +533,10 @@ class rawScriptUI extends UI {
     loadState(state) {
         this.rawText = '';//;
         this.cellInput.value = state[constants.yamlStrings.rawText];
+        this.UIVisible = state[constants.stateStrings.UIVisible];
+        if(this.UIVisible){
+            this.showGUI(this.cellInput.value);
+        }
     }
 }
 
@@ -532,6 +550,7 @@ class markdownUI extends UI {
         this.inputDiv = null;
         this.uiDiv = null;
         this.cellInput = null;
+        this.UIVisible = false;
 
         var cellDiv = document.createElement('div');
 
@@ -647,8 +666,8 @@ class markdownUI extends UI {
         var guiDiv = renderer.renderMarkdownUI(rawText, this);
         this.uiDiv.innerHTML = '';
         this.uiDiv.appendChild(guiDiv);
-        this.inputDiv.style.display = 'none';
-        this.uiDiv.style.display = 'block';
+        
+        toggleUIDiv();
     }
 
     getType() {
@@ -659,8 +678,20 @@ class markdownUI extends UI {
         if (rawText !== null) {
             this.cellInput.value = rawText;
         }
+        
+        toggleInputDiv();
+    }
+
+    toggleUIDiv() {
+        this.inputDiv.style.display = 'none';
+        this.uiDiv.style.display = 'block';
+        this.UIVisible = true;
+    }
+
+    toggleInputDiv() {
         this.uiDiv.style.display = 'none';
         this.inputDiv.style.display = 'block';
+        this.UIVisible = false;
     }
 
     runRaw(rawText) {
@@ -674,13 +705,18 @@ class markdownUI extends UI {
 
     getState() {
         var state = {};
-        state[constants.yamlStrings.rawText] = this.cellInput.value;
-        state[constants.yamlStrings.cellType] = this.getType();
+        state[constants.stateStrings.cellInput] = this.cellInput.value;
+        state[constants.stateStrings.cellType] = this.getType();
+        state[constants.stateStrings.UIVisible] = this.UIVisible;
         return state;
     }
 
     loadState(state) {
-        this.cellInput.value = state[constants.yamlStrings.rawText];
+        this.cellInput.value = state[constants.stateStrings.cellInput];
+        this.UIVisible = state[constants.stateStrings.UIVisible];
+        if(this.UIVisible){
+            this.showGUI(this.cellInput.value);
+        }
     }
 }
 

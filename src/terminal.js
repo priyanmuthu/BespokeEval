@@ -101,21 +101,34 @@ function initializeTerminal() {
 
 function runCommand(commandText) {
   runCommandString(commandText);
+  getCurrentDirectory((output) => {
+    console.log(output);
+  });
+}
+
+function runCommandWithFileTrack() {
+
+}
+
+function waitForCommandComplete(callback) {
   //Get child process
-  // var isCommandComplete = false;
-  // var commandCompleteTimer = setInterval(() => {
-  //   // console.log('interval method running');
-  //   getChildProcess(module.exports.ptyProcess.pid, (output) => {
-  //     if (!(/\S/.test(output))) {
-  //       // command complete
-  //       isCommandComplete = true;
-  //     }
-  //   });
-  //   if (isCommandComplete) {
-  //     // Do something. command run complete
-  //     clearInterval(commandCompleteTimer);
-  //   }
-  // }, 100);
+  var isCommandComplete = false;
+  var commandCompleteTimer = setInterval(() => {
+    // console.log('interval method running');
+    getChildProcess(module.exports.ptyProcess.pid, (output) => {
+      if (!(/\S/.test(output))) {
+        // command complete
+        isCommandComplete = true;
+      }
+    });
+    if (isCommandComplete) {
+      // Do something. command run complete
+      clearInterval(commandCompleteTimer);
+      if (callback !== undefined && callback !== null) {
+        callback();
+      }
+    }
+  }, 100);
 }
 
 function runCommandString(commandText) {
@@ -130,6 +143,11 @@ function getChildProcess(pid, callback) {
   });
 }
 
+function getCurrentDirectory(callback) {
+  utils.RunCommandAsProcess('pwd', (output) => {
+    callback(output);
+  });
+}
 
 module.exports.runCommand = runCommand;
 module.exports.initializeTerminal = initializeTerminal;

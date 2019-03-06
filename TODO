@@ -10,6 +10,7 @@ Todo:
   ✔ Get extension from file bug @done(19-02-17 09:40)
   ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
   ☐ File changes in the current directory
+  ☐ Fix UI visible state load
   ☐ Set directory
   ☐ Cherry pick
   ☐ Fix save files

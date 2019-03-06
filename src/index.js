@@ -7,6 +7,7 @@ const Awesomplete = require('awesomplete');
 // const synthesis = require('./synthesis.js');
 const utils = require('./utils.js');
 const celljs = require('./cell.js');
+const constants = require('./constants.js');
 var cellArray = [];
 
 $(document).ready(() => {
@@ -89,7 +90,10 @@ function saveState() {
     };
     dialog.showSaveDialog(null, options, (path) => {
         if (path === undefined || path === null) { return; }
-        var totalState = cellArray.map(c => c.getState());
+        var cellState = cellArray.map(c => c.getState());
+        var totalState = {};
+        totalState[constants.stateStrings.cellArray] = cellState;
+        totalState[constants.stateStrings.commandObjs] = celljs.commandUI.commandObjs;
         var yamlText = utils.getYAMLText(totalState);
         try {
             fs.writeFileSync(path, yamlText);
@@ -114,9 +118,11 @@ function loadState() {
         var filePath = files[0];
         var yamlText = fs.readFileSync(filePath);
         var yamlObj = utils.getYAMLObject(yamlText);
+        var cellArray = yamlObj[constants.stateStrings.cellArray];
+        celljs.commandUI.commandObjs = yamlObj[constants.stateStrings.commandObjs];
         clearNotebook();
-        for (var i = 0; i < yamlObj.length; i++) {
-            addCell(yamlObj[i]);
+        for (var i = 0; i < cellArray.length; i++) {
+            addCell(cellArray[i]);
         }
     });
 }
