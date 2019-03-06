@@ -869,6 +869,7 @@ function renderArrayFileDialog(param) {
     ];
 
     if (constants.yamlStrings.extensions in param) {
+        console.log(param[constants.yamlStrings.extensions]);
         filters.unshift({ name: 'Restricted', extensions: param[constants.yamlStrings.extensions] });
     }
 

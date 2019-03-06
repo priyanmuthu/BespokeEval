@@ -200,6 +200,18 @@ function mergeCommandObjects(commandObjectsArr, command) {
                     newParam[constants.yamlStrings.value] = valArr;
                     resDict[pName] = newParam;
                     break;
+                case constants.yamlTypes.arrayFiles:
+                    // File inference
+                    var newParam = {};
+                    newParam[constants.yamlStrings.parameterName] = pName;
+                    newParam[constants.yamlStrings.parameterType] = constants.yamlTypes.arrayFiles;
+                    // TODO: File inferences
+                    var extArr = pArr.map(p => utils.commaSeparateValues(p[constants.yamlStrings.defaultValue]));
+                    extArr = extArr.flat();
+                    extArr = extArr.map(e => utils.getFileExtension(e));
+                    newParam[constants.yamlStrings.extensions] = [...new Set(extArr)];
+                    resDict[pName] = newParam;
+                    break;
                 default:
                 // dont do anything. eg: time
             }
