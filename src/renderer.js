@@ -103,8 +103,16 @@ function renderScriptUI(scriptObject, scriptUI = null) {
     buttonDiv.appendChild(editButton);
     scriptDiv.appendChild(buttonDiv);
 
+    var onParamChange = function () {
+        // Render script object again
+        console.log('object change', scriptObject);
+        console.log(getScriptString(scriptObject));
+    };
+
+    var callBacks = {onParamChange: onParamChange};
+
     //for each command
-    scriptDiv.appendChild(renderCommandUI(scriptObject[0]));
+    scriptDiv.appendChild(renderCommandUI(scriptObject[0], callBacks));
 
     for (var i = 1; i < scriptObject.length; i++) {
         var linkDiv = document.createElement('div');
@@ -124,7 +132,7 @@ function renderScriptUI(scriptObject, scriptUI = null) {
     return scriptDiv;
 }
 
-function renderCommandUI(command, commandUI = null) {
+function renderCommandUI(command, callBacks = null) {
     //Create a text for command
     var commandUIDiv = document.createElement("div");
 
@@ -136,7 +144,7 @@ function renderCommandUI(command, commandUI = null) {
     mainParamDiv.id = 'mainParamDiv';
     mainParamDiv.classList.add('grid-form')
 
-    renderParamUI(mainParamDiv, command[constants.yamlStrings.parameterArray]);
+    renderParamUI(mainParamDiv, command[constants.yamlStrings.parameterArray], callBacks);
     commandUIDiv.appendChild(mainParamDiv);
     return commandUIDiv;
 }
@@ -210,7 +218,7 @@ function renderRawScript(rawScript, rawScriptUI) {
     return pDiv;
 }
 
-function renderParamUI(mainParamDiv, params) {
+function renderParamUI(mainParamDiv, params, callBacks) {
     var paramCount = params.length;
     for (var i = 0; i < paramCount; i++) {
         param = params[i];
@@ -224,31 +232,31 @@ function renderParamUI(mainParamDiv, params) {
 
         switch (param[constants.yamlStrings.parameterType]) {
             case constants.yamlTypes.number:
-                pDiv = renderNumberParam(param);
+                pDiv = renderNumberParam(param, callBacks);
                 break;
             case constants.yamlTypes.time:
-                pDiv = renderTimeParam(param);
+                pDiv = renderTimeParam(param, callBacks);
                 break;
             case constants.yamlTypes.boolean:
-                pDiv = renderBooleanParam(param);
+                pDiv = renderBooleanParam(param, callBacks);
                 break;
             case constants.yamlTypes.dropdown:
-                pDiv = renderDropdownParam(param);
+                pDiv = renderDropdownParam(param, callBacks);
                 break;
             case constants.yamlTypes.file:
-                pDiv = renderFileDialog(param);
+                pDiv = renderFileDialog(param, callBacks);
                 break;
             case constants.yamlTypes.folder:
-                pDiv = renderFolderDialog(param);
+                pDiv = renderFolderDialog(param, callBacks);
                 break;
             case constants.yamlTypes.array:
-                pDiv = renderArrayParam(param);
+                pDiv = renderArrayParam(param, callBacks);
                 break;
             case constants.yamlTypes.arrayFiles:
-                pDiv = renderArrayFileDialog(param);
+                pDiv = renderArrayFileDialog(param, callBacks);
                 break;
             default:
-                pDiv = renderStringParam(param);
+                pDiv = renderStringParam(param, callBacks);
                 break;
         }
 
@@ -271,7 +279,7 @@ function renderParamUI(mainParamDiv, params) {
     }
 }
 
-function renderStringParam(param) {
+function renderStringParam(param, callBacks) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_string_' + stringCount;
@@ -286,7 +294,7 @@ function renderStringParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     var paramEdit = document.createElement('input');
@@ -308,7 +316,7 @@ function renderStringParam(param) {
     return pDiv;
 }
 
-function renderNumberParam(param) {
+function renderNumberParam(param, callBacks) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_string_' + numberCount;
@@ -323,7 +331,7 @@ function renderNumberParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -374,7 +382,7 @@ function renderNumberParam(param) {
     return pDiv;
 }
 
-function renderMarkdown(param) {
+function renderMarkdown(param, callBacks) {
     var pDiv = document.createElement('div')
     pDiv.id = 'param_md_' + markdownCount;
     pDiv.style['grid-column'] = "1/-1";
@@ -386,7 +394,7 @@ function renderMarkdown(param) {
     return pDiv;
 }
 
-function renderTimeParam(param) {
+function renderTimeParam(param, callBacks) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_time_' + timeCount;
@@ -401,7 +409,8 @@ function renderTimeParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
+
     pDiv.appendChild(paramName);
     pDiv.insertAdjacentHTML('beforeend', '<br/>');
 
@@ -418,13 +427,14 @@ function renderTimeParam(param) {
     return pDiv;
 }
 
-function renderBooleanParam(param) {
+function renderBooleanParam(param, callBacks) {
     //Render the param UI
     var pDiv = document.createElement('div')
     pDiv.id = 'param_bool_' + booleanCount;
     booleanCount = booleanCount + 1;
     pDiv.classList.add('form-group');
-    pDiv.insertAdjacentHTML('beforeend', '<br/>');
+    // pDiv.insertAdjacentHTML('beforeend', '<br/>');
+    pDiv.appendChild(createRightDiv(param, callBacks));
 
     var paramEdit = document.createElement('input');
     paramEdit.classList.add('form-check-input');
@@ -449,14 +459,10 @@ function renderBooleanParam(param) {
         return paramEdit.checked;
     }
 
-    param[constants.yamlStrings.isinclude] = function () {
-        return true;
-    }
-
     return pDiv;
 }
 
-function renderDropdownParam(param) {
+function renderDropdownParam(param, callBacks) {
     //Render the param UI
 
     var pDiv = document.createElement('div');
@@ -472,7 +478,7 @@ function renderDropdownParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -513,7 +519,7 @@ function renderDropdownParam(param) {
     return pDiv;
 }
 
-function renderArrayParam(param) {
+function renderArrayParam(param, callBacks) {
     //Render the param UI
 
     var pDiv = document.createElement('div');
@@ -529,7 +535,7 @@ function renderArrayParam(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     var inputDiv = document.createElement('div');
@@ -571,7 +577,7 @@ function renderArrayParam(param) {
     return pDiv;
 }
 
-function renderFileDialog(param) {
+function renderFileDialog(param, scriptUI) {
     var pDiv = document.createElement('div');
     pDiv.id = "file_div_" + fileDialogCount;
     fileDialogCount += 1;
@@ -587,7 +593,7 @@ function renderFileDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, scriptUI));
     pDiv.appendChild(paramName);
 
     //input div
@@ -662,17 +668,6 @@ function renderFileDialog(param) {
     vButton.addEventListener('click', () => {
         viewFile(paramEdit.value, modalHolderDiv)
     });
-    // For view file support
-    // paramEdit.addEventListener('input', () => {
-    //     if (utils.checkIfFilePath(paramEdit.value)) {
-    //         if(constants.fileViewSupport.includes(utils.getFileExtension(paramEdit.value))){
-    //             vButton.disabled = false;
-    //             // Proceed
-    //         }
-    //     }
-    // });
-
-    //TODO: view file support
 
     param['eval'] = function () {
         var valStr = paramEdit.value;
@@ -812,7 +807,7 @@ function createModal() {
     return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalFooterDiv: modalFooterDiv, modalID: modalID };
 }
 
-function renderArrayFileDialog(param) {
+function renderArrayFileDialog(param, callBacks) {
     var pDiv = document.createElement('div');
     pDiv.id = "file_div_" + fileDialogCount;
     fileDialogCount += 1;
@@ -828,7 +823,7 @@ function renderArrayFileDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     //input div
@@ -894,7 +889,7 @@ function renderArrayFileDialog(param) {
     return pDiv;
 }
 
-function renderFolderDialog(param) {
+function renderFolderDialog(param, callBacks) {
     var pDiv = document.createElement('div');
     pDiv.id = "file_div_" + folderDialogCount;
     folderDialogCount += 1;
@@ -910,7 +905,7 @@ function renderFolderDialog(param) {
     }
 
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
-    pDiv.appendChild(createRightDiv(param));
+    pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
     //input div
@@ -964,16 +959,16 @@ function renderFolderDialog(param) {
     return pDiv;
 }
 
-function createRightDiv(param) {
+function createRightDiv(param, callBacks) {
     var rightDiv = document.createElement('div');
     rightDiv.classList.add('pull-right');
     rightDiv.style.cssFloat = 'left';
-    // rightDiv.appendChild(createTypeSetting(param));
+    rightDiv.appendChild(createTypeSetting(param, callBacks));
     rightDiv.appendChild(createIncludeCheckbox(param));
     return rightDiv;
 }
 
-function createTypeSetting(param) {
+function createTypeSetting(param, callBacks) {
     var typeSettingDiv = document.createElement('div');
     typeSettingDiv.style.cssFloat = 'left';
 
@@ -989,13 +984,13 @@ function createTypeSetting(param) {
     typeSettingButton.appendChild(icon);
 
     typeSettingButton.addEventListener('click', () => {
-        createTypeSettingModal(param);
+        createTypeSettingModal(param, callBacks);
     });
 
     return typeSettingDiv;
 }
 
-function createTypeSettingModal(param) {
+function createTypeSettingModal(param, callBacks) {
     var modalRes = createModal();
     var modalBodyDiv = modalRes.modalBodyDiv;
     //Create the body here, as a form input
@@ -1007,6 +1002,209 @@ function createTypeSettingModal(param) {
     settingDiv.appendChild(labelName);
     var typeSelect = createTypeSelect(param[constants.yamlStrings.parameterType]);
     settingDiv.appendChild(typeSelect.typeSelectDiv);
+
+    //default value
+    var defaultValueDiv = document.createElement('div');
+    settingDiv.appendChild(defaultValueDiv);
+    defaultValueDiv.classList.add('form-group');
+    var defaultValLabel = document.createElement('label');
+    defaultValLabel.innerText = 'Default Value';
+    defaultValueDiv.appendChild(defaultValLabel);
+
+    var paramEdit = document.createElement('input');
+    paramEdit.classList.add('form-control');
+    paramEdit.type = 'text';
+    if (constants.yamlStrings.defaultValue in param) {
+        paramEdit.value = param[constants.yamlStrings.defaultValue];
+    }
+    paramEdit.placeholder = param[constants.yamlStrings.parameterName];
+    defaultValueDiv.appendChild(paramEdit);
+
+    var paramSpecificDiv = document.createElement('div');
+    settingDiv.appendChild(paramSpecificDiv);
+
+    function paramSpecificInput() {
+        var type = constants.paramTypes[typeSelect.selectList.value];
+        paramSpecificDiv.innerHTML = '';
+        var extensionsEdit, valueEdit, minEdit, maxEdit;
+        switch (type) {
+            case constants.paramTypes.file:
+            case constants.paramTypes.arrayFiles:
+                var fileDiv = document.createElement('div');
+                fileDiv.classList.add('form-group');
+                paramSpecificDiv.appendChild(fileDiv);
+                var extensionsLabel = document.createElement('label');
+                extensionsLabel.innerText = 'Allowed extensions';
+                fileDiv.appendChild(extensionsLabel);
+
+                extensionsEdit = document.createElement('input');
+                extensionsEdit.classList.add('form-control');
+                extensionsEdit.type = 'text';
+                if (constants.yamlStrings.extensions in param) {
+                    extensionsEdit.value = param[constants.yamlStrings.extensions];
+                }
+                fileDiv.appendChild(extensionsEdit);
+                break;
+            case constants.paramTypes.array:
+            case constants.paramTypes.dropdown:
+                var fileDiv = document.createElement('div');
+                fileDiv.classList.add('form-group');
+                paramSpecificDiv.appendChild(fileDiv);
+                var extensionsLabel = document.createElement('label');
+                extensionsLabel.innerText = 'Values';
+                fileDiv.appendChild(extensionsLabel);
+
+                valueEdit = document.createElement('input');
+                valueEdit.classList.add('form-control');
+                valueEdit.type = 'text';
+                if (constants.yamlStrings.value in param) {
+                    valueEdit.value = param[constants.yamlStrings.value];
+                }
+                fileDiv.appendChild(valueEdit);
+                break;
+            case constants.paramTypes.number:
+                var fileDiv = document.createElement('div');
+                fileDiv.classList.add('form-inline');
+                paramSpecificDiv.appendChild(fileDiv);
+                var minDiv = document.createElement('div');
+                minDiv.classList.add('form-group');
+                fileDiv.appendChild(minDiv);
+                var minLabel = document.createElement('label');
+                minLabel.innerText = 'Min Value: ';
+                minDiv.appendChild(minLabel);
+
+                var minEdit = document.createElement('input');
+                minEdit.classList.add('form-control');
+                minEdit.type = 'text';
+                if (constants.yamlStrings.minValue in param) {
+                    minEdit.value = param[constants.yamlStrings.minValue];
+                }
+                minDiv.appendChild(minEdit);
+
+                var maxDiv = document.createElement('div');
+                maxDiv.classList.add('form-group');
+                maxDiv.style.marginLeft = '10px';
+                fileDiv.appendChild(maxDiv);
+                var maxLabel = document.createElement('label');
+                maxLabel.innerText = 'Max Value: ';
+                maxDiv.appendChild(maxLabel);
+
+                var maxEdit = document.createElement('input');
+                maxEdit.classList.add('form-control');
+                maxEdit.type = 'text';
+                if (constants.yamlStrings.maxValue in param) {
+                    maxEdit.value = param[constants.yamlStrings.maxValue];
+                }
+                maxDiv.appendChild(maxEdit);
+                break;
+            case constants.paramTypes.string:
+            case constants.paramTypes.time:
+            case constants.paramTypes.boolean:
+            case constants.paramTypes.folder:
+            default:
+                break;
+
+        }
+
+        //save button stuff
+        //Save Button
+        modalRes.modalFooterDiv.innerHTML = '';
+        var saveButton = document.createElement('button');
+        saveButton.classList.add('btn');
+        saveButton.classList.add('btn-primary');
+        saveButton.innerText = 'Save';
+        modalRes.modalFooterDiv.appendChild(saveButton);
+        saveButton.addEventListener('click', () => {
+            console.log(param);
+            for (var k in param) {
+                if (k === constants.yamlStrings.parameterName) {
+                    continue;
+                }
+                delete param[k];
+            }
+            switch (type) {
+                case constants.paramTypes.string:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.string;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.boolean:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.boolean;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value == 'true';
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.time:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.time;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.dropdown:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.dropdown;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    if (valueEdit.value !== '') {
+                        param[constants.yamlStrings.value] = utils.commaSeparateValues(valueEdit.value);
+                    }
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.array:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.array;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    if (valueEdit.value !== '') {
+                        param[constants.yamlStrings.value] = utils.commaSeparateValues(valueEdit.value);
+                    }
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.folder:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.folder;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.file:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.file;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    if (extensionsEdit.value !== '') {
+                        param[constants.yamlStrings.extensions] = utils.commaSeparateValues(extensionsEdit.value);
+                    }
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.arrayFiles:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.arrayFiles;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    if (extensionsEdit.value !== '') {
+                        param[constants.yamlStrings.extensions] = utils.commaSeparateValues(extensionsEdit.value);
+                    }
+                    param[constants.yamlStrings.required] = true;
+                    break;
+                case constants.paramTypes.number:
+                    param[constants.yamlStrings.parameterType] = constants.yamlTypes.number;
+                    param[constants.yamlStrings.defaultValue] = paramEdit.value;
+                    if (minEdit.value !== '') {
+                        param[constants.yamlStrings.minValue] = minEdit.value;
+                    }
+                    if (maxEdit.value !== '') {
+                        param[constants.yamlStrings.maxValue] = maxEdit.value;
+                    }
+                    param[constants.yamlStrings.required] = true;
+                    break;
+            }
+            param[constants.yamlStrings.manual] = true;
+            param[constants.yamlStrings.evaluate] = () => {
+                return param[constants.yamlStrings.defaultValue];
+            };
+            param[constants.yamlStrings.isinclude] = () => {
+                return true;
+            };
+            console.log(param);
+            $('#' + modalRes.modalID).modal('hide');
+            callBacks.onParamChange();
+        });
+    }
+
+    typeSelect.selectList.addEventListener('change', () => {
+        paramSpecificInput();
+    });
+
+    paramSpecificInput();
 
     var tempModalDiv = document.getElementById('tempModalDiv');
     tempModalDiv.innerHTML = '';
@@ -1022,6 +1220,7 @@ function createTypeSelect(defaultValue = '') {
     typeLabel.innerText = 'Type';
     typeSelectDiv.appendChild(typeLabel);
     var selectList = document.createElement('select');
+    selectList.id = utils.getUniqueID();
     selectList.classList.add('form-control');
     typeSelectDiv.appendChild(selectList);
     for (var key in constants.paramTypes) {

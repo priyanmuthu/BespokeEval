@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path');
 const yaml = require('js-yaml');
+const uuid = require('uuid/v4');
 function readFileText(path) {
     var fileText = null;
     try {
@@ -63,6 +64,32 @@ function RunCommandAsProcess(commandString, callback) {
     });
 }
 
+function getUniqueID(){
+    return uuid().replace(/-/g, "");
+}
+
+module.exports.onChange = (object, onChange) => {
+	const handler = {
+		get(target, property, receiver) {
+			try {
+				return new Proxy(target[property], handler);
+			} catch (err) {
+				return Reflect.get(target, property, receiver);
+			}
+		},
+		defineProperty(target, property, descriptor) {
+			onChange();
+			return Reflect.defineProperty(target, property, descriptor);
+		},
+		deleteProperty(target, property) {
+			onChange();
+			return Reflect.deleteProperty(target, property);
+		}
+	};
+
+	return new Proxy(object, handler);
+};
+
 module.exports.readFileText = readFileText;
 module.exports.getYAMLObject = getYAMLObject;
 module.exports.getYAMLText = getYAMLText;
@@ -72,3 +99,4 @@ module.exports.getPrecision = getPrecision;
 module.exports.writeTextToFile = writeTextToFile;
 module.exports.commaSeparateValues = commaSeparateValues;
 module.exports.RunCommandAsProcess = RunCommandAsProcess;
+module.exports.getUniqueID = getUniqueID;

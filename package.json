@@ -26,6 +26,7 @@
     "node-pty": "^0.8.0",
     "showdown": "^1.9.0",
     "string-argv": "^0.1.1",
+    "uuid": "^3.3.2",
     "xterm": "^3.10.1",
     "yargs-parser": "^11.1.1"
   }

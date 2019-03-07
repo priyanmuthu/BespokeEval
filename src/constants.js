@@ -18,7 +18,8 @@ const yamlStrings = {
     'commandObjects': 'commandObjects',
     'renderObject': 'renderObject',
     'cellType': 'cellType',
-    'step': 'step'
+    'step': 'step',
+    'manual': 'manual'
 };
 
 const stateStrings = {
