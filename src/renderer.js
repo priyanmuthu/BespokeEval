@@ -107,6 +107,7 @@ function renderScriptUI(scriptObject, scriptUI = null) {
         // Render script object again
         console.log('object change', scriptObject);
         console.log(getScriptString(scriptObject));
+        scriptUI.showGUI(getScriptString(scriptObject));
     };
 
     var callBacks = {onParamChange: onParamChange};
