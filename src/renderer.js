@@ -21,6 +21,7 @@ const remote = require('electron').remote;
 const path = require('path');
 const fs = require('fs');
 const editor = require('./editor.js');
+const renderUtils = require('./renderUtils.js');
 
 function renderUI() {
     var editorText = window.editor.getValue();
@@ -71,30 +72,14 @@ function renderScriptUI(scriptObject, scriptUI = null) {
 
     // Edit and run button
     var buttonDiv = document.createElement('div');
-    var editButton = document.createElement('button');
-    editButton.classList.add('btn');
-    editButton.classList.add('btn-default');
-    editButton.classList.add('pull-right');
-    // editButton.innerText = "Edit";
-    editButton.style.minWidth = "40px";
-    editButton.style.marginRight = "10px";
-    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
+    var editButton = renderUtils.createEditButton();
     editButton.addEventListener("click", () => {
         if (scriptUI !== null) {
             scriptUI.showInput(getScriptString(scriptObject));
         }
     });
 
-    var runButton = document.createElement('button');
-    runButton.classList.add('btn');
-    runButton.classList.add('btn-primary');
-    runButton.classList.add('pull-right');
-    // runButton.innerText = "Run";
-    runButton.style.minWidth = "40px";
-    var rIcon = document.createElement('i');
-    rIcon.classList.add('glyphicon');
-    rIcon.classList.add('glyphicon-play');
-    runButton.appendChild(rIcon);
+    var runButton = renderUtils.createRunButton();
     runButton.addEventListener("click", () => {
         scriptUI.addScript(getScriptString(scriptObject));
         runScript(scriptObject);
@@ -152,13 +137,7 @@ function renderCommandUI(command, callBacks = null) {
 
 function renderMarkdownUI(markdownText, markdownUI) {
     var pDiv = document.createElement('div')
-    var editButton = document.createElement('button');
-    editButton.classList.add('btn');
-    editButton.classList.add('btn-default');
-    editButton.classList.add('pull-right');
-    editButton.style.minWidth = "40px";
-    editButton.style.marginRight = "10px";
-    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
+    var editButton = renderUtils.createEditButton();
     editButton.addEventListener("click", () => {
         markdownUI.showInput();
     });
@@ -176,30 +155,14 @@ function renderRawScript(rawScript, rawScriptUI) {
     // Edit and run button
     var buttonDiv = document.createElement('div');
     buttonDiv.classList.add('clearfix');
-    var editButton = document.createElement('button');
-    editButton.classList.add('btn');
-    editButton.classList.add('btn-default');
-    editButton.classList.add('pull-right');
-    // editButton.innerText = "Edit";
-    editButton.style.minWidth = "40px";
-    editButton.style.marginRight = "10px";
-    editButton.insertAdjacentHTML('beforeend', '<span class="glyphicon glyphicon-pencil" />');
+    var editButton = renderUtils.createEditButton();
     editButton.addEventListener("click", () => {
-        if (scriptUI !== null) {
-            scriptUI.showInput(rawScript);
+        if (rawScriptUI !== null) {
+            rawScriptUI.showInput(rawScript);
         }
     });
 
-    var runButton = document.createElement('button');
-    runButton.classList.add('btn');
-    runButton.classList.add('btn-primary');
-    runButton.classList.add('pull-right');
-    // runButton.innerText = "Run";
-    runButton.style.minWidth = "40px";
-    var rIcon = document.createElement('i');
-    rIcon.classList.add('glyphicon');
-    rIcon.classList.add('glyphicon-play');
-    runButton.appendChild(rIcon);
+    var runButton = renderUtils.createRunButton();
     runButton.addEventListener("click", () => {
         runRawText(rawScript);
     });
