@@ -1,4 +1,4 @@
-const constants = require('./constants.js');
+const constants = require('../constants.js');
 const commandUI = require('./commandUI.js').commandUI;
 const rawScriptUI = require('./rawScriptUI.js').rawScriptUI;
 const markdownUI = require('./markdownUI.js').markdownUI;

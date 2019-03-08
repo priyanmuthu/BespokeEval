@@ -6,8 +6,8 @@ const defaultMenu = require('electron-default-menu');
 const Awesomplete = require('awesomplete');
 // const synthesis = require('./synthesis.js');
 const utils = require('./utils.js');
-const celljs = require('./cell.js');
-const commandUI = require('./commandUI.js').commandUI;
+const celljs = require('./CellUI/cell.js');
+const commandUI = require('./CellUI/commandUI.js').commandUI;
 const constants = require('./constants.js');
 var cellArray = [];
 
