@@ -23,47 +23,9 @@ const fs = require('fs');
 const editor = require('./editor.js');
 const renderUtils = require('./renderUtils.js');
 
-function renderUI() {
-    var editorText = window.editor.getValue();
-    try {
-        var formDiv = document.getElementById('formDiv');
-        var yamlObj = utils.getYAMLObject(editorText);
-        var newUI = createUI(yamlObj);
-        formDiv.innerHTML = "";
-        formDiv.appendChild(newUI);
-        $('[data-toggle="tooltip"]').tooltip();
-        module.exports.yamlObj = yamlObj;
+//render utils functions
+const {createInfo} = require('./renderUtils.js');
 
-        // var command = yamlObj['command'];
-        // var params = command['params'];
-        // var val = params[2]['eval']();
-        // console.log('val: '+val);
-    }
-    catch (e) {
-        //Show an error UI
-        console.log(e);
-    }
-}
-
-function createUI(yamlObj) {
-    var mainDiv = document.createElement("div");
-    mainDiv.id = 'mainDiv';
-
-    //Do this for the command
-    var commandCount = yamlObj.length;
-    for (var i = 0; i < commandCount; i++) {
-        var obj = yamlObj[i];
-        if (constants.yamlStrings.commandName in obj) {
-            var commandDiv = renderCommandUI(obj);
-            mainDiv.appendChild(commandDiv);
-        }
-        else if (constants.yamlStrings.markdown in obj) {
-            var mdDiv = renderMarkdown(obj);
-            mainDiv.appendChild(mdDiv);
-        }
-    }
-    return mainDiv;
-}
 
 function renderScriptUI(scriptObject, scriptUI = null) {
     // Get all the command UI
@@ -661,7 +623,7 @@ function viewFile(filePath, modalHolderDiv) {
 }
 
 function showVideoFiles(filePath, holderDiv) {
-    var modalRes = createModal();
+    var modalRes = renderUtils.createModal();
     holderDiv.innerHTML = '';
     holderDiv.appendChild(modalRes.modalDiv);
     var videoDiv = document.createElement('div');
@@ -691,7 +653,7 @@ function showVideoFiles(filePath, holderDiv) {
 }
 
 function showTextFiles(filePath, holderDiv, fileLang) {
-    var modalRes = createModal();
+    var modalRes = renderUtils.createModal();
     holderDiv.innerHTML = '';
     holderDiv.appendChild(modalRes.modalDiv);
     var modalBodyDiv = modalRes.modalBodyDiv;
@@ -732,43 +694,6 @@ function showTextFiles(filePath, holderDiv, fileLang) {
         fs.writeFileSync(filePath, editorObj.getText());
     });
     return;
-}
-
-function createModal() {
-    var modalID = 'fileModal' + modalCount;
-    modalCount += 1;
-    var modalDiv = document.createElement('div');
-    modalDiv.id = modalID;
-    modalDiv.classList.add('modal');
-    modalDiv.classList.add('fade');
-    modalDiv.setAttribute('role', 'dialog');
-    modalDiv.style.maxHeight = constants.modalMaxHeight;
-    var modalDialogDiv = document.createElement('div');
-    modalDialogDiv.classList.add('modal-dialog');
-    modalDialogDiv.classList.add('modal-lg');
-    modalDialogDiv.classList.add('modal-dialog-centered');
-    modalDialogDiv.setAttribute('role', 'document');
-    modalDiv.appendChild(modalDialogDiv);
-    var modalContentDiv = document.createElement('div');
-    modalContentDiv.classList.add('modal-content');
-    modalDialogDiv.appendChild(modalContentDiv);
-    modalContentDiv.insertAdjacentHTML('beforeend',
-        `
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-    </div>
-    `);
-
-    var modalBodyDiv = document.createElement('div');
-    modalBodyDiv.style.maxHeight = constants.modalMaxHeight;
-    modalContentDiv.appendChild(modalBodyDiv);
-    modalBodyDiv.innerHTML = '';
-
-    var modalFooterDiv = document.createElement('div');
-    modalFooterDiv.classList.add('modal-footer');
-    modalContentDiv.appendChild(modalFooterDiv);
-
-    return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalFooterDiv: modalFooterDiv, modalID: modalID };
 }
 
 function renderArrayFileDialog(param, callBacks) {
@@ -955,7 +880,7 @@ function createTypeSetting(param, callBacks) {
 }
 
 function createTypeSettingModal(param, callBacks) {
-    var modalRes = createModal();
+    var modalRes = renderUtils.createModal();
     var modalBodyDiv = modalRes.modalBodyDiv;
     //Create the body here, as a form input
     var settingDiv = document.createElement('div');
@@ -1248,16 +1173,6 @@ function createIncludeCheckbox(param) {
     return paramCheckDiv;
 }
 
-function createInfo(infoText) {
-    var infoIcon = document.createElement('span');
-    infoIcon.classList.add('glyphicon');
-    infoIcon.classList.add('glyphicon-info-sign');
-    infoIcon.setAttribute('data-toggle', 'tooltip');
-    infoIcon.setAttribute('title', infoText);
-    infoIcon.style.marginRight = "10px";
-    return infoIcon;
-}
-
 function createTimerInput(timer_id, defaultVal) {
     var timerDiv = document.createElement('div');
     timerDiv.classList.add('timer-div');
@@ -1352,7 +1267,7 @@ function getScriptString(scriptObj) {
 }
 
 function renderHistoryList(scriptObj) {
-    var modalRes = createModal();
+    var modalRes = renderUtils.createModal();
     var modalBodyDiv = modalRes.modalBodyDiv;
     var historyDiv = document.createElement('div');
     historyDiv.style.color = '#000000';
@@ -1484,8 +1399,6 @@ function runRawText(rawText) {
 }
 
 module.exports = {
-    renderUI: renderUI,
-    createUI: createUI,
     renderCommandUI: renderCommandUI,
     renderMarkdownUI: renderMarkdownUI,
     renderScriptUI: renderScriptUI,
