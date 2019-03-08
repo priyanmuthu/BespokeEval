@@ -7,6 +7,7 @@ const Awesomplete = require('awesomplete');
 // const synthesis = require('./synthesis.js');
 const utils = require('./utils.js');
 const celljs = require('./cell.js');
+const commandUI = require('./commandUI.js').commandUI;
 const constants = require('./constants.js');
 var cellArray = [];
 
@@ -46,9 +47,9 @@ $(document).ready(() => {
 });
 
 function showHistory() {
-    // console.log(celljs.commandUI.commandObjs);
+    // console.log(commandUI.commandObjs);
     var historyModalDiv = document.getElementById('historyModalDiv');
-    var modalRes = celljs.commandUI.getHistory();
+    var modalRes = commandUI.getHistory();
     historyModalDiv.appendChild(modalRes.modalDiv);
     $('#'+modalRes.modalID).modal('show');
 
@@ -93,7 +94,7 @@ function saveState() {
         var cellState = cellArray.map(c => c.getState());
         var totalState = {};
         totalState[constants.stateStrings.cellArray] = cellState;
-        totalState[constants.stateStrings.commandObjs] = celljs.commandUI.commandObjs;
+        totalState[constants.stateStrings.commandObjs] = commandUI.commandObjs;
         var yamlText = utils.getYAMLText(totalState);
         try {
             fs.writeFileSync(path, yamlText);
@@ -119,7 +120,7 @@ function loadState() {
         var yamlText = fs.readFileSync(filePath);
         var yamlObj = utils.getYAMLObject(yamlText);
         var cellArray = yamlObj[constants.stateStrings.cellArray];
-        celljs.commandUI.commandObjs = yamlObj[constants.stateStrings.commandObjs];
+        commandUI.commandObjs = yamlObj[constants.stateStrings.commandObjs];
         clearNotebook();
         for (var i = 0; i < cellArray.length; i++) {
             addCell(cellArray[i]);
