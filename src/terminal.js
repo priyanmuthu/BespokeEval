@@ -157,3 +157,4 @@ function getCurrentDirectory(callback) {
 
 module.exports.runCommand = runCommand;
 module.exports.initializeTerminal = initializeTerminal;
+module.exports.runCommandString = runCommandString;

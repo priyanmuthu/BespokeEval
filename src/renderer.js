@@ -578,7 +578,7 @@ function renderFileDialog(param, scriptUI) {
     }
 
     let options = {
-        defaultPath: __dirname,
+        defaultPath: process.cwd(),
         filters: filters,
         properties: ['openFile']
     }
@@ -758,7 +758,7 @@ function renderArrayFileDialog(param, callBacks) {
     }
 
     let options = {
-        defaultPath: __dirname,
+        defaultPath: process.cwd(),
         filters: filters,
         properties: ['openFile', 'multiSelections']
     }
@@ -828,7 +828,7 @@ function renderFolderDialog(param, callBacks) {
     fButton.appendChild(icon);
 
     let options = {
-        defaultPath: __dirname,
+        defaultPath: process.cwd(),
         properties: ['openDirectory']
     }
 

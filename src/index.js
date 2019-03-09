@@ -84,7 +84,7 @@ function addMenu() {
 
 function saveState() {
     var options = {
-        defaultPath: __dirname,
+        defaultPath: process.cwd(),
         filters: [
             { name: 'YAML', extensions: ['yaml'] }
         ]
@@ -107,7 +107,7 @@ function saveState() {
 
 function loadState() {
     var options = {
-        defaultPath: __dirname,
+        defaultPath: process.cwd(),
         filters: [
             { name: 'YAML', extensions: ['yaml'] }
         ],
@@ -117,6 +117,15 @@ function loadState() {
         console.log(files);
         if (files === undefined || files == null) { return; }
         var filePath = files[0];
+
+        //Change working directory
+        var dirPath = path.dirname(filePath);
+        process.chdir(dirPath);
+        var rcs = require('./terminal.js').runCommandString;
+        rcs('cd '+dirPath);
+        rcs('clear');
+
+
         var yamlText = fs.readFileSync(filePath);
         var yamlObj = utils.getYAMLObject(yamlText);
         var cellArray = yamlObj[constants.stateStrings.cellArray];

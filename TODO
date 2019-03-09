@@ -1,5 +1,18 @@
 
 Todo:
+  ☐ File changes in the current directory
+  ☐ Set directory
+  ☐ Fix save files
+  ☐ GUI edit - for modifications - menu down etc..
+  ☐ View file support
+  ☐ Run / Show all
+  ☐ Cell output
+  ☐ output file as input  in the next command
+  ☐ Use proper class structure
+  ☐ Grey out unselected divs - maybe disable it?
+  ☐ cherry pick commands
+  ☐ positional track command
+  ✔ dropdown / slider for numbers @done(19-03-09 00:54)
   ✔ Handle quotes in string param @done(19-01-31 03:29)
   ✔ Handle quotes in bash: track @done(19-01-31 03:29)
   ✔ Folder param type @done(19-01-31 20:03)
@@ -9,24 +22,10 @@ Todo:
   ✔ Multiline markdown @done(19-02-12 12:02)
   ✔ Get extension from file bug @done(19-02-17 09:40)
   ✔ Menu option to save and load file - for UI @done(19-02-17 09:40)
-  ☐ File changes in the current directory
-  ☐ Fix UI visible state load
-  ☐ Set directory
-  ☐ Cherry pick
-  ☐ Fix save files
-  ☐ GUI edit - for modifications - menu down etc..
-  ☐ Array files param and array param - spaces in the value
-  ☐ Multiple values for the flag - flag repeat - fix multiple files -  in the parse args
-  ☐ Floating point number representation
-  ☐ View file support
-  ☐ Run / Show all
+  ✔ Fix UI visible state load @done(19-03-09 00:52)
+  ✔ Cherry pick @done(19-03-09 00:53)
+  ✔ Array files param and array param - spaces in the value @done(19-03-09 00:53)
+  ✔ Dropdown array set @done(19-03-09 00:54)
+  ✔ Multiple values for the flag - flag repeat - fix multiple files -  in the parse args @done(19-03-09 00:54)
+  ✔ Floating point number representation @done(19-03-09 00:54)
   ✔ Pipe commands @done(19-02-26 15:29)
-  ☐ Cell output
-  ☐ output file as input  in the next command
-  ☐ Dropdown array set
-  ☐ Use proper class structure
-  ☐ dropdown / slider for numbers
-  ☐ Grey out unselected divs - maybe disable it?
-  ☐ cherry pick commands
-  ☐ positional track command
-  ☐ cherry pick commands
