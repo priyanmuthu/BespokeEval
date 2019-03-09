@@ -99,15 +99,21 @@ function initializeTerminal() {
   // ptyProcess.write("clear\r");
 }
 
-function runCommand(commandText) {
-  runCommandString(commandText);
-  getCurrentDirectory((output) => {
-    console.log(output);
-  });
+function toggleCommandStart(start = false) {
+  $('.run-btn').prop('disabled', start);
+  if (start) {
+    $('#panelButton').trigger('uncollapse');
+  }
 }
 
-function runCommandWithFileTrack() {
+function runCommand(commandText) {
+  // disable all the run button till command complete
+  toggleCommandStart(true);
 
+  runCommandString(commandText);
+  waitForCommandComplete(() => {
+    toggleCommandStart(false);
+  });
 }
 
 function waitForCommandComplete(callback) {

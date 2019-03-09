@@ -163,11 +163,17 @@ function initDynamicResize(terminal) {
 
 function initCollapseUI() {
     $('#panelButton').click(() => {
-        collapseUI();
+        toggleCollapsePane();
+    });
+    $('#panelButton').bind('collapse', () => {
+        collapsePane();
+    });
+    $('#panelButton').bind('uncollapse', () => {
+        uncollapsePane();
     });
 }
 
-function collapseUI() {
+function collapsePane(){
     var bottomPanel = '#bottomPanel';
     var topPanel = '#topPanel';
     var panelButtonIcon = '#panelButtonIcon';
@@ -179,12 +185,29 @@ function collapseUI() {
         $(panelButtonIcon).removeClass('glyphicon-menu-down');
         $(panelButtonIcon).addClass('glyphicon-menu-up');
     }
-    else if (disp == 'none') {
+}
+
+function uncollapsePane(){
+    var bottomPanel = '#bottomPanel';
+    var topPanel = '#topPanel';
+    var panelButtonIcon = '#panelButtonIcon';
+    var disp = $('#bottomPanel').css('display');
+    if (disp == 'none') {
         //Show the panel
         $(topPanel).height('50%');
         $(bottomPanel).height('45%');
         $(bottomPanel).show();
         $(panelButtonIcon).removeClass('glyphicon-menu-up');
         $(panelButtonIcon).addClass('glyphicon-menu-down');
+    }
+}
+
+function toggleCollapsePane() {
+    var disp = $('#bottomPanel').css('display');
+    if (disp == 'block') {
+        collapsePane();
+    }
+    else if (disp == 'none') {
+        uncollapsePane();
     }
 }

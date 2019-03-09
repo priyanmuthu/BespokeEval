@@ -92,6 +92,7 @@ class rawScriptUI extends UI {
         var runButton = document.createElement('button');
         runButton.classList.add('btn');
         runButton.classList.add('btn-default');
+        runButton.classList.add('run-btn');
         runButton.type = "submit";
         bSpan.appendChild(runButton);
         var rIcon = document.createElement('i');

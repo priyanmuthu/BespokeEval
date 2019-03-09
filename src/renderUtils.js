@@ -21,6 +21,7 @@ function createRunButton() {
     runButton.classList.add('btn');
     runButton.classList.add('btn-primary');
     runButton.classList.add('pull-right');
+    runButton.classList.add('run-btn');
     // runButton.innerText = "Run";
     runButton.style.minWidth = "40px";
     var rIcon = document.createElement('i');
