@@ -84,6 +84,13 @@ const videoFiles = {
     'mp4': 'video/mp4'
 }
 
+const terminalOutput = [
+    '>',
+    '>>',
+    '&>',
+    '&>>'
+];
+
 const modalMaxHeight = '900px';
 
 const trackingPort = 3000; // Do not forget to change in the track.sh file
@@ -98,5 +105,6 @@ module.exports = {
     videoFiles: videoFiles,
     paramTypes: paramTypes,
     modalMaxHeight: modalMaxHeight,
-    stateStrings: stateStrings
+    stateStrings: stateStrings,
+    terminalOutput: terminalOutput
 };

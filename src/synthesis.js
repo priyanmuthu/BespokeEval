@@ -27,6 +27,15 @@ function parseArgs(commandStr) {
             var arg = argvArr[i];
             // if the arg is present in positional array, add it to params
             if (cObj['_'].indexOf(arg) > -1) {
+                //Redirecting terminal output
+                if (constants.terminalOutput.indexOf(arg) > -1 && i + 1 < argvArr.length) {
+                    var val = argvArr[i + 1];
+                    cYAMLObj[constants.yamlStrings.parameterArray].push(getParamObject(arg, val));
+                    cObj['_'].splice(cObj['_'].indexOf(arg), 1);
+                    cObj['_'].splice(cObj['_'].indexOf(val), 1);
+                    i++;
+                    continue;
+                }
                 // Positional Argument: add it to the param array
                 var pObj = {};
                 pObj[constants.yamlStrings.parameterName] = "";
