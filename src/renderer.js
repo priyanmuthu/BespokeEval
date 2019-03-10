@@ -359,8 +359,11 @@ function renderBooleanParam(param, callBacks) {
     pDiv.id = 'param_bool_' + booleanCount;
     booleanCount = booleanCount + 1;
     pDiv.classList.add('form-group');
-    // pDiv.insertAdjacentHTML('beforeend', '<br/>');
-    pDiv.appendChild(createRightDiv(param, callBacks));
+    var topDiv = document.createElement('div');
+    topDiv.classList.add('clearfix');
+    topDiv.insertAdjacentHTML('beforeend', '<br/>');
+    topDiv.appendChild(createRightDiv(param, callBacks));
+    pDiv.appendChild(topDiv);
 
     var paramEdit = document.createElement('input');
     paramEdit.classList.add('form-check-input');
@@ -1279,6 +1282,10 @@ function renderHistoryList(scriptObj) {
         // show the array
         console.log(comKey);
         var commands = scriptObj[comKey];
+        if(commands.length == 0){
+            delete scriptObj[comKey];
+            continue;
+        }
         var commandDiv = document.createElement('div');
         commandDiv.style.padding = '10px';
         commandDiv.style.borderStyle = 'solid';
@@ -1318,7 +1325,6 @@ function renderHistoryList(scriptObj) {
                 const idx = commands.indexOf(com);
                 if (idx > -1) {
                     commands.splice(idx, 1);
-                    console.log(commands, idx);
                     comList.removeChild(listItem);
                 }
             });

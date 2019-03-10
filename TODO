@@ -1,5 +1,6 @@
 
 Todo:
+  ☐ Delete command from script object if all history is deleted.
   ☐ File changes in the current directory
   ☐ Set directory
   ☐ Fix save files

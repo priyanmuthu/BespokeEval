@@ -7,6 +7,8 @@ class cell {
     constructor(deleteCell) {
         this.deleteCell = deleteCell;
         this.cDiv = document.createElement('div');
+        this.cDiv.style.marginTop = '20px';
+        this.cDiv.style.marginBottom = '20px';
         // this.cDiv.addEventListener('focusin', () => {
         //     console.log('focused');
         // });
