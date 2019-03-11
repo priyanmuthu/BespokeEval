@@ -95,6 +95,8 @@ const modalMaxHeight = '900px';
 
 const trackingPort = 3000; // Do not forget to change in the track.sh file
 
+const enableDraggable = true;
+
 module.exports = {
     yamlStrings: yamlStrings,
     yamlTypes: yamlTypes,
@@ -106,5 +108,6 @@ module.exports = {
     paramTypes: paramTypes,
     modalMaxHeight: modalMaxHeight,
     stateStrings: stateStrings,
-    terminalOutput: terminalOutput
+    terminalOutput: terminalOutput,
+    enableDraggable: enableDraggable
 };

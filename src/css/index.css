@@ -87,3 +87,8 @@ div.awesomplete {
     background-color: #282828;
     display: block;
   }
+
+  .list-group-item {
+      background-color: #282828 !important;
+      border: 0 !important;
+  }

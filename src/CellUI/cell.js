@@ -9,6 +9,9 @@ class cell {
         this.cDiv = document.createElement('div');
         this.cDiv.style.marginTop = '20px';
         this.cDiv.style.marginBottom = '20px';
+        if(constants.enableDraggable){
+            this.cDiv.classList.add('list-group-item');
+        }
         // this.cDiv.addEventListener('focusin', () => {
         //     console.log('focused');
         // });
