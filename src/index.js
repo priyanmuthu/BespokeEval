@@ -45,7 +45,7 @@ $(document).ready(() => {
     if(constants.enableDraggable){
         formDiv.classList.add('list-group');
         var sortable = Sortable.create(formDiv, {
-            filter: 'input',
+            filter: 'input,textarea',
             preventOnFilter: false,
         });
     }
