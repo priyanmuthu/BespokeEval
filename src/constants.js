@@ -97,6 +97,8 @@ const trackingPort = 3000; // Do not forget to change in the track.sh file
 
 const enableDraggable = true;
 
+const trackedFile = null;
+
 module.exports = {
     yamlStrings: yamlStrings,
     yamlTypes: yamlTypes,
@@ -109,5 +111,6 @@ module.exports = {
     modalMaxHeight: modalMaxHeight,
     stateStrings: stateStrings,
     terminalOutput: terminalOutput,
-    enableDraggable: enableDraggable
+    enableDraggable: enableDraggable,
+    trackedFile: trackedFile
 };

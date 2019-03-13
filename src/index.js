@@ -42,7 +42,7 @@ $(document).ready(() => {
 
     collapsePane();
     var formDiv = document.getElementById('formDiv');
-    if(constants.enableDraggable){
+    if (constants.enableDraggable) {
         formDiv.classList.add('list-group');
         var sortable = Sortable.create(formDiv, {
             filter: 'input,textarea',
@@ -59,7 +59,7 @@ function showHistory() {
     var historyModalDiv = document.getElementById('historyModalDiv');
     var modalRes = commandUI.getHistory();
     historyModalDiv.appendChild(modalRes.modalDiv);
-    $('#'+modalRes.modalID).modal('show');
+    $('#' + modalRes.modalID).modal('show');
 
 }
 
@@ -69,7 +69,15 @@ function addMenu() {
         label: 'File',
         submenu: [
             {
-                label: 'Save to file',
+                label: 'Open',
+                accelerator: 'CmdOrCtrl+O',
+                click(item, focusedWindow) {
+                    console.log('clicked load: ', item);
+                    loadState();
+                }
+            },
+            {
+                label: 'Save',
                 accelerator: 'CmdOrCtrl+S',
                 click(item, focusedWindow) {
                     console.log('clicked save: ', item);
@@ -77,11 +85,11 @@ function addMenu() {
                 }
             },
             {
-                label: 'Load from file',
-                accelerator: 'CmdOrCtrl+O',
+                label: 'Save As',
+                accelerator: 'CmdOrCtrl+Shift+S',
                 click(item, focusedWindow) {
-                    console.log('clicked load: ', item);
-                    loadState();
+                    console.log('clicked save: ', item);
+                    saveAsState();
                 }
             }
         ]
@@ -91,6 +99,14 @@ function addMenu() {
 }
 
 function saveState() {
+    if (constants.trackedFile !== null) {
+        fs.writeFileSync(constants.trackedFile, getStateYamlText());
+        return;
+    }
+    saveAsState();
+}
+
+function saveAsState() {
     var options = {
         defaultPath: process.cwd(),
         filters: [
@@ -99,11 +115,7 @@ function saveState() {
     };
     dialog.showSaveDialog(null, options, (path) => {
         if (path === undefined || path === null) { return; }
-        var cellState = cellArray.map(c => c.getState());
-        var totalState = {};
-        totalState[constants.stateStrings.cellArray] = cellState;
-        totalState[constants.stateStrings.commandObjs] = commandUI.commandObjs;
-        var yamlText = utils.getYAMLText(totalState);
+        var yamlText = getStateYamlText();
         try {
             fs.writeFileSync(path, yamlText);
         }
@@ -111,6 +123,15 @@ function saveState() {
             console.error(e);
         }
     });
+}
+
+function getStateYamlText() {
+    var cellState = cellArray.map(c => c.getState());
+    var totalState = {};
+    totalState[constants.stateStrings.cellArray] = cellState;
+    totalState[constants.stateStrings.commandObjs] = commandUI.commandObjs;
+    var yamlText = utils.getYAMLText(totalState);
+    return yamlText;
 }
 
 function loadState() {
@@ -130,7 +151,7 @@ function loadState() {
         var dirPath = path.dirname(filePath);
         process.chdir(dirPath);
         var rcs = require('./terminal.js').runCommandString;
-        rcs('cd '+dirPath);
+        rcs('cd ' + dirPath);
         rcs('clear');
 
 
@@ -142,6 +163,7 @@ function loadState() {
         for (var i = 0; i < cellArray.length; i++) {
             addCell(cellArray[i]);
         }
+        constants.trackedFile = filePath;
     });
 }
 
@@ -191,7 +213,7 @@ function initCollapseUI() {
     });
 }
 
-function collapsePane(){
+function collapsePane() {
     var bottomPanel = '#bottomPanel';
     var topPanel = '#topPanel';
     var panelButtonIcon = '#panelButtonIcon';
@@ -205,7 +227,7 @@ function collapsePane(){
     }
 }
 
-function uncollapsePane(){
+function uncollapsePane() {
     var bottomPanel = '#bottomPanel';
     var topPanel = '#topPanel';
     var panelButtonIcon = '#panelButtonIcon';
