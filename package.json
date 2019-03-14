@@ -4,12 +4,16 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron .",
+    "pack": "build --dir",
+    "dist": "build"
   },
   "author": "priyan",
   "license": "ISC",
   "devDependencies": {
     "electron": "^4.0.1",
+    "electron-builder": "^20.39.0",
     "electron-rebuild": "^1.8.2",
     "webpack-node-externals": "^1.7.2"
   },
@@ -29,5 +33,11 @@
     "uuid": "^3.3.2",
     "xterm": "^3.10.1",
     "yargs-parser": "^11.1.1"
+  },
+  "build": {
+    "appId": "com.pv.guisynthesis",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    }
   }
 }
