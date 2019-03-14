@@ -130,6 +130,7 @@ function getStateYamlText() {
     var totalState = {};
     totalState[constants.stateStrings.cellArray] = cellState;
     totalState[constants.stateStrings.commandObjs] = commandUI.commandObjs;
+    totalState[constants.stateStrings.manualObjs] = commandUI.manualObjs;
     var yamlText = utils.getYAMLText(totalState);
     return yamlText;
 }
@@ -159,6 +160,7 @@ function loadState() {
         var yamlObj = utils.getYAMLObject(yamlText);
         var cellArray = yamlObj[constants.stateStrings.cellArray];
         commandUI.commandObjs = yamlObj[constants.stateStrings.commandObjs];
+        commandUI.manualObjs = yamlObj[constants.stateStrings.manualObjs];
         clearNotebook();
         for (var i = 0; i < cellArray.length; i++) {
             addCell(cellArray[i]);

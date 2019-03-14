@@ -13,6 +13,7 @@ Todo:
   ☐ Grey out unselected divs - maybe disable it?
   ☐ cherry pick commands
   ☐ positional track command
+  ☐ manual edit - High priority
   ✔ dropdown / slider for numbers @done(19-03-09 00:54)
   ✔ Handle quotes in string param @done(19-01-31 03:29)
   ✔ Handle quotes in bash: track @done(19-01-31 03:29)

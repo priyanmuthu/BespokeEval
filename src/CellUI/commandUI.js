@@ -2,6 +2,7 @@ const UI = require('./UI.js').UI;
 const constants = require('../constants.js');
 const renderer = require('../renderer.js');
 const synthesis = require('../synthesis.js');
+const utils = require('../utils.js');
 
 class commandUI extends UI {
 
@@ -9,6 +10,9 @@ class commandUI extends UI {
         super(cell);
         if (commandUI.commandObjs === undefined) {
             commandUI.commandObjs = {};
+        }
+        if (commandUI.manualObjs === undefined) {
+            commandUI.manualObjs = {};
         }
         this.rawText = "";
         this.renderObj = null;
@@ -146,6 +150,15 @@ class commandUI extends UI {
         return this.cellElement;
     }
 
+    updateManualPreference(commandName, paramName, paramObject) {
+        if(!(commandName in commandUI.manualObjs)){
+            commandUI.manualObjs[commandName] = {};
+        }
+        commandUI.manualObjs[commandName][paramName] = utils.paramCopy(paramObject);
+
+        console.log(commandUI.manualObjs, paramObject);
+    }
+
     showGUI(rawText) {
         if (rawText === "") { return; }
         // Generate GUI
@@ -171,8 +184,8 @@ class commandUI extends UI {
     }
 
     renderScript(scriptText) {
-        console.log(scriptText);
-        var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs,
+        console.log(commandUI.commandObjs, scriptText);
+        var mergedObject = synthesis.mergeScriptObjects(commandUI.commandObjs, commandUI.manualObjs,
             synthesis.parseScript(scriptText));
         this.renderObj = mergedObject;
         var guiDiv = renderer.renderScriptUI(mergedObject, this);
@@ -233,7 +246,7 @@ class commandUI extends UI {
         this.cellInput.value = state[constants.stateStrings.cellInput];
         this.renderObj = state[constants.stateStrings.renderObject];
         this.UIVisible = state[constants.stateStrings.UIVisible];
-        if(this.UIVisible){
+        if (this.UIVisible) {
             this.showGUI(this.cellInput.value);
         }
     }

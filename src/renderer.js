@@ -53,6 +53,17 @@ function renderScriptUI(scriptObject, scriptUI = null) {
     var onParamChange = function () {
         // Render script object again
         console.log('object change', scriptObject);
+        // find the manually edited object
+        for(var idx = 0; idx < scriptObject.length; idx++){
+            var pArr = scriptObject[idx][constants.yamlStrings.parameterArray];
+            for(var pidx = 0; pidx < pArr.length; pidx++){
+                if(constants.yamlStrings.manual in pArr[pidx]){
+                    scriptUI.updateManualPreference(scriptObject[idx][constants.yamlStrings.commandName],
+                        pArr[pidx][constants.yamlStrings.parameterName],
+                        pArr[pidx]);
+                }
+            }
+        }
         console.log(getScriptString(scriptObject));
         scriptUI.showGUI(getScriptString(scriptObject));
     };
@@ -1035,6 +1046,7 @@ function createTypeSettingModal(param, callBacks) {
                     param[constants.yamlStrings.defaultValue] = paramEdit.value;
                     if (valueEdit.value !== '') {
                         param[constants.yamlStrings.value] = utils.commaSeparateValues(valueEdit.value);
+                        console.log(utils.commaSeparateValues(valueEdit.value));
                     }
                     param[constants.yamlStrings.required] = true;
                     break;

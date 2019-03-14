@@ -24,6 +24,7 @@ const yamlStrings = {
 
 const stateStrings = {
     commandObjs: 'commandObjs',
+    manualObjs: 'manualObjs',
     cellArray: 'cellArray',
     rawText: 'rawText',
     cellInput: 'cellInput',

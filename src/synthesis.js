@@ -100,19 +100,26 @@ function cleanArg(arg) {
     return arg;
 }
 
-function mergeScriptObjects(commandObjects, scriptObject) {
+function mergeScriptObjects(commandObjects, manualObjs, scriptObject) {
     for (var i in scriptObject) {
         var cmdObj = scriptObject[i];
-        // TODO
         var cmdName = cmdObj[constants.yamlStrings.commandName];
         if (!(cmdName in commandObjects)) { continue; }
         // There are objects
         var mObj = mergeCommandObjects(commandObjects[cmdName], cmdName);
+        var manualParam = manualObjs[cmdName];
         var paramArr = cmdObj[constants.yamlStrings.parameterArray];
         for (var i = 0; i < paramArr.length; i++) {
             var param = paramArr[i];
             var pName = param[constants.yamlStrings.parameterName];
-            if (pName in mObj) {
+            if(manualParam !== undefined && pName in manualParam){
+                var newParam = utils.paramCopy(manualParam[pName]);
+                if (constants.yamlStrings.defaultValue in param) {
+                    newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
+                }
+                paramArr[i] = newParam;
+            }
+            else if (pName in mObj) {
                 var newParam = mObj[pName];
                 if (constants.yamlStrings.defaultValue in param) {
                     newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
@@ -122,7 +129,7 @@ function mergeScriptObjects(commandObjects, scriptObject) {
         }
     }
 
-    console.log(scriptObject);
+    // console.log(scriptObject);
     return scriptObject;
 }
 
@@ -151,11 +158,12 @@ function mergeCommandObjects(commandObjectsArr, command) {
         }
     }
 
-    console.log(mergedDict);
+    // console.log(mergedDict);
 
     // Process merged dictionary
     var resDict = {};
     for (var pName in mergedDict) {
+        // if pname in manual, then don't change
         var pArr = mergedDict[pName];
         var typeSet = new Set(pArr.map(p => p[constants.yamlStrings.parameterType]));
         if (typeSet.size === 1) {

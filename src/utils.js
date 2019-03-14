@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path');
 const yaml = require('js-yaml');
 const uuid = require('uuid/v4');
+const constants = require('./constants.js');
 function readFileText(path) {
     var fileText = null;
     try {
@@ -64,30 +65,43 @@ function RunCommandAsProcess(commandString, callback) {
     });
 }
 
-function getUniqueID(){
+function getUniqueID() {
     return uuid().replace(/-/g, "");
 }
 
-module.exports.onChange = (object, onChange) => {
-	const handler = {
-		get(target, property, receiver) {
-			try {
-				return new Proxy(target[property], handler);
-			} catch (err) {
-				return Reflect.get(target, property, receiver);
-			}
-		},
-		defineProperty(target, property, descriptor) {
-			onChange();
-			return Reflect.defineProperty(target, property, descriptor);
-		},
-		deleteProperty(target, property) {
-			onChange();
-			return Reflect.deleteProperty(target, property);
-		}
-	};
+function paramCopy(paramObj, filter = []) {
+    newParam = {};
+    var copyExclude = ["isinclude",
+        "evaluate"];
+    for (key in constants.yamlStrings) {
+        if (copyExclude.includes(key)) { continue; }
+        if (filter.includes(key)) { continue; }
+        if (!(constants.yamlStrings[key] in paramObj)) { continue; }
+        newParam[constants.yamlStrings[key]] = paramObj[constants.yamlStrings[key]];
+    }
+    return newParam;
+}
 
-	return new Proxy(object, handler);
+module.exports.onChange = (object, onChange) => {
+    const handler = {
+        get(target, property, receiver) {
+            try {
+                return new Proxy(target[property], handler);
+            } catch (err) {
+                return Reflect.get(target, property, receiver);
+            }
+        },
+        defineProperty(target, property, descriptor) {
+            onChange();
+            return Reflect.defineProperty(target, property, descriptor);
+        },
+        deleteProperty(target, property) {
+            onChange();
+            return Reflect.deleteProperty(target, property);
+        }
+    };
+
+    return new Proxy(object, handler);
 };
 
 module.exports.readFileText = readFileText;
@@ -100,3 +114,4 @@ module.exports.writeTextToFile = writeTextToFile;
 module.exports.commaSeparateValues = commaSeparateValues;
 module.exports.RunCommandAsProcess = RunCommandAsProcess;
 module.exports.getUniqueID = getUniqueID;
+module.exports.paramCopy = paramCopy;
