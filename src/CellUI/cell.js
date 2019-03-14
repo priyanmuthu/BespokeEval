@@ -11,6 +11,7 @@ class cell {
         this.cDiv.style.marginBottom = '20px';
         if(constants.enableDraggable){
             this.cDiv.classList.add('list-group-item');
+            this.cDiv.classList.add('cell-list');
         }
         // this.cDiv.addEventListener('focusin', () => {
         //     console.log('focused');

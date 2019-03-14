@@ -27,11 +27,11 @@ function parseArgs(commandStr) {
             var arg = argvArr[i];
             // if the arg is present in positional array, add it to params
             if (cObj['_'].indexOf(arg) > -1) {
-                if (i == 1) {
-                    cYAMLObj[constants.yamlStrings.commandName] = commandName + ' ' + arg;
-                    cObj['_'].splice(cObj['_'].indexOf(arg), 1);
-                    continue;
-                }
+                // if (i == 1) {
+                //     cYAMLObj[constants.yamlStrings.commandName] = commandName + ' ' + arg;
+                //     cObj['_'].splice(cObj['_'].indexOf(arg), 1);
+                //     continue;
+                // }
                 //Redirecting terminal output
                 if (constants.terminalOutput.indexOf(arg) > -1 && i + 1 < argvArr.length) {
                     var val = argvArr[i + 1];

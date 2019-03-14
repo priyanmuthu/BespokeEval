@@ -89,7 +89,8 @@ const terminalOutput = [
     '>',
     '>>',
     '&>',
-    '&>>'
+    '&>>',
+    '<'
 ];
 
 const modalMaxHeight = '900px';
@@ -99,6 +100,8 @@ const trackingPort = 3000; // Do not forget to change in the track.sh file
 const enableDraggable = true;
 
 const trackedFile = null;
+
+const enableInteractiveTerminal = true;
 
 module.exports = {
     yamlStrings: yamlStrings,
@@ -113,5 +116,6 @@ module.exports = {
     stateStrings: stateStrings,
     terminalOutput: terminalOutput,
     enableDraggable: enableDraggable,
-    trackedFile: trackedFile
+    trackedFile: trackedFile,
+    enableInteractiveTerminal: enableInteractiveTerminal
 };

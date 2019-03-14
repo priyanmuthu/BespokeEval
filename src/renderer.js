@@ -1282,6 +1282,7 @@ function getScriptString(scriptObj) {
 }
 
 function renderHistoryList(scriptObj) {
+    console.log(scriptObj);
     var modalRes = renderUtils.createModal();
     var modalBodyDiv = modalRes.modalBodyDiv;
     var historyDiv = document.createElement('div');
@@ -1310,7 +1311,7 @@ function renderHistoryList(scriptObj) {
         commandLabel.innerText = 'Command: ' + comKey;
         commandDiv.appendChild(commandLabel);
 
-        var comList = document.createElement('ul');
+        const comList = document.createElement('ul');
         comList.style.margin = '10px';
         comList.classList.add('list-group');
         commandDiv.appendChild(comList);
@@ -1318,8 +1319,9 @@ function renderHistoryList(scriptObj) {
         for (var i = 0; i < commands.length; i++) {
             const com = commands[i];
             const listItem = document.createElement('li');
-            listItem.classList.add('list-group-item')
-            listItem.classList.add('clearfix')
+            listItem.classList.add('list-group-item');
+            listItem.classList.add('history');
+            listItem.classList.add('clearfix');
             comList.appendChild(listItem);
             listItem.insertAdjacentHTML('beforeend', com[constants.yamlStrings.rawCommand]);
 
@@ -1332,13 +1334,14 @@ function renderHistoryList(scriptObj) {
             icon.classList.add('glyphicon');
             icon.classList.add('glyphicon-trash');
             deleteButton.appendChild(icon);
-
+            console.log(listItem);
             deleteButton.addEventListener('click', () => {
                 const idx = commands.indexOf(com);
                 if (idx > -1) {
                     commands.splice(idx, 1);
-                    comList.removeChild(listItem);
                 }
+                console.log(listItem);
+                comList.removeChild(listItem);
             });
         }
 

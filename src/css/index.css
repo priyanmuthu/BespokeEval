@@ -88,7 +88,7 @@ div.awesomplete {
     display: block;
   }
 
-  .list-group-item {
+  .list-group-item.cell-list {
       background-color: #282828 !important;
       border: 0 !important;
   }

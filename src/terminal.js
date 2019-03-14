@@ -1,3 +1,4 @@
+const constants = require('./constants.js');
 function initializeTerminal() {
   const os = require('os');
   const pty = require('node-pty');
@@ -7,7 +8,6 @@ function initializeTerminal() {
   const editor = require('./editor.js');
   const express = require('express');
   const bodyParser = require('body-parser');
-  const constants = require('./constants.js');
   const utils = require('./utils.js');
 
   // Initialize command listener before initializing the terminal
@@ -100,10 +100,13 @@ function initializeTerminal() {
 }
 
 function toggleCommandStart(start = false) {
-  $('.run-btn').prop('disabled', start);
   if (start) {
     $('#panelButton').trigger('uncollapse');
   }
+  if (!constants.enableInteractiveTerminal) {
+    $('.run-btn').prop('disabled', start);
+  }
+  return;
 }
 
 function runCommand(commandText) {
