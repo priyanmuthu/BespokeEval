@@ -78,7 +78,8 @@ const textFiles = {
     'yaml': 'yaml',
     'md': 'markdown',
     'js': 'javascript',
-    'xml': 'xml'
+    'xml': 'xml',
+    'html': 'html'
 };
 
 const videoFiles = {
