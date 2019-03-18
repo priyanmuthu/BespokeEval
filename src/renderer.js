@@ -24,7 +24,7 @@ const editor = require('./editor.js');
 const renderUtils = require('./renderUtils.js');
 
 //render utils functions
-const {createInfo} = require('./renderUtils.js');
+const { createInfo } = require('./renderUtils.js');
 
 
 function renderScriptUI(scriptObject, scriptUI = null) {
@@ -54,10 +54,10 @@ function renderScriptUI(scriptObject, scriptUI = null) {
         // Render script object again
         console.log('object change', scriptObject);
         // find the manually edited object
-        for(var idx = 0; idx < scriptObject.length; idx++){
+        for (var idx = 0; idx < scriptObject.length; idx++) {
             var pArr = scriptObject[idx][constants.yamlStrings.parameterArray];
-            for(var pidx = 0; pidx < pArr.length; pidx++){
-                if(constants.yamlStrings.manual in pArr[pidx]){
+            for (var pidx = 0; pidx < pArr.length; pidx++) {
+                if (constants.yamlStrings.manual in pArr[pidx]) {
                     scriptUI.updateManualPreference(scriptObject[idx][constants.yamlStrings.commandName],
                         pArr[pidx][constants.yamlStrings.parameterName],
                         pArr[pidx]);
@@ -68,7 +68,7 @@ function renderScriptUI(scriptObject, scriptUI = null) {
         scriptUI.showGUI(getScriptString(scriptObject));
     };
 
-    var callBacks = {onParamChange: onParamChange};
+    var callBacks = { onParamChange: onParamChange };
 
     //for each command
     scriptDiv.appendChild(renderCommandUI(scriptObject[0], callBacks));
@@ -246,11 +246,21 @@ function renderStringParam(param, callBacks) {
 
     param[constants.yamlStrings.evaluate] = function () {
         var valStr = paramEdit.value;
-
+        if (isQuoted(valStr)) { return valStr; }
         return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
     return pDiv;
+}
+
+function isQuoted(str) {
+    if (str[0] == "'" && str[str.length - 1] == "'") {
+        return true;
+    }
+    if (str[0] == '"' && str[str.length - 1] == '"') {
+        return true;
+    }
+    return false;
 }
 
 function renderNumberParam(param, callBacks) {
@@ -1295,7 +1305,7 @@ function renderHistoryList(scriptObj) {
         // show the array
         console.log(comKey);
         var commands = scriptObj[comKey];
-        if(commands.length == 0){
+        if (commands.length == 0) {
             delete scriptObj[comKey];
             continue;
         }
