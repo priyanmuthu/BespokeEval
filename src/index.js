@@ -10,6 +10,7 @@ const celljs = require('./CellUI/cell.js');
 const commandUI = require('./CellUI/commandUI.js').commandUI;
 const constants = require('./constants.js');
 var cellArray = [];
+var cellDict = {};
 
 $(document).ready(() => {
     // Do everything here
@@ -113,11 +114,14 @@ function saveAsState() {
             { name: 'YAML', extensions: ['yaml'] }
         ]
     };
-    dialog.showSaveDialog(null, options, (path) => {
-        if (path === undefined || path === null) { return; }
+    dialog.showSaveDialog(null, options, (filePath) => {
+        if (filePath === undefined || filePath === null) { return; }
         var yamlText = getStateYamlText();
         try {
-            fs.writeFileSync(path, yamlText);
+            fs.writeFileSync(filePath, yamlText);
+            var dirPath = path.dirname(filePath);
+            process.chdir(dirPath);
+            constants.trackedFile = filePath;
         }
         catch (e) {
             console.error(e);
@@ -126,7 +130,13 @@ function saveAsState() {
 }
 
 function getStateYamlText() {
-    var cellState = cellArray.map(c => c.getState());
+    let cellState = [];
+    $('.cell-list').each((i, obj) => {
+        var cID = obj.id;
+        let someCell = cellDict[cID];
+        cellState.push(someCell.getState());
+    });
+    // let cellState = cellArray.map(c => c.getState());
     var totalState = {};
     totalState[constants.stateStrings.cellArray] = cellState;
     totalState[constants.stateStrings.commandObjs] = commandUI.commandObjs;
@@ -174,7 +184,11 @@ function addCell(state = null) {
     var newCell = new celljs.cell(deleteCell);
     if (state !== undefined && state !== null) { newCell.loadState(state); }
     cellArray.push(newCell);
-    formDiv.appendChild(newCell.getUI());
+    let cellUI = newCell.getUI();
+    let uid = utils.getUniqueID();
+    cellUI.id = uid;
+    formDiv.appendChild(cellUI);
+    cellDict[uid] = newCell;
     $('.selectpicker').selectpicker();
 
 }
