@@ -223,14 +223,7 @@ function renderStringParam(param, callBacks) {
     stringCount += 1;
     pDiv.classList.add('form-group');
 
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -270,14 +263,7 @@ function renderNumberParam(param, callBacks) {
     numberCount += 1;
     pDiv.classList.add('form-group');
 
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -348,14 +334,7 @@ function renderTimeParam(param, callBacks) {
     timeCount = timeCount + 1;
     pDiv.classList.add('form-group');
 
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, callBacks));
 
     pDiv.appendChild(paramName);
@@ -395,12 +374,7 @@ function renderBooleanParam(param, callBacks) {
     }
     pDiv.appendChild(paramEdit);
 
-    var paramName = document.createElement('label');
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-    paramName.innerHTML = param[constants.yamlStrings.parameterName]
+    var paramName = renderUtils.createLabel(param);
     paramName.style.marginLeft = "10px";
     paramName.style.fontSize = "16px";
     pDiv.appendChild(paramName);
@@ -419,15 +393,10 @@ function renderDropdownParam(param, callBacks) {
     pDiv.style.color = "#000000";
 
     // label
-    var paramName = document.createElement('label');
+    var paramName = renderUtils.createLabel(param);
     paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -463,7 +432,9 @@ function renderDropdownParam(param, callBacks) {
     }
 
     param[constants.yamlStrings.evaluate] = function () {
-        return dInput.value;
+        var valStr = dInput.value;
+        if (isQuoted(valStr)) { return valStr; }
+        return (valStr.includes(' ')) ? '"' + valStr + '"' : valStr;
     }
 
     return pDiv;
@@ -476,15 +447,10 @@ function renderArrayParam(param, callBacks) {
     pDiv.style.color = "#000000";
 
     // label
-    var paramName = document.createElement('label');
+    var paramName = renderUtils.createLabel(param);
     paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -535,14 +501,7 @@ function renderFileDialog(param, scriptUI) {
     pDiv.classList.add('form-group');
 
     // label
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, scriptUI));
     pDiv.appendChild(paramName);
 
@@ -728,14 +687,7 @@ function renderArrayFileDialog(param, callBacks) {
     pDiv.classList.add('form-group');
 
     // label
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -810,14 +762,7 @@ function renderFolderDialog(param, callBacks) {
     pDiv.classList.add('form-group');
 
     // label
-    var paramName = document.createElement('label');
-    paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-
-    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    var paramName = renderUtils.createLabel(param);
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 

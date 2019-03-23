@@ -77,9 +77,22 @@ function createModal() {
     return { modalDiv: modalDiv, modalBodyDiv: modalBodyDiv, modalFooterDiv: modalFooterDiv, modalID: modalID };
 }
 
+function createLabel(param) {
+    var paramName = document.createElement('label');
+    paramName.style.width = '100%';
+    if (constants.yamlStrings.info in param) {
+        var infoIcon = createInfo(param[constants.yamlStrings.info]);
+        paramName.appendChild(infoIcon);
+    }
+
+    paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    return paramName;
+}
+
 module.exports = {
     createEditButton: createEditButton,
     createRunButton: createRunButton,
     createModal: createModal,
-    createInfo: createInfo
+    createInfo: createInfo,
+    createLabel: createLabel
 };
