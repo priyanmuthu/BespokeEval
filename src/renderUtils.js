@@ -84,8 +84,13 @@ function createLabel(param) {
         var infoIcon = createInfo(param[constants.yamlStrings.info]);
         paramName.appendChild(infoIcon);
     }
-
+    
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
+    paramName.setAttribute('contenteditable', true);
+    paramName.addEventListener('keyup', (ev) => {
+        console.log('parameter name changed to: ', paramName.innerText);
+        // Modify stuff here
+    });
     return paramName;
 }
 
