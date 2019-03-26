@@ -65,6 +65,13 @@ function RunCommandAsProcess(commandString, callback) {
     });
 }
 
+async function RunCommandAsProcessAsync(commandString) {
+    const { exec } = require('promisify-child-process')
+    const { stdout, stderr } = await exec(commandString);
+    return stdout;
+}
+
+
 function getUniqueID() {
     return uuid().replace(/-/g, "");
 }
@@ -115,3 +122,4 @@ module.exports.commaSeparateValues = commaSeparateValues;
 module.exports.RunCommandAsProcess = RunCommandAsProcess;
 module.exports.getUniqueID = getUniqueID;
 module.exports.paramCopy = paramCopy;
+module.exports.RunCommandAsProcessAsync = RunCommandAsProcessAsync;
