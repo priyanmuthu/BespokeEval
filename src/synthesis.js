@@ -90,6 +90,29 @@ function parseScript(scriptStr) {
     return commandArr;
 }
 
+function splitScript(scriptStr) {
+    var commandStrArr = []
+    var argArr = stringArgv(scriptStr);
+
+    var currentCommand = "";
+    for (var i in argArr) {
+        if (argArr[i] === "|") {
+            commandStrArr.push(currentCommand);
+            currentCommand = "";
+            continue;
+        }
+        var argStr = (argArr[i].includes(' ') || argArr[i].includes('|'))
+            ? "\"" + argArr[i] + "\"" : argArr[i];
+        currentCommand = currentCommand.concat(' ', argStr);
+    }
+
+    if (currentCommand != "") {
+        commandStrArr.push(currentCommand);
+        currentCommand = "";
+    }
+    return commandStrArr;
+}
+
 function cleanArg(arg) {
     if (arg.startsWith('--')) {
         return arg.replace('--', '');
@@ -107,12 +130,16 @@ function mergeScriptObjects(commandObjects, manualObjs, scriptObject) {
         if (!(cmdName in commandObjects)) { continue; }
         // There are objects
         var mObj = mergeCommandObjects(commandObjects[cmdName], cmdName);
+
+        //get the manpage explanation
+        let explain = utils.ExtractManPageInfo(cmdObj[constants.yamlStrings.rawCommand]);
+
         var manualParam = manualObjs[cmdName];
         var paramArr = cmdObj[constants.yamlStrings.parameterArray];
         for (var i = 0; i < paramArr.length; i++) {
             var param = paramArr[i];
             var pName = param[constants.yamlStrings.parameterName];
-            if(manualParam !== undefined && pName in manualParam){
+            if (manualParam !== undefined && pName in manualParam) {
                 var newParam = utils.paramCopy(manualParam[pName]);
                 if (constants.yamlStrings.defaultValue in param) {
                     newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
@@ -125,6 +152,11 @@ function mergeScriptObjects(commandObjects, manualObjs, scriptObject) {
                     newParam[constants.yamlStrings.defaultValue] = param[constants.yamlStrings.defaultValue];
                 }
                 paramArr[i] = newParam;
+            }
+
+            // add param info
+            if(pName in explain){
+                paramArr[i][constants.yamlStrings.info] = explain[pName];
             }
         }
     }

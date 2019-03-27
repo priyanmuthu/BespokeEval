@@ -32,13 +32,16 @@ function createRunButton() {
 }
 
 function createInfo(infoText) {
+    var infoDiv = document.createElement('div');
     var infoIcon = document.createElement('span');
-    infoIcon.classList.add('glyphicon');
-    infoIcon.classList.add('glyphicon-info-sign');
+    infoIcon.style.color = '#FFFFFF';
+    infoIcon.classList.add('fa');
+    infoIcon.classList.add('fa-info-circle');
     infoIcon.setAttribute('data-toggle', 'tooltip');
     infoIcon.setAttribute('title', infoText);
     infoIcon.style.marginRight = "10px";
-    return infoIcon;
+    infoDiv.appendChild(infoIcon);
+    return infoDiv;
 }
 
 function createModal() {
@@ -78,20 +81,25 @@ function createModal() {
 }
 
 function createLabel(param) {
+    var labelDiv = document.createElement('div');
+    // labelDiv.classList.add('form-inline');
     var paramName = document.createElement('label');
     paramName.style.width = '100%';
-    if (constants.yamlStrings.info in param) {
-        var infoIcon = createInfo(param[constants.yamlStrings.info]);
-        paramName.appendChild(infoIcon);
-    }
-    
+    paramName.style.display = 'inline-block';
     paramName.insertAdjacentHTML('beforeend', param[constants.yamlStrings.parameterName]);
     paramName.setAttribute('contenteditable', true);
     paramName.addEventListener('keyup', (ev) => {
         console.log('parameter name changed to: ', paramName.innerText);
         // Modify stuff here
     });
-    return paramName;
+    labelDiv.appendChild(paramName);
+    // if (constants.yamlStrings.info in param) {
+    //     var infoIcon = createInfo(param[constants.yamlStrings.info]);
+    //     infoIcon.style.display = 'inline-block';
+    //     labelDiv.appendChild(infoIcon);
+    // }
+
+    return labelDiv;
 }
 
 module.exports = {

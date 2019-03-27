@@ -396,7 +396,7 @@ function renderDropdownParam(param, callBacks) {
     var paramName = renderUtils.createLabel(param);
     paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
-    
+
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -450,7 +450,7 @@ function renderArrayParam(param, callBacks) {
     var paramName = renderUtils.createLabel(param);
     paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
-    
+
     pDiv.appendChild(createRightDiv(param, callBacks));
     pDiv.appendChild(paramName);
 
@@ -821,6 +821,11 @@ function createRightDiv(param, callBacks) {
     var rightDiv = document.createElement('div');
     rightDiv.classList.add('pull-right');
     rightDiv.style.cssFloat = 'left';
+    if (constants.yamlStrings.info in param) {
+        var info = renderUtils.createInfo(param[constants.yamlStrings.info]);
+        info.style.cssFloat = 'left';
+        rightDiv.appendChild(info);
+    }
     rightDiv.appendChild(createTypeSetting(param, callBacks));
     rightDiv.appendChild(createIncludeCheckbox(param));
     return rightDiv;
