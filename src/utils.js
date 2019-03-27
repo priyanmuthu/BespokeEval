@@ -3,10 +3,12 @@ const path = require('path');
 const yaml = require('js-yaml');
 const uuid = require('uuid/v4');
 const constants = require('./constants.js');
-function readFileText(path) {
-    var fileText = null;
+function readFileText(filePath) {
+    let fileText = null;
+    let fullPath = path.resolve(filePath);
+    console.log(fullPath);
     try {
-        fileText = fs.readFileSync(path).toString();
+        fileText = fs.readFileSync(fullPath).toString();
     }
     catch (err) {
         console.log(err);
@@ -65,10 +67,53 @@ function RunCommandAsProcess(commandString, callback) {
     });
 }
 
+function RunCommandAsProcessSync(commandString, callback) {
+    const { execSync } = require('child_process');
+    return execSync(commandString).toString();
+}
+
 async function RunCommandAsProcessAsync(commandString) {
     const { exec } = require('promisify-child-process')
     const { stdout, stderr } = await exec(commandString);
     return stdout;
+}
+
+function ExtractManPageInfo(commandString) {
+    const cheerio = require("cheerio");
+    const htmlToText = require("html-to-text")
+    var cmd = `curl -Gs "https://explainshell.com/explain?"$ --data-urlencode 'cmd=${commandString}'`;
+    console.log(cmd);
+    let resultHtml = RunCommandAsProcessSync(cmd);
+    // let resultHtml = readFileText('manpage.html');
+    // console.log(resultHtml);
+    let dollar = cheerio.load(resultHtml);
+    dollar('pre').each((i, ele) => {
+        console.log(ele);
+    });
+
+    // For tracking parameters
+    let paramHelpRef = {};
+    dollar('.command0').each((i, ele) => {
+        let param = htmlToText.fromString(dollar.html(ele)).split(' ')[0];
+        paramHelpRef[param] = dollar(ele).attr('helpref');
+    });
+
+    // Tracking Explain text
+    let explains = {};
+    dollar('pre').each((i, ele) => {
+        let id = dollar(ele).attr('id');
+        let explainText = htmlToText.fromString(dollar.html(ele));
+        explains[id] = explainText;
+    });
+
+    let result = {};
+    for (var p in paramHelpRef) {
+        if (paramHelpRef[p] === undefined) { continue; }
+        result[p] = explains[paramHelpRef[p]];
+    }
+
+    console.log(result);
+    return result
 }
 
 
@@ -123,3 +168,5 @@ module.exports.RunCommandAsProcess = RunCommandAsProcess;
 module.exports.getUniqueID = getUniqueID;
 module.exports.paramCopy = paramCopy;
 module.exports.RunCommandAsProcessAsync = RunCommandAsProcessAsync;
+module.exports.RunCommandAsProcessSync = RunCommandAsProcessSync;
+module.exports.ExtractManPageInfo = ExtractManPageInfo;
