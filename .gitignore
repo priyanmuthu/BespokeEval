@@ -68,3 +68,6 @@ typings/
 
 # VS CODE
 .vscode/
+case_study/
+examples/
+dist/
