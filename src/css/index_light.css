@@ -1,0 +1,122 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0%;
+    align-content: center;
+    background-color: white;
+}
+body{
+    color: black;
+    -ms-overflow-style: scrollbar;
+    -webkit-app-region:drag;
+}
+
+label{
+    font-size: 16px;
+}
+
+div.cellselect:focus-within {
+    border-style: solid;
+    border-width: 2px;
+}
+
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="text"],
+button,
+textarea {
+    -webkit-app-region: no-drag;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    -webkit-user-select: none;
+}
+
+.panel-body{
+    background-color: white;
+}
+
+.container-fluid {
+    width: 80%;
+    height: 80%;
+    padding: 20px;
+    overflow-y: hidden; /* don't show content that exceeds my height */
+}
+
+.monaco-editor {
+    -webkit-app-region: no-drag;
+}
+
+.terminal {
+    -webkit-app-region: no-drag;
+}
+
+.half {
+    max-height: 50% !important;
+}
+
+.full {
+    max-height: 100% !important;
+}
+
+#formdiv {
+    overflow: scroll;
+}
+
+div.awesomplete {
+    display: block;
+}
+
+.accordion {
+    background-color: #454545;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    vertical-align: middle;
+  }
+
+  .active, .accordion:hover {
+    background-color: #515151;
+  }
+
+  .accordion-panel {
+    background-color: white;
+    display: block;
+  }
+
+  .list-group-item.cell-list {
+      background-color: #ffffff !important;
+      border: 0 !important;
+  }
+
+  .grid-form{
+    display: grid; 
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+}
+
+.timer-div {
+  background-color: white;
+  display: inline-flex;
+  border: 1px solid #ccc;
+  color: #555;
+}
+  
+.timer-input {
+  border: none;
+  color: #555;
+  text-align: center;
+  width: 60px;
+}
+
+.list-group-item.history{
+  background-color: white !important;
+}
+
+#tempModalDiv {
+    color: #000000;
+}
