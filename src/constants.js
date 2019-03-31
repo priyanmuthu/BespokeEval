@@ -104,7 +104,10 @@ const trackedFile = null;
 
 const enableInteractiveTerminal = true;
 
+const theme = 'light';
+
 module.exports = {
+    theme: theme,
     yamlStrings: yamlStrings,
     yamlTypes: yamlTypes,
     trackingPort: trackingPort,

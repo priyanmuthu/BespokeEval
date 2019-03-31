@@ -198,7 +198,12 @@ function renderParamUI(mainParamDiv, params, callBacks) {
         }
 
         //adding border to pdiv
-        pDiv.style.background = '#303030';
+        if(constants.theme === 'dark'){
+            pDiv.style.background = '#303030';
+        }
+        else if(constants.theme === 'light') {
+            pDiv.style.background = '#EEEEEE';
+        }
         pDiv.style.padding = '10px'
         pDiv.style.borderRadius = '10px'
 
@@ -390,11 +395,11 @@ function renderDropdownParam(param, callBacks) {
     //Render the param UI
 
     var pDiv = document.createElement('div');
-    pDiv.style.color = "#000000";
+    // pDiv.style.color = "#000000";
 
     // label
     var paramName = renderUtils.createLabel(param);
-    paramName.style.color = "#ffffff";
+    // paramName.style.color = "#ffffff";
     paramName.style.width = '100%';
 
     pDiv.appendChild(createRightDiv(param, callBacks));
@@ -403,6 +408,7 @@ function renderDropdownParam(param, callBacks) {
     var inputDiv = document.createElement('div');
     inputDiv.classList.add('form-group');
     inputDiv.classList.add('has-feedback');
+    inputDiv.style.color = '#000000';
     pDiv.appendChild(inputDiv);
 
     //input
@@ -836,7 +842,6 @@ function createTypeSetting(param, callBacks) {
     typeSettingDiv.style.cssFloat = 'left';
 
     var typeSettingButton = document.createElement('a');
-    typeSettingButton.style.color = '#FFFFFF';
     typeSettingButton.style.marginRight = '10px';
     typeSettingDiv.appendChild(typeSettingButton);
     // typeSettingButton.classList.add('btn');

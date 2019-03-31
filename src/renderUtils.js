@@ -34,7 +34,6 @@ function createRunButton() {
 function createInfo(infoText) {
     var infoDiv = document.createElement('div');
     var infoIcon = document.createElement('span');
-    infoIcon.style.color = '#FFFFFF';
     infoIcon.classList.add('fa');
     infoIcon.classList.add('fa-info-circle');
     infoIcon.setAttribute('data-toggle', 'tooltip');

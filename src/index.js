@@ -13,6 +13,9 @@ var cellArray = [];
 var cellDict = {};
 
 $(document).ready(() => {
+    // Do this before anything else
+    // setTheme();
+
     // Do everything here
 
     //House keeping
